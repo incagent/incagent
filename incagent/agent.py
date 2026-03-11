@@ -10,8 +10,8 @@ from typing import Any
 
 from incagent.approval import ApprovalGateway, ApprovalStatus
 from incagent.config import AgentConfig, ApprovalConfig, LLMConfig, ResilienceConfig
-from incagent.contract import Contract, ContractStatus, ContractTerms
-from incagent.identity import CorporateIdentity, KeyPair, create_identity
+from incagent.contract import Contract
+from incagent.identity import create_identity
 from incagent.ledger import Ledger
 from incagent.messaging import AgentMessage, MessageBus, MessageType
 from incagent.negotiation import NegotiationEngine, NegotiationPolicy, NegotiationResult, NegotiationStatus

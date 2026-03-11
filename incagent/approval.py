@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 import logging
 from enum import Enum
-from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -78,7 +77,7 @@ class ApprovalGateway:
     async def _cli_approval(self, req: ApprovalRequest) -> ApprovalRequest:
         """Interactive CLI approval."""
         print(f"\n{'='*60}")
-        print(f"APPROVAL REQUIRED")
+        print("APPROVAL REQUIRED")
         print(f"{'='*60}")
         print(f"  Contract: {req.description}")
         print(f"  Amount:   ${req.amount:,.2f}")

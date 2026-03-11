@@ -1,6 +1,5 @@
 """Tests for self-healing resilience infrastructure."""
 
-import asyncio
 
 import pytest
 

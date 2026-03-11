@@ -1,7 +1,5 @@
 """Tests for transaction management."""
 
-import tempfile
-from pathlib import Path
 
 from incagent.ledger import Ledger
 from incagent.transaction import Transaction, TransactionManager, TransactionStatus

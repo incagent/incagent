@@ -7,7 +7,7 @@ import json
 import uuid
 from datetime import datetime, timezone
 
-from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
 from pydantic import BaseModel, Field
 

@@ -1,7 +1,5 @@
 """Tests for IncAgent core functionality."""
 
-import asyncio
-import tempfile
 
 import pytest
 
