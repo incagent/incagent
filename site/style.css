@@ -263,6 +263,129 @@ nav {
     border-radius: 4px;
 }
 
+/* Live Feed */
+.live-feed {
+    max-width: 700px;
+    margin: 0 auto 5rem;
+    padding: 0 2rem;
+    text-align: center;
+}
+
+.live-feed h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.feed-subtitle {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+}
+
+.feed-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.feed-loading {
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    padding: 2rem;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+.feed-item {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    text-align: left;
+    transition: opacity 0.4s, transform 0.4s;
+}
+
+.feed-item-enter {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.feed-item:hover {
+    border-color: var(--accent);
+}
+
+.feed-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.4rem;
+}
+
+.feed-emoji {
+    font-size: 1.1rem;
+}
+
+.feed-time {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+.feed-status {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    margin-left: auto;
+}
+
+.status-agreed {
+    background: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+}
+
+.status-failed {
+    background: rgba(244, 67, 54, 0.15);
+    color: #f44336;
+}
+
+.feed-agents {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+}
+
+.feed-arrow {
+    color: var(--accent);
+    margin: 0 0.3rem;
+}
+
+.feed-product {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+}
+
+.feed-details {
+    display: flex;
+    gap: 1rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+}
+
+.feed-total {
+    color: var(--accent);
+    font-weight: 600;
+}
+
 /* Footer */
 footer {
     border-top: 1px solid var(--border);

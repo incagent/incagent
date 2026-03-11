@@ -86,6 +86,14 @@ result = <span class="kw">await</span> buyer.negotiate(contract, counterparty=se
   └─────────┘            └─────────┘</pre>
         </section>
 
+        <section class="live-feed">
+            <h2>Live Agent Trades</h2>
+            <p class="feed-subtitle">Simulated AI-to-AI transactions running in your browser</p>
+            <div id="feed" class="feed-container">
+                <div class="feed-loading">Initializing agents...</div>
+            </div>
+        </section>
+
         <section class="modes">
             <div class="mode">
                 <h3>Human-in-the-Loop</h3>
@@ -106,5 +114,96 @@ result = <span class="kw">await</span> buyer.negotiate(contract, counterparty=se
             <p>MIT License | Built for the agentic economy</p>
         </div>
     </footer>
+    <script>
+    (function() {
+        const BUYERS = [
+            "Acme Corp", "NovaTech", "Zenith AI", "Lumin Labs", "Cobalt Industries",
+            "Apex Digital", "Vertex Systems", "Helix Corp", "Prism Dynamics", "Ion Forge",
+            "Quantum Ventures", "Atlas Global", "Nimbus AI", "Solace Tech", "Ember Corp"
+        ];
+        const SELLERS = [
+            "Widget Inc", "SupplyChain AI", "DataForge", "CloudPeak", "SteelBridge",
+            "OmniParts", "NexGen Supply", "TrueSource", "PivotWare", "ClearPath",
+            "SilkRoute", "IronClad Systems", "Beacon Supply", "CoreLink", "ArcLine"
+        ];
+        const PRODUCTS = [
+            ["AI Compute Credits", 0.5, 5, 1000, 50000],
+            ["GPU Cluster Hours", 10, 80, 100, 2000],
+            ["Data Pipeline Licenses", 500, 3000, 5, 50],
+            ["Edge Inference Nodes", 200, 1500, 10, 100],
+            ["ML Training Slots", 50, 500, 20, 500],
+            ["API Gateway Bandwidth", 2, 20, 100, 5000],
+            ["Vector DB Storage", 0.1, 2, 500, 10000],
+            ["Synthetic Data Packs", 100, 800, 10, 200]
+        ];
+
+        const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+        const rand = (a, b) => a + Math.random() * (b - a);
+        const feed = document.getElementById("feed");
+        const MAX_ITEMS = 8;
+
+        function simulate() {
+            const buyer = pick(BUYERS);
+            let seller = pick(SELLERS);
+            while (seller === buyer) seller = pick(SELLERS);
+
+            const [product, pLo, pHi, qLo, qHi] = pick(PRODUCTS);
+            const qty = Math.floor(rand(qLo, qHi));
+            const rounds = Math.floor(rand(2, 7));
+            const agreed = Math.random() > 0.15;
+            const price = agreed ? Math.round(rand(pLo, pHi) * 100) / 100 : 0;
+            const total = agreed ? qty * price : 0;
+            const ms = Math.floor(rand(12, 180));
+
+            const status = agreed ? "AGREED" : (Math.random() > 0.5 ? "REJECTED" : "TIMEOUT");
+            const statusClass = agreed ? "status-agreed" : "status-failed";
+            const emoji = agreed ? "\u{1F91D}" : (status === "REJECTED" ? "\u274C" : "\u23F0");
+
+            const now = new Date();
+            const time = now.toLocaleTimeString("en-US", { hour12: false });
+
+            const el = document.createElement("div");
+            el.className = "feed-item feed-item-enter";
+            el.innerHTML = `
+                <div class="feed-header">
+                    <span class="feed-emoji">${emoji}</span>
+                    <span class="feed-time">${time}</span>
+                    <span class="feed-status ${statusClass}">${status}</span>
+                </div>
+                <div class="feed-agents">${buyer} <span class="feed-arrow">\u2194</span> ${seller}</div>
+                <div class="feed-product">${product}</div>
+                <div class="feed-details">
+                    ${agreed ? `<span class="feed-total">$${total.toLocaleString("en-US", {minimumFractionDigits: 0, maximumFractionDigits: 0})}</span>` : ""}
+                    <span class="feed-rounds">${rounds} rounds</span>
+                    <span class="feed-ms">${ms}ms</span>
+                </div>
+            `;
+
+            // Remove loading message
+            const loading = feed.querySelector(".feed-loading");
+            if (loading) loading.remove();
+
+            feed.prepend(el);
+            requestAnimationFrame(() => el.classList.remove("feed-item-enter"));
+
+            // Limit items
+            while (feed.children.length > MAX_ITEMS) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        // Initial batch
+        setTimeout(() => { simulate(); }, 800);
+        setTimeout(() => { simulate(); }, 1600);
+        setTimeout(() => { simulate(); }, 2400);
+
+        // New trade every 4-8 seconds
+        function scheduleNext() {
+            const delay = 4000 + Math.random() * 4000;
+            setTimeout(() => { simulate(); scheduleNext(); }, delay);
+        }
+        setTimeout(scheduleNext, 3500);
+    })();
+    </script>
 </body>
 </html>
