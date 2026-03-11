@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IncAgent — Where AI Agents Do Business</title>
+    <meta name="description" content="Open protocol for autonomous AI-to-AI corporate transactions. Build AI agents that negotiate, contract, and transact without human intervention.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <a href="/" class="logo">Inc<span class="accent">Agent</span></a>
+            <div class="nav-links">
+                <a href="https://github.com/incagent/incagent" target="_blank">GitHub</a>
+                <a href="https://github.com/incagent/incagent/tree/main/docs" target="_blank">Docs</a>
+                <a href="https://x.com/incagent" target="_blank">X</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <h1>Where AI Agents<br><span class="accent">Do Business</span></h1>
+            <p class="subtitle">Open-source protocol for autonomous AI-to-AI corporate transactions.<br>Negotiate. Contract. Transact. No humans required.</p>
+            <div class="cta-row">
+                <a href="https://github.com/incagent/incagent" class="btn btn-primary">View on GitHub</a>
+                <code class="install-cmd">pip install incagent</code>
+            </div>
+        </section>
+
+        <section class="code-demo">
+            <pre><code><span class="kw">from</span> incagent <span class="kw">import</span> IncAgent, Contract, ContractTerms
+
+<span class="cm"># Create two corporate agents</span>
+buyer = IncAgent(name=<span class="st">"Acme Corp"</span>, role=<span class="st">"buyer"</span>)
+seller = IncAgent(name=<span class="st">"Widget Inc"</span>, role=<span class="st">"seller"</span>)
+
+<span class="cm"># Define a contract</span>
+contract = Contract(
+    title=<span class="st">"Widget Supply Agreement"</span>,
+    terms=ContractTerms(quantity=<span class="nu">1000</span>, unit_price_range=(<span class="nu">50</span>, <span class="nu">80</span>)),
+)
+
+<span class="cm"># Agents negotiate autonomously</span>
+result = <span class="kw">await</span> buyer.negotiate(contract, counterparty=seller)
+<span class="cm"># NegotiationResult(status='agreed', final_price=65, rounds=3)</span></code></pre>
+        </section>
+
+        <section class="features">
+            <div class="feature">
+                <div class="feature-icon">&#x1F916;</div>
+                <h3>Autonomous</h3>
+                <p>AI agents negotiate contract terms using LLMs, within policy-defined boundaries. No human intervention needed.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">&#x1F6E1;</div>
+                <h3>Self-Healing</h3>
+                <p>Built-in retry with backoff, circuit breakers, and fallback chains. Agents recover from errors automatically.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">&#x1F310;</div>
+                <h3>Open Protocol</h3>
+                <p>JSON-based messaging spec. Signed messages. Tamper-evident ledger. MIT licensed. Build on it freely.</p>
+            </div>
+        </section>
+
+        <section class="architecture">
+            <h2>How It Works</h2>
+            <pre class="arch-diagram">
+┌─────────────┐         ┌─────────────┐
+│   Agent A    │◄──JSON──►│   Agent B    │
+│  (Buyer)     │         │  (Seller)    │
+├─────────────┤         ├─────────────┤
+│ Identity     │         │ Identity     │
+│ Negotiation  │         │ Negotiation  │
+│ Contracts    │         │ Contracts    │
+│ Ledger       │         │ Ledger       │
+│ Resilience   │         │ Resilience   │
+└──────┬──────┘         └──────┬──────┘
+       │                       │
+       ▼                       ▼
+  ┌─────────┐            ┌─────────┐
+  │ SQLite  │            │ SQLite  │
+  │ Ledger  │            │ Ledger  │
+  └─────────┘            └─────────┘</pre>
+        </section>
+
+        <section class="modes">
+            <div class="mode">
+                <h3>Human-in-the-Loop</h3>
+                <p>Start with human approval for high-value transactions. Set dollar thresholds. Get CLI, webhook, or Slack notifications.</p>
+                <code>approval_threshold=10000</code>
+            </div>
+            <div class="mode">
+                <h3>Full Autonomous</h3>
+                <p>When ready, flip to fully autonomous mode. Agents handle everything — from negotiation to execution.</p>
+                <code>autonomous_mode=True</code>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <p>&copy; 2026 IncAgent &mdash; <a href="https://incagent.ai">incagent.ai</a></p>
+            <p>MIT License | Built for the agentic economy</p>
+        </div>
+    </footer>
+</body>
+</html>
