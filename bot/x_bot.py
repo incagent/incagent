@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import os
 import random
 import sys
@@ -11,7 +10,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-import httpx
+import tweepy
 from dotenv import load_dotenv
 
 # Add parent dir so we can import incagent
@@ -22,13 +21,14 @@ from incagent.messaging import MessageBus
 
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
-# ── X API credentials ───────────────────────────────────────────────
-API_KEY = os.getenv("X_API_KEY", "")
-API_SECRET = os.getenv("X_API_SECRET", "")
-ACCESS_TOKEN = os.getenv("X_ACCESS_TOKEN", "")
-ACCESS_TOKEN_SECRET = os.getenv("X_ACCESS_TOKEN_SECRET", "")
-
-TWEET_URL = "https://api.twitter.com/2/tweets"
+# ── X API client ────────────────────────────────────────────────────
+def _get_client() -> tweepy.Client:
+    return tweepy.Client(
+        consumer_key=os.getenv("X_API_KEY"),
+        consumer_secret=os.getenv("X_API_SECRET"),
+        access_token=os.getenv("X_ACCESS_TOKEN"),
+        access_token_secret=os.getenv("X_ACCESS_TOKEN_SECRET"),
+    )
 
 # ── Company name pools ──────────────────────────────────────────────
 BUYER_NAMES = [
@@ -53,52 +53,6 @@ PRODUCT_CATEGORIES = [
     ("Vector DB Storage", "GB", 0.1, 2.0, 500, 10000),
     ("Synthetic Data Packs", "packs", 100, 800, 10, 200),
 ]
-
-
-def _create_oauth1_header(method: str, url: str, body: str = "") -> dict[str, str]:
-    """Build OAuth 1.0a Authorization header (HMAC-SHA1)."""
-    import hashlib
-    import hmac
-    import urllib.parse
-    import uuid
-
-    params = {
-        "oauth_consumer_key": API_KEY,
-        "oauth_nonce": uuid.uuid4().hex,
-        "oauth_signature_method": "HMAC-SHA1",
-        "oauth_timestamp": str(int(time.time())),
-        "oauth_token": ACCESS_TOKEN,
-        "oauth_version": "1.0",
-    }
-
-    # Build signature base string
-    param_string = "&".join(
-        f"{urllib.parse.quote(k, safe='')}={urllib.parse.quote(v, safe='')}"
-        for k, v in sorted(params.items())
-    )
-    base_string = f"{method.upper()}&{urllib.parse.quote(url, safe='')}&{urllib.parse.quote(param_string, safe='')}"
-    signing_key = f"{urllib.parse.quote(API_SECRET, safe='')}&{urllib.parse.quote(ACCESS_TOKEN_SECRET, safe='')}"
-
-    import base64
-    signature = base64.b64encode(
-        hmac.new(signing_key.encode(), base_string.encode(), hashlib.sha1).digest()
-    ).decode()
-
-    params["oauth_signature"] = signature
-    auth_header = "OAuth " + ", ".join(
-        f'{urllib.parse.quote(k, safe="")}="{urllib.parse.quote(v, safe="")}"'
-        for k, v in sorted(params.items())
-    )
-    return {"Authorization": auth_header, "Content-Type": "application/json"}
-
-
-async def post_tweet(text: str) -> dict:
-    """Post a tweet using X API v2."""
-    headers = _create_oauth1_header("POST", TWEET_URL)
-    async with httpx.AsyncClient() as client:
-        resp = await client.post(TWEET_URL, headers=headers, json={"text": text})
-        resp.raise_for_status()
-        return resp.json()
 
 
 def random_scenario() -> tuple[str, str, Contract, NegotiationPolicy, NegotiationPolicy]:
@@ -147,34 +101,33 @@ def format_tweet(
 ) -> str:
     """Format a trade result into a tweet."""
     status_emoji = {
-        "agreed": "🤝",
-        "rejected": "❌",
-        "timeout": "⏰",
-        "in_progress": "🔄",
+        "agreed": "\U0001f91d",
+        "rejected": "\u274c",
+        "timeout": "\u23f0",
+        "in_progress": "\U0001f504",
     }
-    emoji = status_emoji.get(result.status.value, "📊")
+    emoji = status_emoji.get(result.status.value, "\U0001f4ca")
 
     lines = [
         f"{emoji} AI Agent Trade Complete",
-        f"",
-        f"🏢 {buyer} ↔ {seller}",
-        f"📋 {contract.title}",
+        "",
+        f"\U0001f3e2 {buyer} \u2194 {seller}",
+        f"\U0001f4cb {contract.title}",
     ]
 
     if result.final_terms and result.final_terms.unit_price:
         total = result.final_terms.estimated_value()
-        lines.append(f"💰 ${total:,.0f} ({result.final_terms.quantity} × ${result.final_terms.unit_price:.2f})")
+        lines.append(f"\U0001f4b0 ${total:,.0f} ({result.final_terms.quantity} \u00d7 ${result.final_terms.unit_price:.2f})")
     else:
         est = contract.terms.estimated_value()
-        lines.append(f"📊 Est. ${est:,.0f}")
+        lines.append(f"\U0001f4ca Est. ${est:,.0f}")
 
-    lines.append(f"🔁 {result.rounds} rounds → {result.status.value.upper()}")
-    lines.append(f"⚡ {duration_ms}ms")
-    lines.append(f"")
-    lines.append(f"#IncAgent #AIAgents #AutonomousAI")
+    lines.append(f"\U0001f501 {result.rounds} rounds \u2192 {result.status.value.upper()}")
+    lines.append(f"\u26a1 {duration_ms}ms")
+    lines.append("")
+    lines.append("#IncAgent #AIAgents #AutonomousAI")
 
     tweet = "\n".join(lines)
-    # X limit: 280 chars
     if len(tweet) > 280:
         tweet = tweet[:277] + "..."
     return tweet
@@ -200,12 +153,20 @@ async def run_simulation() -> str:
     return tweet_text
 
 
+def post_tweet(text: str) -> str:
+    """Post a tweet and return the tweet URL."""
+    client = _get_client()
+    resp = client.create_tweet(text=text)
+    tweet_id = resp.data["id"]
+    return f"https://x.com/incagentai/status/{tweet_id}"
+
+
 async def main() -> None:
     """Bot main loop — simulate and tweet periodically."""
     interval = int(os.getenv("TWEET_INTERVAL_SECONDS", "3600"))  # Default: 1 hour
     dry_run = os.getenv("DRY_RUN", "true").lower() == "true"
 
-    print(f"IncAgent X Bot started")
+    print("IncAgent X Bot started")
     print(f"  Interval: {interval}s")
     print(f"  Dry run:  {dry_run}")
     print()
@@ -218,14 +179,10 @@ async def main() -> None:
             print()
 
             if dry_run:
-                print("(DRY RUN — not posting to X)")
+                print("(DRY RUN \u2014 not posting to X)")
             else:
-                if not API_KEY or API_KEY == "REGENERATE_ME":
-                    print("ERROR: X API credentials not configured. Set them in .env")
-                else:
-                    resp = await post_tweet(tweet_text)
-                    tweet_id = resp.get("data", {}).get("id", "unknown")
-                    print(f"Posted! https://x.com/incagent/status/{tweet_id}")
+                url = post_tweet(tweet_text)
+                print(f"Posted! {url}")
 
             print(f"Next tweet in {interval}s...\n")
             await asyncio.sleep(interval)
@@ -235,7 +192,7 @@ async def main() -> None:
             break
         except Exception as e:
             print(f"Error: {e}")
-            await asyncio.sleep(60)  # Wait 1 min on error
+            await asyncio.sleep(60)
 
 
 if __name__ == "__main__":
