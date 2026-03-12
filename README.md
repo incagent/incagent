@@ -93,6 +93,9 @@ incagent serve --name "CloudPeak" --role seller --port 8402 \
 | **Negotiation** | LLM-powered autonomous negotiation with rule-based fallback |
 | **Ledger** | Tamper-evident, hash-chained transaction log. Cryptographically verifiable |
 | **Identity** | Ed25519 keypair. Signed messages, signed contracts |
+| **Settlement** | Payment + delivery + dispute resolution. USDC on-chain or simulated off-chain |
+| **Payment** | EVM/USDC transfers on Base, Arbitrum, Ethereum, Polygon via web3 |
+| **Delivery** | Digital auto-verification, physical human/webhook confirmation, overdue tracking |
 
 ## What AI Decides vs What Humans Do
 
@@ -183,6 +186,62 @@ curl -X POST http://localhost:8401/tools \
 
 Tools are Python files in `data_dir/tools/` that define a `BaseTool` subclass. Hot-loaded at runtime.
 
+## Settlement, Payment & Delivery
+
+Full trade lifecycle from payment to delivery verification to dispute resolution.
+
+### Payment (EVM/USDC)
+
+On-chain USDC payments on Base, Arbitrum, Ethereum, or Polygon. Falls back to simulated off-chain mode when no wallet is configured.
+
+```python
+agent = IncAgent(
+    name="Acme Corp", role="buyer",
+    payment={"chain": "base", "rpc_url": "https://mainnet.base.org", "private_key": "0x..."},
+)
+
+balance = await agent.get_balance()  # USDC balance
+```
+
+### Delivery Verification
+
+| Type | Verification | Example |
+|------|-------------|---------|
+| **Digital** | Auto (API check, file hash) | API key provisioned, access granted |
+| **Physical** | Human confirmation or webhook | Package delivered, signed receipt |
+| **Service** | Ongoing monitoring | SLA compliance check |
+
+```python
+# Human confirms physical delivery
+agent.confirm_delivery(settlement_id, approved=True, notes="Package received")
+
+# External system confirms via webhook
+# POST /delivery/webhook {"settlement_id": "...", "verified": true, "tracking": "ABC123"}
+```
+
+### Settlement Modes
+
+| Mode | Flow |
+|------|------|
+| **DIRECT** | Buyer pays seller immediately after delivery verification |
+| **ESCROW** | Funds held in smart contract until delivery confirmed |
+| **PREPAID** | Buyer pays upfront, delivery tracked separately |
+| **COD** | Payment on physical delivery confirmation |
+
+### Dispute Resolution
+
+```python
+# Buyer files dispute
+dispute = agent.file_dispute(settlement_id, "Never received goods")
+
+# Add evidence
+agent._settlement.add_dispute_evidence(dispute.dispute_id, {"photo": "damage.jpg"})
+
+# Resolution: RESOLVED_BUYER (refund), RESOLVED_SELLER (release), RESOLVED_SPLIT
+```
+
+The heartbeat auto-checks for overdue deliveries and sends critical alerts.
+
 ## API Endpoints (Gateway Mode)
 
 | Endpoint | Method | Description |
@@ -200,6 +259,11 @@ Tools are Python files in `data_dir/tools/` that define a `BaseTool` subclass. H
 | `/tools` | POST | Create a new custom tool |
 | `/tools/{name}` | POST | Execute a tool by name |
 | `/improve` | POST | Trigger self-improvement cycle |
+| `/balance` | GET | USDC wallet balance |
+| `/settlements` | GET | List active settlements |
+| `/delivery/confirm` | POST | Human confirms physical delivery |
+| `/delivery/webhook` | POST | External system confirms delivery |
+| `/dispute` | POST | File a dispute for a settlement |
 
 ## CLI Commands
 
@@ -252,6 +316,9 @@ pip install incagent
 
 # With LLM support (for AI-powered negotiation)
 pip install incagent[llm]
+
+# With on-chain payment (EVM/USDC)
+pip install incagent[web3]
 
 # Development
 pip install incagent[dev]

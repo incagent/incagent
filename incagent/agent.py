@@ -19,7 +19,10 @@ from incagent.messaging import AgentMessage, MessageBus, MessageType
 from incagent.negotiation import NegotiationEngine, NegotiationPolicy, NegotiationResult, NegotiationStatus
 from incagent.registry import Registry
 from incagent.resilience import ResilientExecutor
+from incagent.delivery import DeliveryType
+from incagent.payment import PaymentConfig
 from incagent.self_improve import SelfImproveEngine
+from incagent.settlement import SettlementEngine, SettlementMode
 from incagent.skills import SkillManager
 from incagent.tools import ToolRegistry, ToolResult
 from incagent.transaction import TransactionManager
@@ -68,6 +71,9 @@ class IncAgent:
         port: int = 8400,
         industries: list[str] | None = None,
         capabilities: list[str] | None = None,
+        # EVM payment
+        payment: dict[str, Any] | PaymentConfig | None = None,
+        wallet_address: str = "",
     ) -> None:
         # Identity
         self.identity, self._keypair = create_identity(name, role)
@@ -123,6 +129,14 @@ class IncAgent:
         self._tools = ToolRegistry(
             custom_tools_dir=self._config.data_dir / "tools",
         )
+
+        # Settlement engine (EVM payment + delivery verification)
+        pay_config = (
+            PaymentConfig(**payment) if isinstance(payment, dict)
+            else payment or PaymentConfig()
+        )
+        self._settlement = SettlementEngine(payment_config=pay_config)
+        self._wallet_address = wallet_address
 
         # Self-improvement engine
         self._self_improve = SelfImproveEngine(
@@ -300,14 +314,23 @@ class IncAgent:
         return result
 
     async def _execute_transaction(self, contract: Contract, counterparty: IncAgent) -> None:
-        """Execute the agreed transaction."""
+        """Execute the agreed transaction with real settlement.
+
+        Flow:
+        1. Create transaction record
+        2. Create settlement (payment + delivery tracking)
+        3. Execute USDC payment (if configured, otherwise simulate)
+        4. Track delivery
+        5. Complete on verification
+        """
         self.state = AgentState.EXECUTING
         amount = contract.terms.estimated_value()
+        is_buyer = self._config.role == "buyer"
 
         txn = self._transactions.create(
             contract_id=contract.contract_id,
-            buyer_id=self.agent_id if self._config.role == "buyer" else counterparty.agent_id,
-            seller_id=counterparty.agent_id if self._config.role == "buyer" else self.agent_id,
+            buyer_id=self.agent_id if is_buyer else counterparty.agent_id,
+            seller_id=counterparty.agent_id if is_buyer else self.agent_id,
             amount=amount,
         )
 
@@ -315,8 +338,59 @@ class IncAgent:
             self._transactions.execute(txn.transaction_id)
             contract.execute()
 
-            # Simulate execution (real implementation would involve actual payment/delivery)
-            await asyncio.sleep(0.1)
+            # Determine delivery type from contract terms
+            delivery_type = DeliveryType.DIGITAL
+            if contract.terms.delivery_days and contract.terms.delivery_days > 0:
+                delivery_type = DeliveryType.PHYSICAL
+
+            # Determine settlement mode
+            mode = SettlementMode.DIRECT
+            if contract.terms.payment_terms == "prepaid":
+                mode = SettlementMode.PREPAID
+            elif contract.terms.payment_terms == "escrow":
+                mode = SettlementMode.ESCROW
+
+            # Get counterparty wallet address
+            seller_wallet = ""
+            if hasattr(counterparty, '_wallet_address'):
+                seller_wallet = counterparty._wallet_address
+
+            # Create settlement
+            settlement = self._settlement.create_settlement(
+                transaction_id=txn.transaction_id,
+                contract_id=contract.contract_id,
+                buyer_id=txn.buyer_id,
+                seller_id=txn.seller_id,
+                amount_usdc=amount,
+                seller_wallet=seller_wallet,
+                mode=mode,
+                delivery_type=delivery_type,
+                delivery_days=contract.terms.delivery_days,
+            )
+
+            # Execute payment (USDC if configured, otherwise record only)
+            if is_buyer and self._settlement.payment_executor.wallet_address:
+                payment = await self._settlement.execute_payment(settlement.settlement_id)
+                if payment and payment.status.value == "failed":
+                    raise RuntimeError(f"Payment failed: {payment.error}")
+                self._ledger.append(self.agent_id, "payment_executed", {
+                    "settlement_id": settlement.settlement_id,
+                    "tx_hash": payment.tx_hash if payment else "",
+                    "amount_usdc": amount,
+                })
+            else:
+                # No wallet configured - mark as paid (simulated/off-chain)
+                settlement.status = "paid"
+                self._ledger.append(self.agent_id, "payment_simulated", {
+                    "settlement_id": settlement.settlement_id,
+                    "amount": amount,
+                    "note": "No EVM wallet configured - payment recorded off-chain",
+                })
+
+            # For digital goods, auto-verify delivery
+            if delivery_type == DeliveryType.DIGITAL:
+                await self._settlement.verify_delivery(settlement.settlement_id)
+                await self._settlement.complete(settlement.settlement_id)
 
             self._transactions.complete(txn.transaction_id)
             contract.complete()
@@ -325,9 +399,16 @@ class IncAgent:
                 sender_id=self.agent_id,
                 recipient_id=counterparty.agent_id,
                 message_type=MessageType.ACCEPT,
-                payload={"contract_id": contract.contract_id, "transaction_id": txn.transaction_id},
+                payload={
+                    "contract_id": contract.contract_id,
+                    "transaction_id": txn.transaction_id,
+                    "settlement_id": settlement.settlement_id,
+                },
             ))
-            logger.info("Transaction completed: %s ($%.2f)", txn.transaction_id, amount)
+            logger.info(
+                "Transaction completed: %s ($%.2f) settlement=%s",
+                txn.transaction_id, amount, settlement.settlement_id,
+            )
 
         except Exception as e:
             self._transactions.fail(txn.transaction_id, str(e))
@@ -372,6 +453,24 @@ class IncAgent:
     def list_tools(self) -> list[dict[str, Any]]:
         """List all available tools."""
         return self._tools.list_tools()
+
+    # ── Settlement ──────────────────────────────────────────────────
+
+    async def get_balance(self) -> float:
+        """Get agent's USDC balance."""
+        return await self._settlement.payment_executor.get_balance()
+
+    def confirm_delivery(self, settlement_id: str, approved: bool = True, notes: str = "") -> bool:
+        """Human confirms physical delivery for a settlement."""
+        return self._settlement.confirm_delivery_human(settlement_id, approved, notes)
+
+    def file_dispute(self, settlement_id: str, reason: str, evidence: list[dict[str, Any]] | None = None) -> Any:
+        """File a dispute for a settlement."""
+        return self._settlement.file_dispute(settlement_id, self.agent_id, reason, evidence)
+
+    def list_active_settlements(self) -> list[Any]:
+        """List settlements awaiting completion."""
+        return self._settlement.list_active()
 
     async def improve(self) -> dict[str, Any]:
         """Run one self-improvement cycle. The agent analyzes its performance

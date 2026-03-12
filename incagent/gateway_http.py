@@ -147,6 +147,61 @@ def create_app(gateway: Gateway) -> Starlette:
         except Exception as e:
             return JSONResponse({"error": str(e)}, status_code=400)
 
+    async def balance(request: Request) -> JSONResponse:
+        """GET /balance — agent's USDC balance."""
+        try:
+            bal = await gateway.agent.get_balance()
+            return JSONResponse({
+                "balance_usdc": bal,
+                "wallet": gateway.agent._settlement.payment_executor.wallet_address,
+            })
+        except Exception as e:
+            return JSONResponse({"error": str(e)}, status_code=500)
+
+    async def settlements_list(request: Request) -> JSONResponse:
+        """GET /settlements — list active settlements."""
+        active = gateway.agent.list_active_settlements()
+        return JSONResponse({
+            "settlements": [s.model_dump(mode="json") for s in active],
+            "count": len(active),
+        })
+
+    async def delivery_confirm(request: Request) -> JSONResponse:
+        """POST /delivery/confirm — human confirms physical delivery."""
+        try:
+            body = await request.json()
+            settlement_id = body["settlement_id"]
+            approved = body.get("approved", True)
+            notes = body.get("notes", "")
+            result = gateway.agent.confirm_delivery(settlement_id, approved, notes)
+            return JSONResponse({"confirmed": result, "settlement_id": settlement_id})
+        except Exception as e:
+            return JSONResponse({"error": str(e)}, status_code=400)
+
+    async def delivery_webhook(request: Request) -> JSONResponse:
+        """POST /delivery/webhook — external system confirms delivery."""
+        try:
+            body = await request.json()
+            settlement_id = body.pop("settlement_id", "")
+            result = gateway.agent._settlement.confirm_delivery_webhook(settlement_id, body)
+            return JSONResponse({"verified": result})
+        except Exception as e:
+            return JSONResponse({"error": str(e)}, status_code=400)
+
+    async def dispute_file(request: Request) -> JSONResponse:
+        """POST /dispute — file a dispute for a settlement."""
+        try:
+            body = await request.json()
+            dispute = gateway.agent.file_dispute(
+                body["settlement_id"], body["reason"],
+                body.get("evidence"),
+            )
+            if dispute:
+                return JSONResponse(dispute.model_dump(mode="json"))
+            return JSONResponse({"error": "Settlement not found"}, status_code=404)
+        except Exception as e:
+            return JSONResponse({"error": str(e)}, status_code=400)
+
     routes = [
         Route("/health", health, methods=["GET"]),
         Route("/identity", identity, methods=["GET"]),
@@ -161,6 +216,11 @@ def create_app(gateway: Gateway) -> Starlette:
         Route("/tools", tools_list, methods=["GET"]),
         Route("/tools", tools_create, methods=["POST"]),
         Route("/tools/{name}", tools_execute, methods=["POST"]),
+        Route("/balance", balance, methods=["GET"]),
+        Route("/settlements", settlements_list, methods=["GET"]),
+        Route("/delivery/confirm", delivery_confirm, methods=["POST"]),
+        Route("/delivery/webhook", delivery_webhook, methods=["POST"]),
+        Route("/dispute", dispute_file, methods=["POST"]),
     ]
 
     middleware = [

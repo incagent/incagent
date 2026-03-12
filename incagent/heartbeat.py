@@ -129,11 +129,21 @@ class Heartbeat:
             except Exception as e:
                 logger.warning("Self-improvement failed: %s", e)
 
-        # 8. Periodic reports (every 50 ticks)
+        # 8. Check overdue deliveries
+        if hasattr(agent, '_settlement'):
+            overdue = agent._settlement.list_overdue()
+            for s in overdue:
+                await self._try_notify(
+                    agent,
+                    f"OVERDUE: Settlement {s.settlement_id} (${s.amount_usdc:.2f}) delivery past due",
+                    critical=True,
+                )
+
+        # 9. Periodic reports (every 50 ticks)
         if self._tick_count % 50 == 0 and hasattr(agent, '_tools'):
             await self._generate_report(agent)
 
-        # 9. Update memory
+        # 10. Update memory
         if hasattr(agent, '_memory'):
             agent._memory.record_heartbeat(self._tick_count, {
                 "messages_processed": len(messages),

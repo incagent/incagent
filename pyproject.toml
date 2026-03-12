@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "incagent"
-version = "0.2.0"
+version = "0.4.0"
 description = "Open protocol for autonomous AI-to-AI corporate transactions"
 readme = "README.md"
 license = "MIT"
@@ -33,8 +33,9 @@ incagent = "incagent.cli:main"
 
 [project.optional-dependencies]
 llm = ["anthropic>=0.40", "openai>=1.50"]
+web3 = ["web3>=7.0"]
 dev = ["pytest>=8.0", "pytest-asyncio>=0.24", "ruff>=0.8"]
-all = ["incagent[llm,dev]"]
+all = ["incagent[llm,web3,dev]"]
 
 [project.urls]
 Homepage = "https://incagent.ai"
