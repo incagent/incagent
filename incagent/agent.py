@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from incagent.approval import ApprovalGateway, ApprovalStatus
-from incagent.config import AgentConfig, ApprovalConfig, LLMConfig, ResilienceConfig
+from incagent.config import AgentConfig, ApprovalConfig, LLMConfig, ResilienceConfig, SecurityConfigLite
 from incagent.contract import Contract
 from incagent.heartbeat import Heartbeat, HeartbeatConfig
 from incagent.identity import create_identity
@@ -71,6 +71,8 @@ class IncAgent:
         port: int = 8400,
         industries: list[str] | None = None,
         capabilities: list[str] | None = None,
+        # Security
+        security: dict[str, Any] | SecurityConfigLite | None = None,
         # EVM payment
         payment: dict[str, Any] | PaymentConfig | None = None,
         wallet_address: str = "",
@@ -92,6 +94,10 @@ class IncAgent:
             method=approval_method,
             enabled=not autonomous_mode,
         )
+        sec_config = (
+            SecurityConfigLite(**security) if isinstance(security, dict)
+            else security or SecurityConfigLite()
+        )
         self._config = AgentConfig(
             name=name,
             role=role,
@@ -100,6 +106,7 @@ class IncAgent:
             resilience=res_config,
             approval=approval_config,
             llm=llm_config,
+            security=sec_config,
             autonomous_mode=autonomous_mode,
             data_dir=Path(data_dir) if data_dir else Path.home() / ".incagent",
         )

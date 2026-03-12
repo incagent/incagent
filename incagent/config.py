@@ -41,6 +41,24 @@ class LLMConfig(BaseModel):
     temperature: float = 0.7
 
 
+class SecurityConfigLite(BaseModel):
+    """Security settings embedded in AgentConfig.
+
+    For full SecurityConfig, see incagent.security module.
+    """
+
+    api_keys: list[str] = Field(default_factory=list, description="Allowed API keys")
+    require_auth: bool = Field(default=True, description="Require auth on non-public endpoints")
+    allowed_origins: list[str] = Field(default_factory=list, description="CORS allowed origins")
+    rate_limit_per_minute: int = Field(default=60, ge=1)
+    tool_denylist: list[str] = Field(
+        default_factory=lambda: ["shell_exec"],
+        description="Tools blocked from API access",
+    )
+    allow_tool_creation_via_api: bool = False
+    allow_self_improve_via_api: bool = False
+
+
 class AgentConfig(BaseModel):
     """Top-level agent configuration."""
 
@@ -52,5 +70,6 @@ class AgentConfig(BaseModel):
     resilience: ResilienceConfig = Field(default_factory=ResilienceConfig)
     approval: ApprovalConfig = Field(default_factory=ApprovalConfig)
     llm: LLMConfig = Field(default_factory=LLMConfig)
+    security: SecurityConfigLite = Field(default_factory=SecurityConfigLite)
     autonomous_mode: bool = Field(default=False, description="If True, skip all human approvals")
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"

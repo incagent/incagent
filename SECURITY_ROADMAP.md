@@ -1,0 +1,158 @@
+# IncAgent Security Roadmap
+
+## v0.5.0 — 実装済み (Current)
+
+### API認証 & アクセス制御 ✅
+- **API Key認証**: Bearer token方式。HMAC-SHA256でキーをハッシュ化して保存（平文保存しない）
+- **レート制限**: トークンバケット方式。IP単位で毎分60リクエスト、バースト10
+- **CORS制限**: デフォルトで全オリジン拒否（明示指定のみ許可）
+- **エンドポイント権限**: `/health`, `/identity` のみ公開。他は認証必須
+- **ツール実行制御**: `shell_exec` はAPI経由でデフォルト拒否。allowlist/denylist設定可
+- **ツール作成/自己改善**: API経由はデフォルト無効（明示的に有効化が必要）
+
+### コード実行サンドボックス ✅
+- **CodeSandbox**: LLM生成コード・カスタムツールを実行前に静的解析
+- **ブロック対象**:
+  - `subprocess`, `os.system`, `eval`, `exec`, `compile`, `__import__`
+  - `socket`, `requests`, `urllib` (ネットワーク直接操作)
+  - `pickle`, `marshal`, `shelve` (デシリアライゼーション攻撃)
+  - `shutil.rmtree`, `os.remove` (ファイル削除)
+  - `open(..., "w")` (任意ファイル書き込み)
+- **BaseTool継承必須**: クラス定義なしのコードは拒否
+- **サイズ制限**: 50KB超のコードは拒否
+- **防御の多層化**: Gateway → ToolRegistry → CodeSandbox の3段階チェック
+
+### シェルコマンド防御 ✅
+- **40+パターンのブロックリスト**:
+  - 破壊: `rm -rf /`, `mkfs`, `dd if=`
+  - 逆シェル: `/dev/tcp/`, `bash -i >&`, `nc -e`
+  - データ窃取: `.ssh/`, `.env`, `.aws/credentials`, `/etc/shadow`
+  - 権限昇格: `sudo`, `su -`, `chown root`
+  - クリプトマイニング: `xmrig`, `minerd`
+  - システム改変: `systemctl`, `crontab`
+- **Strictモード**: 環境変数 `INCAGENT_SHELL_STRICT=true` でコマンドホワイトリスト強制
+- **パイプ先チェック**: `| bash`, `| python` 等のインタプリタへのパイプを検出
+
+### Skill/Tool注入防御 ✅
+- **スキル名サニタイズ**: 英数字・アンダースコア・ハイフンのみ許可
+- **コンテンツ検証**: パストラバーサル・XSS・コマンドインジェクション検出
+- **サイズ制限**: スキルファイル100KB上限
+- **カスタムツール読み込み時検証**: ディスクからのロード時もCodeSandbox通過必須
+
+### HMAC署名 & リプレイ防御 ✅
+- **リクエスト署名**: HMAC-SHA256 + タイムスタンプ
+- **タイムスタンプ鮮度チェック**: デフォルト300秒以内のリクエストのみ受付
+- **エージェント間メッセージ署名**: ペイロード改ざん検出
+
+### 監査ログ ✅
+- **AuditLogger**: SQLite追記専用ログ
+- **チェーンハッシュ**: SHA-256で各エントリをチェーン化（改ざん検出可能）
+- **改ざん検証**: `verify_chain()` でチェーン全体の整合性チェック
+- **記録対象**: 認証失敗、レート制限、ツール実行、ツール作成拒否、取引提案、紛争申請
+- **APIエンドポイント**: `GET /audit` で監査ログ閲覧可能
+
+### 入力バリデーション ✅
+- **JSONボディ**: ネスト深度制限（5階層）、サイズ制限（1MB）
+- **名前フィールド**: 英数字のみ、64文字以内
+- **全POSTエンドポイント**: InputValidator通過必須
+
+---
+
+## v0.6.0 — 次期実装予定
+
+### Tier 1: 必須（米国法人運用に不可欠）
+
+| 項目 | 内容 | 優先度 |
+|------|------|--------|
+| **Solidityエスクロー契約** | Base/Arbitrumにデプロイ。タイムロック+自動返金+紛争仲裁 | P0 |
+| **KYC/AML統合** | Jumio or Stripe Identity + OFACスクリーニング | P0 |
+| **HTTPS強制** | TLS 1.3、証明書管理、HTTP→HTTPSリダイレクト | P0 |
+| **マルチシグウォレット** | 2-of-3最低。Safe (Gnosis Safe) or Fireblocks統合 | P0 |
+| **秘密鍵管理** | HashiCorp Vault or AWS Secrets Manager連携 | P0 |
+| **EIP-1559ガス管理** | 動的手数料、RBF、複数RPCフェイルオーバー | P1 |
+| **Money Transmitter評価** | 弁護士レビュー（各州ライセンス要件の確認） | P0 |
+
+### Tier 2: コンプライアンス
+
+| 項目 | 内容 | 優先度 |
+|------|------|--------|
+| **税務トラッキング** | 全USDC入出金記録、キャピタルゲイン計算 | P1 |
+| **1099-NEC自動生成** | 年間$600超のベンダー支払い追跡 | P1 |
+| **不変監査ログ** | SQLite→PostgreSQL移行 or ブロックチェーンアンカリング | P1 |
+| **データ暗号化** | DB暗号化（SQLCipher or PostgreSQL pgcrypto） | P2 |
+| **データ保持ポリシー** | 自動アーカイブ・削除ルール | P2 |
+
+### Tier 3: 運用品質
+
+| 項目 | 内容 | 優先度 |
+|------|------|--------|
+| **Prometheus/Grafana** | メトリクスエクスポーター、アラート閾値 | P2 |
+| **DR/バックアップ** | DB複製、鍵バックアップ（暗号化してKMSへ） | P2 |
+| **配送トラッキング** | Shippo API統合、GPS検証 | P3 |
+| **WAF/DDoS防御** | Cloudflare or AWS WAF | P2 |
+| **ログ集約** | SIEM連携（Datadog, Splunk等） | P3 |
+
+---
+
+## セキュリティ設定例
+
+### 最小構成（開発用）
+```python
+agent = IncAgent(
+    name="Dev Agent",
+    role="buyer",
+    security={
+        "require_auth": False,  # 開発時のみ
+    },
+)
+```
+
+### 推奨構成（本番用）
+```python
+agent = IncAgent(
+    name="Acme Corp",
+    role="buyer",
+    security={
+        "api_keys": ["inc_your_secret_key_here"],
+        "require_auth": True,
+        "allowed_origins": ["https://your-dashboard.com"],
+        "rate_limit_per_minute": 30,
+        "tool_denylist": ["shell_exec"],
+        "allow_tool_creation_via_api": False,
+        "allow_self_improve_via_api": False,
+    },
+)
+```
+
+### 環境変数
+```bash
+# API key（設定ファイルの代わりに環境変数でも指定可能）
+INCAGENT_API_KEY=inc_your_secret_key
+
+# シェルツール厳格モード（コマンドホワイトリスト強制）
+INCAGENT_SHELL_STRICT=true
+
+# データディレクトリ（ファイルツールのアクセス範囲）
+INCAGENT_DATA_DIR=/path/to/agent/data
+```
+
+---
+
+## テストカバレッジ
+
+| テストファイル | テスト数 | カバー範囲 |
+|---------------|---------|-----------|
+| test_security.py | 50 | API Key, HMAC, Rate Limit, Input Validation, CodeSandbox, Shell Validation, Audit Logger, Peer Signing, Config Defaults |
+| 全テスト | 173 | セキュリティ変更による既存機能への回帰テスト含む |
+
+---
+
+## 既知のリスクと緩和策
+
+| リスク | 現状 | 緩和策 |
+|--------|------|--------|
+| LLMプロンプトインジェクション | CodeSandboxで静的解析 | v0.6でAST解析追加予定 |
+| SQLiteファイル直接編集 | チェーンハッシュで改ざん検出 | v0.6でPostgreSQL移行 |
+| 秘密鍵の環境変数管理 | 平文 | v0.6でVault連携 |
+| 単一RPCプロバイダ | フェイルオーバーなし | v0.6で複数RPC対応 |
+| HTTP通信 | 暗号化なし | v0.6でTLS必須化 |

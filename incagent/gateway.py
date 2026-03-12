@@ -33,8 +33,22 @@ class Gateway:
     async def start(self) -> None:
         """Start the Gateway HTTP server."""
         from incagent.gateway_http import create_app
+        from incagent.security import SecurityConfig
 
-        app = create_app(self)
+        # Build SecurityConfig from agent's config
+        sec_lite = self.agent._config.security
+        sec = SecurityConfig(
+            api_keys=sec_lite.api_keys,
+            require_auth=sec_lite.require_auth,
+            allowed_origins=sec_lite.allowed_origins,
+            rate_limit_per_minute=sec_lite.rate_limit_per_minute,
+            tool_denylist=sec_lite.tool_denylist,
+            allow_tool_creation_via_api=sec_lite.allow_tool_creation_via_api,
+            allow_self_improve_via_api=sec_lite.allow_self_improve_via_api,
+            audit_log_path=self.agent._config.data_dir / "audit.db",
+        )
+
+        app = create_app(self, security=sec)
         self._running = True
 
         # Start heartbeat if configured

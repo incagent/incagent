@@ -1,4 +1,11 @@
-"""Shell command execution tool — run system commands."""
+"""Shell command execution tool — hardened with security validation.
+
+Security layers:
+1. Blocked patterns (reverse shells, data exfil, privilege escalation, etc.)
+2. Optional strict mode (command allowlist)
+3. Timeout enforcement
+4. Output truncation to prevent memory exhaustion
+"""
 
 from __future__ import annotations
 
@@ -10,7 +17,7 @@ from incagent.tools.base import BaseTool, ToolParam, ToolResult
 
 
 class ShellExecTool(BaseTool):
-    """Execute shell commands on the host system."""
+    """Execute shell commands on the host system with security validation."""
 
     @property
     def name(self) -> str:
@@ -20,31 +27,59 @@ class ShellExecTool(BaseTool):
     def description(self) -> str:
         return (
             "Execute a shell command on the host system. "
-            "Use for system operations, running scripts, managing processes, "
-            "installing packages, generating PDFs, database operations."
+            "Dangerous commands are blocked. "
+            "Use for running scripts, build commands, data processing."
         )
 
     @property
     def parameters(self) -> list[ToolParam]:
         return [
             ToolParam("command", "string", "Shell command to execute"),
-            ToolParam("timeout", "number", "Timeout in seconds", required=False, default=60),
+            ToolParam("timeout", "number", "Timeout in seconds (max 120)", required=False, default=60),
             ToolParam("cwd", "string", "Working directory", required=False),
         ]
 
     async def execute(self, **kwargs: Any) -> ToolResult:
         command = kwargs.get("command", "")
-        timeout = kwargs.get("timeout", 60)
+        timeout = min(kwargs.get("timeout", 60), 120)  # Cap at 120s
         cwd = kwargs.get("cwd")
 
         if not command:
             return ToolResult(success=False, error="Command is required")
 
-        # Safety: block obviously destructive commands
-        blocked = ["rm -rf /", "mkfs", "dd if=", ":(){:|:&};:"]
-        for b in blocked:
-            if b in command:
-                return ToolResult(success=False, error=f"Blocked dangerous command pattern: {b}")
+        # Security validation
+        try:
+            from incagent.security import validate_shell_command
+            strict = os.environ.get("INCAGENT_SHELL_STRICT", "").lower() in ("1", "true", "yes")
+            violations = validate_shell_command(command, strict=strict)
+            if violations:
+                return ToolResult(
+                    success=False,
+                    error=f"Command blocked: {'; '.join(violations)}",
+                )
+        except ImportError:
+            # Fallback to basic blocklist if security module unavailable
+            blocked = [
+                "rm -rf /", "rm -rf ~", "mkfs", "dd if=",
+                ":(){:|:&};:", "sudo", "/dev/tcp/",
+                "nc -", "curl|bash", "wget|bash",
+            ]
+            for b in blocked:
+                if b in command:
+                    return ToolResult(success=False, error=f"Blocked dangerous command pattern: {b}")
+
+        # Validate cwd if provided
+        if cwd:
+            data_dir = os.environ.get("INCAGENT_DATA_DIR", "")
+            if data_dir:
+                from pathlib import Path
+                cwd_path = Path(cwd).resolve()
+                base_path = Path(data_dir).resolve()
+                if not str(cwd_path).startswith(str(base_path)):
+                    return ToolResult(
+                        success=False,
+                        error="Working directory must be within INCAGENT_DATA_DIR",
+                    )
 
         try:
             proc = await asyncio.create_subprocess_shell(

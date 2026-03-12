@@ -275,26 +275,60 @@ Be specific and data-driven. Base your improvement on the actual patterns in the
         return False
 
     def _apply_skill(self, improvement: dict[str, Any]) -> bool:
-        """Save a new skill file and reload."""
+        """Save a new skill file and reload.
+
+        Security: Skill content is validated to prevent injection attacks.
+        Malicious cowork skill.md files could try to embed dangerous
+        instructions or tool creation commands.
+        """
         if not self._skills_dir:
             logger.warning("No skills directory configured, cannot save skill")
             return False
 
         self._skills_dir.mkdir(parents=True, exist_ok=True)
-        name = improvement.get("name", "auto_generated").replace(" ", "_").lower()
-        path = self._skills_dir / f"{name}.md"
+
+        # Sanitize name
+        raw_name = improvement.get("name", "auto_generated")
+        try:
+            from incagent.security import InputValidator
+            safe_name = InputValidator.sanitize_name(raw_name)
+            if not safe_name:
+                logger.warning("Invalid skill name: %s", raw_name)
+                return False
+        except ImportError:
+            safe_name = raw_name.replace(" ", "_").lower()
+
+        path = self._skills_dir / f"{safe_name}.md"
 
         content = improvement.get("content", "")
         if not content:
+            return False
+
+        # Validate skill content for injection patterns
+        try:
+            from incagent.security import InputValidator
+            violations = InputValidator.validate_no_injection(content)
+            if violations:
+                logger.warning(
+                    "Skill '%s' contains dangerous patterns: %s",
+                    safe_name, violations,
+                )
+                return False
+        except ImportError:
+            pass
+
+        # Size limit: skills shouldn't be huge
+        if len(content) > 100_000:
+            logger.warning("Skill '%s' too large (%d bytes)", safe_name, len(content))
             return False
 
         path.write_text(content, encoding="utf-8")
         self._skills.reload()
         self._improvements_applied += 1
 
-        logger.info("Applied skill improvement: %s -> %s", name, path)
+        logger.info("Applied skill improvement: %s -> %s", safe_name, path)
         self._memory.learn_strategy(
-            "self_improvement", f"skill_{name}",
+            "self_improvement", f"skill_{safe_name}",
             improvement.get("description", "Auto-generated skill"),
             confidence=0.4,
         )
@@ -334,7 +368,11 @@ Be specific and data-driven. Base your improvement on the actual patterns in the
         return True
 
     def _apply_tool(self, improvement: dict[str, Any]) -> bool:
-        """Create a new tool from generated Python code."""
+        """Create a new tool from generated Python code.
+
+        Security: Code is validated through CodeSandbox before execution.
+        LLM-generated code is treated as untrusted input.
+        """
         if not self._tools:
             logger.warning("No tool registry configured, cannot create tool")
             return False
@@ -344,6 +382,32 @@ Be specific and data-driven. Base your improvement on the actual patterns in the
         if not code:
             return False
 
+        # Pre-validate with CodeSandbox before passing to registry
+        try:
+            from incagent.security import CodeSandbox, InputValidator
+            sandbox = CodeSandbox()
+            violations = sandbox.validate(code)
+            if violations:
+                logger.warning(
+                    "LLM-generated tool '%s' failed security validation: %s",
+                    name, violations,
+                )
+                self._memory.learn_strategy(
+                    "self_improvement", f"blocked_tool_{name}",
+                    f"Tool blocked by security: {violations}",
+                    confidence=0.9,
+                )
+                return False
+
+            safe_name = InputValidator.sanitize_name(name)
+            if not safe_name:
+                logger.warning("Invalid tool name from LLM: %s", name)
+                return False
+            name = safe_name
+        except ImportError:
+            pass  # Security module unavailable, registry will do basic check
+
+        # Registry also validates code (defense in depth)
         success = self._tools.create_tool(name, code)
         if success:
             self._improvements_applied += 1

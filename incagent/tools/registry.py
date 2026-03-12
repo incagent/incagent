@@ -3,6 +3,11 @@
 Built-in tools are loaded automatically.
 Custom tools from the tools directory are hot-reloaded.
 Agent can create new tools at runtime via create_tool().
+
+Security:
+- All dynamically created tools pass through CodeSandbox validation
+- Blocked imports/patterns prevent code injection
+- Tool names are sanitized
 """
 
 from __future__ import annotations
@@ -61,6 +66,16 @@ class ToolRegistry:
             if py_file.name.startswith("_"):
                 continue
             try:
+                # Validate code before loading
+                code = py_file.read_text(encoding="utf-8")
+                violations = self._validate_code(code)
+                if violations:
+                    logger.warning(
+                        "Custom tool %s failed security check: %s",
+                        py_file.name, violations,
+                    )
+                    continue
+
                 spec = importlib.util.spec_from_file_location(
                     f"incagent_custom_tool_{py_file.stem}", py_file,
                 )
@@ -72,6 +87,21 @@ class ToolRegistry:
                     logger.info("Loaded custom tool from %s", py_file.name)
             except Exception as e:
                 logger.warning("Failed to load custom tool %s: %s", py_file.name, e)
+
+    def _validate_code(self, code: str) -> list[str]:
+        """Validate tool code through CodeSandbox.
+
+        Returns list of violations (empty = safe).
+        """
+        try:
+            from incagent.security import CodeSandbox
+            sandbox = CodeSandbox()
+            return sandbox.validate(code)
+        except ImportError:
+            # Security module not available, do basic check
+            if "BaseTool" not in code:
+                return ["Code must define a BaseTool subclass"]
+            return []
 
     def _register_from_module(self, mod: Any) -> None:
         """Find and register all BaseTool subclasses in a module."""
@@ -133,19 +163,34 @@ class ToolRegistry:
 
         The agent calls this to extend its own capabilities.
         The code must define a class that inherits from BaseTool.
+
+        Security: Code is validated through CodeSandbox before execution.
         """
         if not self._custom_dir:
             logger.warning("No custom tools directory configured")
             return False
 
-        self._custom_dir.mkdir(parents=True, exist_ok=True)
-        safe_name = name.replace(" ", "_").lower()
-        path = self._custom_dir / f"{safe_name}.py"
+        # Sanitize tool name
+        try:
+            from incagent.security import InputValidator
+            safe_name = InputValidator.sanitize_name(name)
+            if not safe_name:
+                logger.error("Invalid tool name: %s", name)
+                return False
+        except ImportError:
+            safe_name = name.replace(" ", "_").lower()
 
-        # Validate: code must contain BaseTool subclass
-        if "BaseTool" not in code:
-            logger.error("Tool code must define a BaseTool subclass")
+        # Validate code safety
+        violations = self._validate_code(code)
+        if violations:
+            logger.error(
+                "Tool code for '%s' failed security validation: %s",
+                safe_name, violations,
+            )
             return False
+
+        self._custom_dir.mkdir(parents=True, exist_ok=True)
+        path = self._custom_dir / f"{safe_name}.py"
 
         path.write_text(code, encoding="utf-8")
         logger.info("Created custom tool file: %s", path)
