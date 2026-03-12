@@ -237,8 +237,8 @@ class PingTool(BaseTool):
         assert result.success is True
         assert result.data["response"] == "pong"
 
-        # Verify file was created
-        assert (Path(self.tmp) / "tools" / "ping.py").exists()
+        # Verify file was created in per-org directory
+        assert (agent._config.data_dir / "tools" / "ping.py").exists()
         agent.close()
 
     async def test_agent_list_tools(self):

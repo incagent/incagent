@@ -7,7 +7,7 @@ from incagent.contract import Contract, ContractStatus, ContractTerms
 from incagent.delivery import DeliveryProof, DeliveryRecord, DeliveryType, DeliveryVerifier
 from incagent.gateway import Gateway
 from incagent.heartbeat import Heartbeat, HeartbeatConfig
-from incagent.identity import CorporateIdentity, KeyPair, create_identity
+from incagent.identity import CorporateIdentity, KeyPair, create_identity, init_org, org_data_dir
 from incagent.ledger import Ledger
 from incagent.memory import Memory
 from incagent.messaging import AgentMessage, MessageBus, MessageType

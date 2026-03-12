@@ -12,7 +12,7 @@ from incagent.approval import ApprovalGateway, ApprovalStatus
 from incagent.config import AgentConfig, ApprovalConfig, LLMConfig, ResilienceConfig, SecurityConfigLite
 from incagent.contract import Contract
 from incagent.heartbeat import Heartbeat, HeartbeatConfig
-from incagent.identity import create_identity
+from incagent.identity import create_identity, init_org
 from incagent.ledger import Ledger
 from incagent.memory import Memory
 from incagent.messaging import AgentMessage, MessageBus, MessageType
@@ -77,8 +77,12 @@ class IncAgent:
         payment: dict[str, Any] | PaymentConfig | None = None,
         wallet_address: str = "",
     ) -> None:
-        # Identity
-        self.identity, self._keypair = create_identity(name, role)
+        # Base directory for all org data
+        base_dir = Path(data_dir) if data_dir else Path.home() / ".incagent"
+
+        # Identity — persistent per org (deterministic ID from name)
+        # init_org creates the per-org directory structure and saves/loads keys
+        self.identity, self._keypair, org_dir = init_org(base_dir, name, role)
 
         # Config
         res_config = (
@@ -108,7 +112,7 @@ class IncAgent:
             llm=llm_config,
             security=sec_config,
             autonomous_mode=autonomous_mode,
-            data_dir=Path(data_dir) if data_dir else Path.home() / ".incagent",
+            data_dir=org_dir,  # per-org directory
         )
 
         # State
@@ -116,8 +120,8 @@ class IncAgent:
         self._contracts: dict[str, Contract] = {}
         self._policies: dict[str, NegotiationPolicy] = {}
 
-        # Core subsystems
-        self._ledger = Ledger(self._config.data_dir / f"{self.identity.agent_id}.db")
+        # Core subsystems — all paths within per-org directory
+        self._ledger = Ledger(org_dir / "ledger.db")
         self._executor = ResilientExecutor(res_config)
         self._negotiation = NegotiationEngine(llm_config)
         self._approval = ApprovalGateway(approval_config)
@@ -125,16 +129,16 @@ class IncAgent:
         self._bus = message_bus or MessageBus()
         self._bus.register(self.identity.agent_id)
 
-        # New subsystems
-        self._memory = Memory(self._config.data_dir / f"{self.identity.agent_id}_memory.db")
+        # New subsystems — all within per-org directory
+        self._memory = Memory(org_dir / "memory.db")
         self._registry = Registry(hub_url=hub_url)
         self._skills = SkillManager(
-            skills_dir=skills_dir or self._config.data_dir / "skills"
+            skills_dir=skills_dir or org_dir / "skills"
         )
 
         # Tool system (external integrations + agent-extensible)
         self._tools = ToolRegistry(
-            custom_tools_dir=self._config.data_dir / "tools",
+            custom_tools_dir=org_dir / "tools",
         )
 
         # Settlement engine (EVM payment + delivery verification)
@@ -150,7 +154,7 @@ class IncAgent:
             memory=self._memory,
             skills=self._skills,
             llm_config=llm_config,
-            skills_dir=skills_dir or self._config.data_dir / "skills",
+            skills_dir=skills_dir or org_dir / "skills",
             tools=self._tools,
         )
 
