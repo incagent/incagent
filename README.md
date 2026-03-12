@@ -70,7 +70,7 @@ incagent serve --name "CloudPeak" --port 8402
 ```
               Agent A (Buyer)                    Agent B (Seller)
       ┌──────────────────────┐           ┌──────────────────────┐
-      │  Gateway :8401       │◄──HTTP───►│  Gateway :8402       │
+      │  Gateway :8401       │◄─HTTPS──►│  Gateway :8402       │
       ├──────────────────────┤           ├──────────────────────┤
       │  Identity + Ed25519  │           │  Identity + Ed25519  │
       │  Security (API/HMAC) │           │  Security (API/HMAC) │
@@ -102,6 +102,7 @@ Each organization gets its own directory (deterministic ID from org name):
     memory.db          # Learning memory
     tax.db             # Tax records & 1099-NEC tracking
     audit.db           # Security audit log
+    tls/               # TLS certificates (auto-generated or user-provided)
     skills/            # Markdown skill files
     tools/             # Custom Python tools
     reports/           # Generated reports
@@ -111,7 +112,8 @@ Each organization gets its own directory (deterministic ID from org name):
 
 | Component | Description |
 |-----------|-------------|
-| **Gateway** | Persistent HTTP server with REST API, rate limiting, API key auth |
+| **Gateway** | Persistent HTTPS server with REST API, TLS 1.3, rate limiting, API key auth |
+| **Escrow** | Solidity smart contract — trustless USDC escrow with timelock + dispute resolution |
 | **Identity** | Ed25519 keypair. Deterministic org ID. Persistent across restarts |
 | **Security** | API key auth, HMAC signing, rate limiting, code sandbox, audit log |
 | **Negotiation** | LLM-powered autonomous negotiation with rule-based fallback |
@@ -126,10 +128,12 @@ Each organization gets its own directory (deterministic ID from org name):
 
 ## Security
 
-### v0.6.0 Security Features
+### v0.7.0 Security Features
 
 | Feature | Implementation |
 |---------|---------------|
+| **HTTPS/TLS 1.3** | Mandatory TLS, auto-generate self-signed certs, HTTP→HTTPS redirect |
+| **On-chain Escrow** | Solidity smart contract, timelock + dispute arbiter + auto-refund |
 | **API Key Auth** | HMAC-SHA256 hashed keys, Bearer token, env var fallback |
 | **Rate Limiting** | Token bucket per-IP (60/min, burst 10) |
 | **HMAC Request Signing** | Timestamp + body signing, 300s replay window |
@@ -169,12 +173,76 @@ INCAGENT_DATA_DIR=/path/to/agent/data
 
 See [SECURITY_ROADMAP.md](SECURITY_ROADMAP.md) for full details.
 
+## HTTPS/TLS
+
+All inter-agent communication is encrypted with TLS 1.3 by default.
+
+```python
+agent = IncAgent(
+    name="Acme Corp", role="buyer",
+    tls={
+        "enabled": True,
+        "auto_generate": True,        # Self-signed cert for dev
+        "redirect_http": True,        # HTTP :8080 → HTTPS :8400
+    },
+)
+
+# Production: provide your own certs
+agent = IncAgent(
+    name="Acme Corp", role="buyer",
+    tls={
+        "enabled": True,
+        "cert_file": "/etc/ssl/certs/agent.pem",
+        "key_file": "/etc/ssl/private/agent-key.pem",
+        "min_version": "TLSv1.3",
+    },
+)
+```
+
+Features:
+- **TLS 1.3 minimum** — configurable (TLSv1.2 also supported)
+- **Auto-generate** — self-signed EC P-256 certs for development
+- **HTTP redirect** — optional HTTP listener that 301s to HTTPS
+- **mTLS** — mutual TLS with CA bundle for zero-trust agent networks
+
+## On-chain Escrow (Solidity)
+
+Trustless USDC escrow for agent-to-agent trades. No trust required — funds are locked in a smart contract.
+
+```
+Buyer deposits → [Escrow Contract] → Delivery verified → Seller receives
+                        ↓ (timeout)
+                   Buyer refunded
+                        ↓ (dispute)
+                   Arbiter splits
+```
+
+```python
+# Escrow mode settlement
+settlement = engine.create_settlement(
+    ..., mode=SettlementMode.ESCROW,
+    seller_wallet="0x...",
+)
+
+# Buyer deposits USDC into contract
+await engine.execute_payment(settlement.settlement_id, lock_seconds=86400)
+
+# After delivery verification, release to seller
+await engine.complete(settlement.settlement_id)
+
+# Or: auto-refund after deadline
+await engine.refund_expired(settlement.settlement_id)
+```
+
+Contract: [`contracts/IncAgentEscrow.sol`](contracts/IncAgentEscrow.sol) — deploy on Base, Arbitrum, Ethereum, or Polygon.
+
 ## Payment (EVM/USDC)
 
 On-chain USDC payments on Base, Arbitrum, Ethereum, or Polygon. Falls back to simulated off-chain mode when no wallet is configured.
 
-### Features (v0.6.0)
+### Features (v0.7.0)
 
+- **On-chain escrow** — deposit/release/refund/dispute via Solidity contract
 - **EIP-1559 gas management** — dynamic `maxFeePerGas` / `maxPriorityFeePerGas`
 - **Balance check** — pre-transfer verification, fail-fast on insufficient funds
 - **Nonce management** — thread-safe for concurrent transactions
@@ -237,7 +305,7 @@ Metrics include:
 | Mode | Flow |
 |------|------|
 | **DIRECT** | Buyer pays seller immediately after delivery verification |
-| **ESCROW** | Funds held in smart contract until delivery confirmed |
+| **ESCROW** | Funds locked in [Solidity escrow contract](contracts/IncAgentEscrow.sol), released on delivery, auto-refund on timeout |
 | **PREPAID** | Buyer pays upfront, delivery tracked separately |
 | **COD** | Payment on physical delivery confirmation |
 
@@ -326,13 +394,15 @@ pip install incagent[dev]
 ## Test Coverage
 
 ```
-233 tests passing
+258 tests passing
 ├── test_security.py      — 50 tests (auth, rate limiting, sandbox, audit)
+├── test_escrow.py        — 15 tests (ABI, escrow ID, deposit/release/refund/dispute/status)
 ├── test_org_setup.py     — 16 tests (identity, persistence, isolation)
 ├── test_e2e_trade.py     — 17 tests (full trade lifecycle, disputes)
-├── test_payment.py       — 15 tests (config, balance, RPC failover)
+├── test_payment.py       — 15 tests (config, balance, RPC failover, ERC20 ABI)
 ├── test_tax.py           — 14 tests (records, 1099-NEC, export)
 ├── test_metrics.py       — 14 tests (counters, gauges, histograms)
+├── test_tls.py           — 10 tests (TLS config, SSL context, cert gen, redirect)
 └── ... (agent, contract, negotiation, resilience, settlement, tools, gateway)
 ```
 

@@ -84,15 +84,38 @@
 
 ---
 
-## v0.7.0 — 次期実装予定
+## v0.7.0 — 実装済み (Current)
+
+### Solidityエスクロー ✅
+- **IncAgentEscrow.sol**: Base/Arbitrum/Ethereum/Polygon対応のUSDCエスクローコントラクト
+- **deposit()**: バイヤーがUSDCをロック（IERC20 safeTransferFrom）
+- **release()**: デリバリー検証後、バイヤーが資金解放 → セラーへ
+- **refund()**: デッドライン超過時、バイヤーが返金請求
+- **dispute()**: いずれかの当事者が紛争申請 → アービター解決待ち
+- **resolveDispute(buyerPct)**: アービターが0-100%で分配
+- **タイムロック**: MIN 1時間 ~ MAX 90日
+- **ReentrancyGuard**: リエントランシー攻撃防御
+- **SafeERC20**: トークン転送の安全ラッパー
+- **Python連携**: `PaymentExecutor.escrow_deposit/release/refund/dispute/status`
+- **Settlement連携**: `SettlementMode.ESCROW` でオンチェーンエスクロー自動使用
+
+### HTTPS/TLS ✅
+- **TLS 1.3必須**: `TLSConfig(enabled=True)` でHTTPS有効化
+- **自動証明書生成**: `auto_generate=True` でEC P-256自己署名証明書を自動作成
+- **HTTP→HTTPSリダイレクト**: `redirect_http=True` で8080→8400リダイレクト
+- **mTLS対応**: `ca_file` でCA証明書指定 → 相互TLS認証
+- **最小バージョン設定**: `min_version="TLSv1.3"` or `"TLSv1.2"`
+- **証明書保管**: `{org_dir}/tls/cert.pem`, `key.pem`（パーミッション0600）
+
+---
+
+## v0.8.0 — 次期実装予定
 
 ### Tier 1: 必須（米国法人運用に不可欠）
 
 | 項目 | 内容 | 優先度 |
 |------|------|--------|
-| **Solidityエスクロー契約** | Base/Arbitrumにデプロイ。タイムロック+自動返金+紛争仲裁 | P0 |
 | **KYC/AML統合** | Jumio or Stripe Identity + OFACスクリーニング | P0 |
-| **HTTPS強制** | TLS 1.3、証明書管理、HTTP→HTTPSリダイレクト | P0 |
 | **マルチシグウォレット** | 2-of-3最低。Safe (Gnosis Safe) or Fireblocks統合 | P0 |
 | **秘密鍵管理** | HashiCorp Vault or AWS Secrets Manager連携 | P0 |
 | **Money Transmitter評価** | 弁護士レビュー（各州ライセンス要件の確認） | P0 |
@@ -166,10 +189,12 @@ INCAGENT_DATA_DIR=/path/to/agent/data
 | テストファイル | テスト数 | カバー範囲 |
 |---------------|---------|-----------|
 | test_security.py | 50 | API Key, HMAC, Rate Limit, Input Validation, CodeSandbox, Shell Validation, Audit Logger, Peer Signing, Config Defaults |
-| test_payment.py | 15 | PaymentConfig, RPC failover, balance check, EIP-1559 |
+| test_escrow.py | 15 | ABI, エスクローID生成, deposit/release/refund/dispute/status, Settlement連携 |
+| test_payment.py | 15 | PaymentConfig, RPC failover, balance check, EIP-1559, ERC20 ABI |
+| test_tls.py | 10 | TLSConfig, SSL Context, 自動証明書生成, リダイレクトアプリ |
 | test_tax.py | 14 | 税務記録、1099-NEC、エクスポート |
 | test_metrics.py | 14 | Counter, Gauge, Histogram, Registry |
-| 全テスト | 233 | v0.6.0全機能 + 既存回帰テスト |
+| 全テスト | 258 | v0.7.0全機能 + 既存回帰テスト |
 
 ---
 
@@ -177,8 +202,9 @@ INCAGENT_DATA_DIR=/path/to/agent/data
 
 | リスク | 現状 | 緩和策 |
 |--------|------|--------|
-| LLMプロンプトインジェクション | CodeSandboxで静的解析 | v0.6でAST解析追加予定 |
-| SQLiteファイル直接編集 | チェーンハッシュで改ざん検出 | v0.6でPostgreSQL移行 |
-| 秘密鍵の環境変数管理 | 平文 | v0.6でVault連携 |
-| 単一RPCプロバイダ | フェイルオーバーなし | v0.6で複数RPC対応 |
-| HTTP通信 | 暗号化なし | v0.6でTLS必須化 |
+| LLMプロンプトインジェクション | CodeSandboxで静的解析 | v0.8でAST解析追加予定 |
+| SQLiteファイル直接編集 | チェーンハッシュで改ざん検出 | v0.8でPostgreSQL移行 |
+| 秘密鍵の環境変数管理 | 平文 | v0.8でVault連携 |
+| 単一RPCプロバイダ | v0.6で複数RPC対応 ✅ | 解決済み |
+| HTTP通信 | v0.7でTLS 1.3対応 ✅ | 解決済み |
+| トラストベースのエスクロー | v0.7でSolidityコントラクト ✅ | 解決済み |

@@ -158,8 +158,22 @@ class SettlementEngine:
         )
         return settlement
 
-    async def execute_payment(self, settlement_id: str) -> PaymentRecord | None:
-        """Execute the payment for a settlement."""
+    async def execute_payment(
+        self,
+        settlement_id: str,
+        lock_seconds: int = 86400,
+        contract_terms_json: str = "",
+    ) -> PaymentRecord | None:
+        """Execute the payment for a settlement.
+
+        For ESCROW mode, deposits funds into the on-chain escrow contract.
+        For DIRECT/PREPAID/COD, transfers USDC directly to seller.
+
+        Args:
+            settlement_id: Settlement to pay
+            lock_seconds: Escrow lock duration (default 24h). Only for ESCROW mode.
+            contract_terms_json: Contract terms JSON for on-chain hash. Only for ESCROW mode.
+        """
         settlement = self._settlements.get(settlement_id)
         if not settlement:
             logger.error("Settlement not found: %s", settlement_id)
@@ -169,20 +183,38 @@ class SettlementEngine:
             logger.error("No seller wallet configured for settlement %s", settlement_id)
             return None
 
-        # Execute USDC transfer
-        payment = await self._payment.transfer_usdc(
-            to_address=settlement.seller_wallet,
-            amount_usdc=settlement.amount_usdc,
-            transaction_id=settlement.transaction_id,
-        )
+        # Route to escrow or direct based on settlement mode
+        if settlement.mode == SettlementMode.ESCROW:
+            payment = await self._payment.escrow_deposit(
+                seller_address=settlement.seller_wallet,
+                amount_usdc=settlement.amount_usdc,
+                lock_seconds=lock_seconds,
+                contract_id=settlement.contract_id,
+                contract_terms_json=contract_terms_json,
+            )
+        else:
+            payment = await self._payment.transfer_usdc(
+                to_address=settlement.seller_wallet,
+                amount_usdc=settlement.amount_usdc,
+                transaction_id=settlement.transaction_id,
+            )
+
         settlement.payment = payment
 
-        if payment.status == PaymentStatus.CONFIRMED:
-            settlement.status = "paid"
-            logger.info("Settlement %s: payment confirmed (tx=%s)", settlement_id, payment.tx_hash[:16])
+        if settlement.mode == SettlementMode.ESCROW:
+            if payment.status == PaymentStatus.ESCROWED:
+                settlement.status = "escrowed"
+                logger.info("Settlement %s: funds escrowed (tx=%s)", settlement_id, payment.tx_hash[:16])
+            else:
+                settlement.status = "payment_failed"
+                logger.error("Settlement %s: escrow deposit failed: %s", settlement_id, payment.error)
         else:
-            settlement.status = "payment_failed"
-            logger.error("Settlement %s: payment failed: %s", settlement_id, payment.error)
+            if payment.status == PaymentStatus.CONFIRMED:
+                settlement.status = "paid"
+                logger.info("Settlement %s: payment confirmed (tx=%s)", settlement_id, payment.tx_hash[:16])
+            else:
+                settlement.status = "payment_failed"
+                logger.error("Settlement %s: payment failed: %s", settlement_id, payment.error)
 
         return payment
 
@@ -240,7 +272,11 @@ class SettlementEngine:
         return result
 
     async def complete(self, settlement_id: str) -> bool:
-        """Complete a verified settlement."""
+        """Complete a verified settlement.
+
+        For ESCROW mode, this releases funds from the on-chain escrow to the seller.
+        For other modes, simply marks as completed.
+        """
         settlement = self._settlements.get(settlement_id)
         if not settlement:
             return False
@@ -249,12 +285,56 @@ class SettlementEngine:
             logger.warning("Cannot complete settlement %s: status=%s", settlement_id, settlement.status)
             return False
 
+        # For escrow mode, release funds on-chain
+        if settlement.mode == SettlementMode.ESCROW:
+            release_payment = await self._payment.escrow_release(
+                seller_address=settlement.seller_wallet,
+                amount_usdc=settlement.amount_usdc,
+                contract_id=settlement.contract_id,
+            )
+            if release_payment.status != PaymentStatus.RELEASED:
+                logger.error(
+                    "Settlement %s: escrow release failed: %s",
+                    settlement_id, release_payment.error,
+                )
+                return False
+            logger.info("Settlement %s: escrow released to seller", settlement_id)
+
         settlement.status = "completed"
         settlement.completed_at = datetime.now(timezone.utc)
         logger.info("Settlement %s completed", settlement_id)
         return True
 
     # ── Disputes ──────────────────────────────────────────────────────
+
+    async def refund_expired(self, settlement_id: str) -> bool:
+        """Refund an expired escrow (deadline passed, seller didn't deliver)."""
+        settlement = self._settlements.get(settlement_id)
+        if not settlement:
+            return False
+
+        if settlement.mode != SettlementMode.ESCROW:
+            logger.warning("refund_expired only applies to ESCROW mode")
+            return False
+
+        if settlement.status not in ("escrowed", "delivering"):
+            logger.warning("Cannot refund settlement %s: status=%s", settlement_id, settlement.status)
+            return False
+
+        refund_payment = await self._payment.escrow_refund(
+            seller_address=settlement.seller_wallet,
+            amount_usdc=settlement.amount_usdc,
+            contract_id=settlement.contract_id,
+        )
+
+        if refund_payment.status == PaymentStatus.REFUNDED:
+            settlement.status = "refunded"
+            settlement.completed_at = datetime.now(timezone.utc)
+            logger.info("Settlement %s: escrow refunded to buyer", settlement_id)
+            return True
+
+        logger.error("Settlement %s: escrow refund failed: %s", settlement_id, refund_payment.error)
+        return False
 
     def file_dispute(
         self,

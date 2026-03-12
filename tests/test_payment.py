@@ -129,3 +129,4 @@ class TestERC20ABI:
         assert "transfer" in names
         assert "approve" in names
         assert "balanceOf" in names
+        assert "allowance" in names

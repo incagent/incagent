@@ -2,7 +2,7 @@
 
 from incagent.agent import AgentState, IncAgent
 from incagent.approval import ApprovalGateway, ApprovalStatus
-from incagent.config import AgentConfig, ApprovalConfig, LLMConfig, ResilienceConfig, SecurityConfigLite
+from incagent.config import AgentConfig, ApprovalConfig, LLMConfig, ResilienceConfig, SecurityConfigLite, TLSConfig
 from incagent.contract import Contract, ContractStatus, ContractTerms
 from incagent.delivery import DeliveryProof, DeliveryRecord, DeliveryType, DeliveryVerifier
 from incagent.gateway import Gateway
@@ -24,7 +24,7 @@ from incagent.tax import TaxTracker
 from incagent.metrics import MetricsRegistry, METRICS
 from incagent.transaction import Transaction, TransactionManager
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 __all__ = [
     "IncAgent",
@@ -71,6 +71,7 @@ __all__ = [
     "RetryWithBackoff",
     "SecurityConfig",
     "SecurityConfigLite",
+    "TLSConfig",
     "SelfImproveEngine",
     "SettlementEngine",
     "SettlementMode",

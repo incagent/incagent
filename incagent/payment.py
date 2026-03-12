@@ -11,6 +11,7 @@ Works with any EVM chain: Ethereum, Base, Arbitrum, Polygon.
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import os
 import threading
@@ -55,6 +56,85 @@ ERC20_TRANSFER_ABI = [
         "type": "function",
         "inputs": [{"name": "account", "type": "address"}],
         "outputs": [{"name": "", "type": "uint256"}],
+    },
+    {
+        "name": "allowance",
+        "type": "function",
+        "inputs": [
+            {"name": "owner", "type": "address"},
+            {"name": "spender", "type": "address"},
+        ],
+        "outputs": [{"name": "", "type": "uint256"}],
+    },
+]
+
+# IncAgentEscrow contract ABI (minimal — deposit, release, refund, dispute, resolve, view)
+ESCROW_ABI = [
+    {
+        "name": "deposit",
+        "type": "function",
+        "inputs": [
+            {"name": "escrowId", "type": "bytes32"},
+            {"name": "seller", "type": "address"},
+            {"name": "amount", "type": "uint256"},
+            {"name": "lockSeconds", "type": "uint256"},
+            {"name": "contractHash", "type": "bytes32"},
+        ],
+        "outputs": [],
+    },
+    {
+        "name": "release",
+        "type": "function",
+        "inputs": [{"name": "escrowId", "type": "bytes32"}],
+        "outputs": [],
+    },
+    {
+        "name": "refund",
+        "type": "function",
+        "inputs": [{"name": "escrowId", "type": "bytes32"}],
+        "outputs": [],
+    },
+    {
+        "name": "dispute",
+        "type": "function",
+        "inputs": [{"name": "escrowId", "type": "bytes32"}],
+        "outputs": [],
+    },
+    {
+        "name": "resolveDispute",
+        "type": "function",
+        "inputs": [
+            {"name": "escrowId", "type": "bytes32"},
+            {"name": "buyerPct", "type": "uint256"},
+        ],
+        "outputs": [],
+    },
+    {
+        "name": "getEscrow",
+        "type": "function",
+        "stateMutability": "view",
+        "inputs": [{"name": "escrowId", "type": "bytes32"}],
+        "outputs": [
+            {
+                "name": "",
+                "type": "tuple",
+                "components": [
+                    {"name": "buyer", "type": "address"},
+                    {"name": "seller", "type": "address"},
+                    {"name": "amount", "type": "uint256"},
+                    {"name": "deadline", "type": "uint256"},
+                    {"name": "status", "type": "uint8"},
+                    {"name": "contractHash", "type": "bytes32"},
+                ],
+            }
+        ],
+    },
+    {
+        "name": "isExpired",
+        "type": "function",
+        "stateMutability": "view",
+        "inputs": [{"name": "escrowId", "type": "bytes32"}],
+        "outputs": [{"name": "", "type": "bool"}],
     },
 ]
 
@@ -548,3 +628,400 @@ class PaymentExecutor:
             logger.error("RBF bump failed: %s", e)
 
         return payment
+
+    # ------------------------------------------------------------------
+    # Escrow contract operations
+    # ------------------------------------------------------------------
+
+    def _get_escrow_contract(self, w3: Any) -> Any | None:
+        """Get the escrow contract instance. Returns None if not configured."""
+        if not self._config.escrow_address:
+            return None
+        return w3.eth.contract(
+            address=w3.to_checksum_address(self._config.escrow_address),
+            abi=ESCROW_ABI,
+        )
+
+    @staticmethod
+    def compute_escrow_id(
+        buyer: str, seller: str, contract_id: str, amount_usdc: float
+    ) -> bytes:
+        """Deterministic escrow ID from trade parameters.
+
+        Returns 32-byte hash suitable for use as Solidity bytes32.
+        """
+        payload = f"{buyer}:{seller}:{contract_id}:{amount_usdc}".encode()
+        return hashlib.sha256(payload).digest()
+
+    @staticmethod
+    def compute_contract_hash(terms_json: str) -> bytes:
+        """Hash off-chain contract terms for on-chain anchoring."""
+        return hashlib.sha256(terms_json.encode()).digest()
+
+    async def escrow_deposit(
+        self,
+        seller_address: str,
+        amount_usdc: float,
+        lock_seconds: int,
+        contract_id: str = "",
+        contract_terms_json: str = "",
+    ) -> PaymentRecord:
+        """Deposit USDC into escrow contract.
+
+        Steps:
+          1. Approve escrow contract to spend USDC
+          2. Call escrow.deposit()
+
+        Args:
+            seller_address: Seller's wallet
+            amount_usdc: USDC amount
+            lock_seconds: Seconds until auto-refund eligible (3600–7776000)
+            contract_id: Off-chain contract ID (used in escrow ID generation)
+            contract_terms_json: JSON string of contract terms (hashed on-chain)
+        """
+        payment = PaymentRecord(
+            payment_id=str(uuid.uuid4()),
+            transaction_id=f"escrow:deposit:{contract_id}",
+            from_address=self.wallet_address,
+            to_address=self._config.escrow_address,
+            amount_usdc=amount_usdc,
+            chain=self._config.chain,
+        )
+
+        w3 = self._get_web3()
+        if not w3 or not self._account:
+            payment.status = PaymentStatus.FAILED
+            payment.error = "Web3 not configured"
+            return payment
+
+        escrow_contract = self._get_escrow_contract(w3)
+        if not escrow_contract:
+            payment.status = PaymentStatus.FAILED
+            payment.error = "Escrow contract address not configured"
+            return payment
+
+        try:
+            usdc_addr = self._config.get_usdc_address()
+            usdc_contract = w3.eth.contract(
+                address=w3.to_checksum_address(usdc_addr),
+                abi=ERC20_TRANSFER_ABI,
+            )
+
+            amount_raw = int(amount_usdc * 1e6)
+
+            # Balance check
+            balance_raw = usdc_contract.functions.balanceOf(self._account.address).call()
+            if balance_raw < amount_raw:
+                payment.status = PaymentStatus.FAILED
+                payment.error = f"Insufficient USDC: have {balance_raw / 1e6:.2f}, need {amount_usdc:.2f}"
+                return payment
+
+            escrow_addr = w3.to_checksum_address(self._config.escrow_address)
+            gas_params = self._build_eip1559_gas_params(w3)
+
+            # Step 1: Approve escrow contract to spend USDC
+            current_allowance = usdc_contract.functions.allowance(
+                self._account.address, escrow_addr
+            ).call()
+
+            if current_allowance < amount_raw:
+                nonce = self._get_next_nonce(w3)
+                approve_tx = usdc_contract.functions.approve(
+                    escrow_addr, amount_raw
+                ).build_transaction({
+                    "from": self._account.address,
+                    "nonce": nonce,
+                    "gas": 60000,
+                    "chainId": w3.eth.chain_id,
+                    **gas_params,
+                })
+                signed_approve = self._account.sign_transaction(approve_tx)
+                approve_hash = w3.eth.send_raw_transaction(signed_approve.raw_transaction)
+                w3.eth.wait_for_transaction_receipt(approve_hash, timeout=120)
+                logger.info("USDC approval confirmed for escrow")
+
+            # Step 2: Call escrow.deposit()
+            escrow_id = self.compute_escrow_id(
+                self._account.address, seller_address, contract_id, amount_usdc
+            )
+            contract_hash = self.compute_contract_hash(contract_terms_json or contract_id)
+
+            nonce = self._get_next_nonce(w3)
+
+            try:
+                estimated_gas = escrow_contract.functions.deposit(
+                    escrow_id,
+                    w3.to_checksum_address(seller_address),
+                    amount_raw,
+                    lock_seconds,
+                    contract_hash,
+                ).estimate_gas({"from": self._account.address})
+                gas_limit = int(estimated_gas * 1.2)
+            except Exception:
+                gas_limit = 200000  # Higher limit for escrow deposit (approve + transfer)
+
+            deposit_tx = escrow_contract.functions.deposit(
+                escrow_id,
+                w3.to_checksum_address(seller_address),
+                amount_raw,
+                lock_seconds,
+                contract_hash,
+            ).build_transaction({
+                "from": self._account.address,
+                "nonce": nonce,
+                "gas": gas_limit,
+                "chainId": w3.eth.chain_id,
+                **gas_params,
+            })
+
+            signed = self._account.sign_transaction(deposit_tx)
+            tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
+            payment.tx_hash = tx_hash.hex()
+            payment.status = PaymentStatus.SUBMITTED
+
+            receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=120)
+            if receipt.status == 1:
+                payment.status = PaymentStatus.ESCROWED
+                payment.block_number = receipt.blockNumber
+                logger.info(
+                    "Escrow deposit confirmed: $%.2f USDC (escrow_id=%s)",
+                    amount_usdc, escrow_id.hex()[:16],
+                )
+            else:
+                payment.status = PaymentStatus.FAILED
+                payment.error = "Escrow deposit transaction reverted"
+
+        except Exception as e:
+            payment.status = PaymentStatus.FAILED
+            payment.error = str(e)
+            logger.error("Escrow deposit failed: %s", e)
+
+        return payment
+
+    async def escrow_release(
+        self,
+        seller_address: str,
+        amount_usdc: float,
+        contract_id: str = "",
+    ) -> PaymentRecord:
+        """Release escrowed funds to seller after delivery verification."""
+        payment = PaymentRecord(
+            payment_id=str(uuid.uuid4()),
+            transaction_id=f"escrow:release:{contract_id}",
+            from_address=self._config.escrow_address,
+            to_address=seller_address,
+            amount_usdc=amount_usdc,
+            chain=self._config.chain,
+        )
+
+        w3 = self._get_web3()
+        if not w3 or not self._account:
+            payment.status = PaymentStatus.FAILED
+            payment.error = "Web3 not configured"
+            return payment
+
+        escrow_contract = self._get_escrow_contract(w3)
+        if not escrow_contract:
+            payment.status = PaymentStatus.FAILED
+            payment.error = "Escrow contract not configured"
+            return payment
+
+        try:
+            escrow_id = self.compute_escrow_id(
+                self._account.address, seller_address, contract_id, amount_usdc
+            )
+
+            nonce = self._get_next_nonce(w3)
+            gas_params = self._build_eip1559_gas_params(w3)
+
+            try:
+                estimated_gas = escrow_contract.functions.release(
+                    escrow_id
+                ).estimate_gas({"from": self._account.address})
+                gas_limit = int(estimated_gas * 1.2)
+            except Exception:
+                gas_limit = 100000
+
+            tx = escrow_contract.functions.release(escrow_id).build_transaction({
+                "from": self._account.address,
+                "nonce": nonce,
+                "gas": gas_limit,
+                "chainId": w3.eth.chain_id,
+                **gas_params,
+            })
+
+            signed = self._account.sign_transaction(tx)
+            tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
+            payment.tx_hash = tx_hash.hex()
+            payment.status = PaymentStatus.SUBMITTED
+
+            receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=120)
+            if receipt.status == 1:
+                payment.status = PaymentStatus.RELEASED
+                payment.block_number = receipt.blockNumber
+                logger.info("Escrow released to seller: $%.2f USDC", amount_usdc)
+            else:
+                payment.status = PaymentStatus.FAILED
+                payment.error = "Escrow release transaction reverted"
+
+        except Exception as e:
+            payment.status = PaymentStatus.FAILED
+            payment.error = str(e)
+            logger.error("Escrow release failed: %s", e)
+
+        return payment
+
+    async def escrow_refund(
+        self,
+        seller_address: str,
+        amount_usdc: float,
+        contract_id: str = "",
+    ) -> PaymentRecord:
+        """Refund escrowed funds to buyer after deadline."""
+        payment = PaymentRecord(
+            payment_id=str(uuid.uuid4()),
+            transaction_id=f"escrow:refund:{contract_id}",
+            from_address=self._config.escrow_address,
+            to_address=self.wallet_address,
+            amount_usdc=amount_usdc,
+            chain=self._config.chain,
+        )
+
+        w3 = self._get_web3()
+        if not w3 or not self._account:
+            payment.status = PaymentStatus.FAILED
+            payment.error = "Web3 not configured"
+            return payment
+
+        escrow_contract = self._get_escrow_contract(w3)
+        if not escrow_contract:
+            payment.status = PaymentStatus.FAILED
+            payment.error = "Escrow contract not configured"
+            return payment
+
+        try:
+            escrow_id = self.compute_escrow_id(
+                self._account.address, seller_address, contract_id, amount_usdc
+            )
+
+            nonce = self._get_next_nonce(w3)
+            gas_params = self._build_eip1559_gas_params(w3)
+
+            try:
+                estimated_gas = escrow_contract.functions.refund(
+                    escrow_id
+                ).estimate_gas({"from": self._account.address})
+                gas_limit = int(estimated_gas * 1.2)
+            except Exception:
+                gas_limit = 100000
+
+            tx = escrow_contract.functions.refund(escrow_id).build_transaction({
+                "from": self._account.address,
+                "nonce": nonce,
+                "gas": gas_limit,
+                "chainId": w3.eth.chain_id,
+                **gas_params,
+            })
+
+            signed = self._account.sign_transaction(tx)
+            tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
+            payment.tx_hash = tx_hash.hex()
+            payment.status = PaymentStatus.SUBMITTED
+
+            receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=120)
+            if receipt.status == 1:
+                payment.status = PaymentStatus.REFUNDED
+                payment.block_number = receipt.blockNumber
+                logger.info("Escrow refunded to buyer: $%.2f USDC", amount_usdc)
+            else:
+                payment.status = PaymentStatus.FAILED
+                payment.error = "Escrow refund transaction reverted"
+
+        except Exception as e:
+            payment.status = PaymentStatus.FAILED
+            payment.error = str(e)
+            logger.error("Escrow refund failed: %s", e)
+
+        return payment
+
+    async def escrow_dispute(
+        self,
+        seller_address: str,
+        amount_usdc: float,
+        contract_id: str = "",
+    ) -> bool:
+        """File a dispute on an escrowed trade. Returns True on success."""
+        w3 = self._get_web3()
+        if not w3 or not self._account:
+            return False
+
+        escrow_contract = self._get_escrow_contract(w3)
+        if not escrow_contract:
+            return False
+
+        try:
+            escrow_id = self.compute_escrow_id(
+                self._account.address, seller_address, contract_id, amount_usdc
+            )
+
+            nonce = self._get_next_nonce(w3)
+            gas_params = self._build_eip1559_gas_params(w3)
+
+            tx = escrow_contract.functions.dispute(escrow_id).build_transaction({
+                "from": self._account.address,
+                "nonce": nonce,
+                "gas": 80000,
+                "chainId": w3.eth.chain_id,
+                **gas_params,
+            })
+
+            signed = self._account.sign_transaction(tx)
+            tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
+
+            receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=120)
+            if receipt.status == 1:
+                logger.info("Escrow dispute filed on-chain")
+                return True
+
+        except Exception as e:
+            logger.error("Escrow dispute failed: %s", e)
+
+        return False
+
+    async def escrow_status(
+        self,
+        seller_address: str,
+        amount_usdc: float,
+        contract_id: str = "",
+    ) -> dict[str, Any]:
+        """Query on-chain escrow status."""
+        w3 = self._get_web3()
+        if not w3:
+            return {"error": "Web3 not configured"}
+
+        escrow_contract = self._get_escrow_contract(w3)
+        if not escrow_contract:
+            return {"error": "Escrow contract not configured"}
+
+        try:
+            escrow_id = self.compute_escrow_id(
+                self._account.address if self._account else "",
+                seller_address, contract_id, amount_usdc,
+            )
+
+            data = escrow_contract.functions.getEscrow(escrow_id).call()
+            status_names = ["EMPTY", "FUNDED", "RELEASED", "REFUNDED", "DISPUTED", "RESOLVED"]
+
+            return {
+                "escrow_id": escrow_id.hex(),
+                "buyer": data[0],
+                "seller": data[1],
+                "amount_usdc": data[2] / 1e6,
+                "deadline": data[3],
+                "status": status_names[data[4]] if data[4] < len(status_names) else str(data[4]),
+                "contract_hash": data[5].hex(),
+                "is_expired": escrow_contract.functions.isExpired(escrow_id).call(),
+            }
+
+        except Exception as e:
+            return {"error": str(e)}

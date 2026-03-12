@@ -59,6 +59,25 @@ class SecurityConfigLite(BaseModel):
     allow_self_improve_via_api: bool = False
 
 
+class TLSConfig(BaseModel):
+    """TLS/HTTPS configuration for the Gateway."""
+
+    enabled: bool = Field(default=False, description="Enable HTTPS (TLS 1.3)")
+    cert_file: str = Field(default="", description="Path to TLS certificate (PEM)")
+    key_file: str = Field(default="", description="Path to TLS private key (PEM)")
+    ca_file: str = Field(default="", description="Path to CA bundle (optional, for mTLS)")
+    auto_generate: bool = Field(
+        default=False,
+        description="Auto-generate self-signed cert if cert_file is empty",
+    )
+    redirect_http: bool = Field(
+        default=True,
+        description="Start HTTP listener that redirects to HTTPS",
+    )
+    redirect_http_port: int = Field(default=8080, ge=1, le=65535)
+    min_version: str = Field(default="TLSv1.3", description="Minimum TLS version")
+
+
 class AgentConfig(BaseModel):
     """Top-level agent configuration."""
 
@@ -71,5 +90,6 @@ class AgentConfig(BaseModel):
     approval: ApprovalConfig = Field(default_factory=ApprovalConfig)
     llm: LLMConfig = Field(default_factory=LLMConfig)
     security: SecurityConfigLite = Field(default_factory=SecurityConfigLite)
+    tls: TLSConfig = Field(default_factory=TLSConfig)
     autonomous_mode: bool = Field(default=False, description="If True, skip all human approvals")
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
