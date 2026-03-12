@@ -135,11 +135,213 @@ nav {
     color: var(--accent);
 }
 
+/* Hero tag */
+.hero-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    background: rgba(0, 229, 255, 0.08);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Vision */
+.vision {
+    max-width: 800px;
+    margin: 0 auto 5rem;
+    padding: 0 2rem;
+    text-align: center;
+}
+
+.vision h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    font-weight: 700;
+}
+
+.vision-diagram {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    align-items: center;
+}
+
+.vision-layer {
+    width: 100%;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+}
+
+.vision-ai {
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.08), rgba(124, 77, 255, 0.08));
+    border: 1px solid var(--accent);
+}
+
+.vision-human {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+}
+
+.vision-layer h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.3rem;
+}
+
+.vision-ai h3 {
+    color: var(--accent);
+}
+
+.vision-layer > p {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.vision-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.vision-items span {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-dim);
+}
+
+.vision-ai .vision-items span {
+    background: rgba(0, 229, 255, 0.1);
+    color: var(--accent);
+}
+
+.vision-arrow {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    padding: 0.8rem 0;
+    position: relative;
+}
+
+.vision-arrow::before {
+    content: "";
+    display: block;
+    width: 2px;
+    height: 20px;
+    background: var(--border);
+    margin: 0 auto 0.3rem;
+}
+
+.vision-arrow::after {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid var(--border);
+    margin: 0.3rem auto 0;
+}
+
+/* How It Works */
+.how-it-works {
+    max-width: 800px;
+    margin: 0 auto 5rem;
+    padding: 0 2rem;
+    text-align: center;
+}
+
+.how-it-works h2 {
+    font-size: 2rem;
+    margin-bottom: 2.5rem;
+    font-weight: 700;
+}
+
+.steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: left;
+}
+
+.step {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: border-color 0.2s;
+}
+
+.step:hover {
+    border-color: var(--accent);
+}
+
+.step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #000;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.step h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    width: 100px;
+    flex-shrink: 0;
+}
+
+.step p {
+    flex: 1;
+    min-width: 200px;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.step code {
+    width: 100%;
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+    background: var(--code-bg);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    margin-top: 0.3rem;
+}
+
 /* Code demo */
 .code-demo {
     max-width: 700px;
     margin: 0 auto 4rem;
     padding: 0 2rem;
+}
+
+.code-demo h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    text-align: center;
 }
 
 .code-demo pre {
@@ -162,7 +364,7 @@ nav {
 .features {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
+    gap: 1.5rem;
     max-width: 1000px;
     margin: 0 auto 5rem;
     padding: 0 2rem;

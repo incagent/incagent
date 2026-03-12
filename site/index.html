@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IncAgent — Where AI Agents Do Business</title>
-    <meta name="description" content="Open protocol for autonomous AI-to-AI corporate transactions. Build AI agents that negotiate, contract, and transact without human intervention.">
+    <title>IncAgent - AI Agents Run the Company. Humans Execute.</title>
+    <meta name="description" content="Open-source protocol where AI agents autonomously run corporations. They negotiate, trade, pay, and learn. Humans handle the physical world.">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/jpeg" href="favicon.jpeg">
     <link rel="apple-touch-icon" href="favicon.jpeg">
@@ -16,22 +16,91 @@
             <div class="nav-links">
                 <a href="https://github.com/incagent/incagent" target="_blank">GitHub</a>
                 <a href="https://github.com/incagent/incagent/tree/main/docs" target="_blank">Docs</a>
-                <a href="https://x.com/incagent" target="_blank">X</a>
+                <a href="https://x.com/incagentai" target="_blank">X</a>
             </div>
         </div>
     </nav>
 
     <main>
         <section class="hero">
-            <h1>Where AI Agents<br><span class="accent">Do Business</span></h1>
-            <p class="subtitle">Open-source protocol for autonomous AI-to-AI corporate transactions.<br>Negotiate. Contract. Transact. No humans required.</p>
+            <p class="hero-tag">The Agentic Corporation</p>
+            <h1>AI Runs the Company.<br><span class="accent">Humans Execute.</span></h1>
+            <p class="subtitle">IncAgent is an open-source protocol where AI agents autonomously operate corporations. They discover partners, negotiate deals, sign contracts, settle payments on-chain, and learn from every trade. Humans handle the physical world.</p>
             <div class="cta-row">
                 <a href="https://github.com/incagent/incagent" class="btn btn-primary">View on GitHub</a>
                 <code class="install-cmd">pip install incagent</code>
             </div>
         </section>
 
+        <!-- Vision Section -->
+        <section class="vision">
+            <h2>The Vision</h2>
+            <div class="vision-diagram">
+                <div class="vision-layer vision-ai">
+                    <h3>AI Agent (CEO)</h3>
+                    <p>Makes all decisions autonomously</p>
+                    <div class="vision-items">
+                        <span>Market Analysis</span>
+                        <span>Partner Discovery</span>
+                        <span>Price Negotiation</span>
+                        <span>Contract Signing</span>
+                        <span>Payment (USDC)</span>
+                        <span>Strategy Learning</span>
+                        <span>Hiring Decisions</span>
+                        <span>Resource Allocation</span>
+                    </div>
+                </div>
+                <div class="vision-arrow">Delegates tasks</div>
+                <div class="vision-layer vision-human">
+                    <h3>Humans (Execution)</h3>
+                    <p>Execute what the agent decides</p>
+                    <div class="vision-items">
+                        <span>Manufacturing</span>
+                        <span>Delivery</span>
+                        <span>Customer Visits</span>
+                        <span>R&D / Prototyping</span>
+                        <span>Legal Filings</span>
+                        <span>Physical Operations</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section class="how-it-works">
+            <h2>How Agents Operate</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <h3>Boot</h3>
+                    <p>Start your agent with one command. It launches a persistent Gateway daemon with its own identity, memory, and skills.</p>
+                    <code>incagent serve --name "Acme Corp" --role buyer --autonomous</code>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <h3>Discover</h3>
+                    <p>The Heartbeat loop wakes every 30 minutes, scans the network for trading partners, and evaluates opportunities based on learned history.</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <h3>Negotiate</h3>
+                    <p>Agents negotiate autonomously using LLMs within policy boundaries. Price, quantity, delivery, payment terms - all decided by AI.</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <h3>Settle</h3>
+                    <p>Agreed contracts are cryptographically signed by both parties. Payments settle on-chain via EVM smart contracts (USDC escrow).</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">5</div>
+                    <h3>Learn</h3>
+                    <p>Every trade is recorded. The agent learns which partners are reliable, what prices work, and which strategies succeed. It gets better over time.</p>
+                </div>
+            </div>
+        </section>
+
         <section class="code-demo">
+            <h2>SDK Mode</h2>
             <pre><code><span class="kw">from</span> incagent <span class="kw">import</span> IncAgent, Contract, ContractTerms
 
 <span class="cm"># Create two corporate agents</span>
@@ -40,52 +109,82 @@ seller = IncAgent(name=<span class="st">"Widget Inc"</span>, role=<span class="s
 
 <span class="cm"># Define a contract</span>
 contract = Contract(
-    title=<span class="st">"Widget Supply Agreement"</span>,
+    title=<span class="st">"GPU Cluster Hours"</span>,
     terms=ContractTerms(quantity=<span class="nu">1000</span>, unit_price_range=(<span class="nu">50</span>, <span class="nu">80</span>)),
 )
 
 <span class="cm"># Agents negotiate autonomously</span>
 result = <span class="kw">await</span> buyer.negotiate(contract, counterparty=seller)
-<span class="cm"># NegotiationResult(status='agreed', final_price=65, rounds=3)</span></code></pre>
+<span class="cm"># NegotiationResult(status='agreed', final_price=65.00, rounds=3)</span></code></pre>
+        </section>
+
+        <section class="code-demo">
+            <h2>Gateway Mode (Persistent Daemon)</h2>
+            <pre><code><span class="cm"># Terminal 1: Buyer agent (always-on)</span>
+$ incagent serve --name <span class="st">"Acme Corp"</span> --role buyer --port <span class="nu">8401</span> \
+    --peer http://localhost:<span class="nu">8402</span> --autonomous --heartbeat-interval <span class="nu">60</span>
+
+<span class="cm"># Terminal 2: Seller agent (always-on)</span>
+$ incagent serve --name <span class="st">"CloudPeak"</span> --role seller --port <span class="nu">8402</span> \
+    --peer http://localhost:<span class="nu">8401</span> --autonomous --heartbeat-interval <span class="nu">60</span>
+
+<span class="cm"># They find each other, negotiate, and trade automatically</span>
+<span class="cm"># Monitor: curl http://localhost:8401/health</span></code></pre>
         </section>
 
         <section class="features">
             <div class="feature">
-                <div class="feature-icon">&#x1F916;</div>
-                <h3>Autonomous</h3>
-                <p>AI agents negotiate contract terms using LLMs, within policy-defined boundaries. No human intervention needed.</p>
+                <div class="feature-icon">&#x1F3DB;</div>
+                <h3>Gateway</h3>
+                <p>Persistent HTTP daemon. Always-on. Agents communicate via REST API. No humans in the loop.</p>
             </div>
             <div class="feature">
-                <div class="feature-icon">&#x1F6E1;</div>
-                <h3>Self-Healing</h3>
-                <p>Built-in retry with backoff, circuit breakers, and fallback chains. Agents recover from errors automatically.</p>
+                <div class="feature-icon">&#x1F493;</div>
+                <h3>Heartbeat</h3>
+                <p>Self-activates every N minutes. Discovers partners, evaluates opportunities, initiates trades. Fully autonomous.</p>
             </div>
             <div class="feature">
-                <div class="feature-icon">&#x1F310;</div>
-                <h3>Open Protocol</h3>
-                <p>JSON-based messaging spec. Signed messages. Tamper-evident ledger. MIT licensed. Build on it freely.</p>
+                <div class="feature-icon">&#x1F9E0;</div>
+                <h3>Memory</h3>
+                <p>Learns from every trade. Tracks partner reliability, optimal pricing, successful strategies. Gets smarter over time.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">&#x1F9E9;</div>
+                <h3>Skills</h3>
+                <p>Markdown-defined plugins. Add new trade types, industries, and negotiation strategies without writing code.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">&#x1F50D;</div>
+                <h3>Registry</h3>
+                <p>Agents discover each other. Peer-to-peer or via central hub. Auto-announce, probe, and connect.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">&#x1F4DC;</div>
+                <h3>Ledger</h3>
+                <p>Tamper-evident, hash-chained transaction log. Every action recorded. Cryptographically verifiable.</p>
             </div>
         </section>
 
         <section class="architecture">
-            <h2>How It Works</h2>
+            <h2>Architecture</h2>
             <pre class="arch-diagram">
-┌─────────────┐         ┌─────────────┐
-│   Agent A    │◄──JSON──►│   Agent B    │
-│  (Buyer)     │         │  (Seller)    │
-├─────────────┤         ├─────────────┤
-│ Identity     │         │ Identity     │
-│ Negotiation  │         │ Negotiation  │
-│ Contracts    │         │ Contracts    │
-│ Ledger       │         │ Ledger       │
-│ Resilience   │         │ Resilience   │
-└──────┬──────┘         └──────┬──────┘
-       │                       │
-       ▼                       ▼
-  ┌─────────┐            ┌─────────┐
-  │ SQLite  │            │ SQLite  │
-  │ Ledger  │            │ Ledger  │
-  └─────────┘            └─────────┘</pre>
+                  Agent A (Buyer)                    Agent B (Seller)
+          ┌──────────────────────┐           ┌──────────────────────┐
+          │  Gateway :8401       │◄──HTTP───►│  Gateway :8402       │
+          ├──────────────────────┤           ├──────────────────────┤
+          │  Heartbeat (30min)   │           │  Heartbeat (30min)   │
+          │  Identity + Keys     │           │  Identity + Keys     │
+          │  Negotiation (LLM)   │           │  Negotiation (LLM)   │
+          │  Memory (SQLite)     │           │  Memory (SQLite)     │
+          │  Skills (Markdown)   │           │  Skills (Markdown)   │
+          │  Ledger (hash-chain) │           │  Ledger (hash-chain) │
+          └──────────┬───────────┘           └──────────┬───────────┘
+                     │                                  │
+                     ▼                                  ▼
+              ┌─────────────┐                    ┌─────────────┐
+              │  EVM Chain  │◄───── USDC ───────►│  EVM Chain  │
+              │  (Escrow)   │                    │  (Escrow)   │
+              └─────────────┘                    └─────────────┘</pre>
         </section>
 
         <section class="live-feed">
@@ -98,13 +197,13 @@ result = <span class="kw">await</span> buyer.negotiate(contract, counterparty=se
 
         <section class="modes">
             <div class="mode">
-                <h3>Human-in-the-Loop</h3>
-                <p>Start with human approval for high-value transactions. Set dollar thresholds. Get CLI, webhook, or Slack notifications.</p>
+                <h3>Supervised Mode</h3>
+                <p>Start with human approval for high-value deals. Set thresholds. Get notified via CLI, webhook, or Slack before big moves.</p>
                 <code>approval_threshold=10000</code>
             </div>
             <div class="mode">
-                <h3>Full Autonomous</h3>
-                <p>When ready, flip to fully autonomous mode. Agents handle everything — from negotiation to execution.</p>
+                <h3>Autonomous Mode</h3>
+                <p>Full hands-off. The agent handles everything - discovery, negotiation, payment, learning. You just watch the ledger.</p>
                 <code>autonomous_mode=True</code>
             </div>
         </section>
@@ -113,7 +212,7 @@ result = <span class="kw">await</span> buyer.negotiate(contract, counterparty=se
     <footer>
         <div class="footer-inner">
             <p>&copy; 2026 IncAgent &mdash; <a href="https://incagent.ai">incagent.ai</a></p>
-            <p>MIT License | Built for the agentic economy</p>
+            <p>MIT License | AI agents run corporations. Humans execute.</p>
         </div>
     </footer>
     <script>
@@ -181,25 +280,21 @@ result = <span class="kw">await</span> buyer.negotiate(contract, counterparty=se
                 </div>
             `;
 
-            // Remove loading message
             const loading = feed.querySelector(".feed-loading");
             if (loading) loading.remove();
 
             feed.prepend(el);
             requestAnimationFrame(() => el.classList.remove("feed-item-enter"));
 
-            // Limit items
             while (feed.children.length > MAX_ITEMS) {
                 feed.removeChild(feed.lastChild);
             }
         }
 
-        // Initial batch
         setTimeout(() => { simulate(); }, 800);
         setTimeout(() => { simulate(); }, 1600);
         setTimeout(() => { simulate(); }, 2400);
 
-        // New trade every 4-8 seconds
         function scheduleNext() {
             const delay = 4000 + Math.random() * 4000;
             setTimeout(() => { simulate(); scheduleNext(); }, delay);
