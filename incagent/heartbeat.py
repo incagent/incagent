@@ -117,7 +117,15 @@ class Heartbeat:
                     continue
                 asyncio.create_task(self._execute_trade(agent, opp))
 
-        # 6. Update memory
+        # 6. Self-improvement (every 10 ticks)
+        if self._tick_count % 10 == 0 and hasattr(agent, '_self_improve'):
+            try:
+                result = await agent.improve()
+                logger.info("Self-improvement: %s (applied=%s)", result.get("type"), result.get("applied"))
+            except Exception as e:
+                logger.warning("Self-improvement failed: %s", e)
+
+        # 7. Update memory
         if hasattr(agent, '_memory'):
             agent._memory.record_heartbeat(self._tick_count, {
                 "messages_processed": len(messages),

@@ -19,6 +19,7 @@ from incagent.messaging import AgentMessage, MessageBus, MessageType
 from incagent.negotiation import NegotiationEngine, NegotiationPolicy, NegotiationResult, NegotiationStatus
 from incagent.registry import Registry
 from incagent.resilience import ResilientExecutor
+from incagent.self_improve import SelfImproveEngine
 from incagent.skills import SkillManager
 from incagent.transaction import TransactionManager
 
@@ -115,6 +116,14 @@ class IncAgent:
         self._registry = Registry(hub_url=hub_url)
         self._skills = SkillManager(
             skills_dir=skills_dir or self._config.data_dir / "skills"
+        )
+
+        # Self-improvement engine
+        self._self_improve = SelfImproveEngine(
+            memory=self._memory,
+            skills=self._skills,
+            llm_config=llm_config,
+            skills_dir=skills_dir or self._config.data_dir / "skills",
         )
 
         # Store metadata
@@ -330,6 +339,11 @@ class IncAgent:
         """Verify the integrity of this agent's ledger."""
         return self._ledger.verify_chain()
 
+    async def improve(self) -> dict[str, Any]:
+        """Run one self-improvement cycle. The agent analyzes its performance
+        and generates strategy/skill improvements using LLM (or rules)."""
+        return await self._self_improve.improve()
+
     def health_status(self) -> dict[str, Any]:
         """Get agent health status."""
         return {
@@ -344,6 +358,7 @@ class IncAgent:
             "skills": len(self._skills.list_skills()),
             "peers": len(self._registry.list_peers()),
             "heartbeat_ticks": self._heartbeat.tick_count if self._heartbeat else 0,
+            "improvements_applied": self._self_improve.improvements_count,
         }
 
     def close(self) -> None:

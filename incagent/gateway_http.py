@@ -94,7 +94,7 @@ def create_app(gateway: Gateway) -> Starlette:
         if not hasattr(gateway.agent, '_registry'):
             return JSONResponse({"peers": []})
         peers = gateway.agent._registry.list_peers()
-        return JSONResponse({"peers": [p.model_dump() for p in peers]})
+        return JSONResponse({"peers": [p.model_dump(mode="json") for p in peers]})
 
     async def register_peer(request: Request) -> JSONResponse:
         """POST /peers — register a new peer agent."""
@@ -109,6 +109,16 @@ def create_app(gateway: Gateway) -> Starlette:
         except Exception as e:
             return JSONResponse({"error": str(e)}, status_code=400)
 
+    async def trigger_improve(request: Request) -> JSONResponse:
+        """POST /improve — trigger one self-improvement cycle."""
+        if not hasattr(gateway.agent, '_self_improve'):
+            return JSONResponse({"error": "Self-improvement not configured"}, status_code=404)
+        try:
+            result = await gateway.agent.improve()
+            return JSONResponse(result)
+        except Exception as e:
+            return JSONResponse({"error": str(e)}, status_code=500)
+
     routes = [
         Route("/health", health, methods=["GET"]),
         Route("/identity", identity, methods=["GET"]),
@@ -119,6 +129,7 @@ def create_app(gateway: Gateway) -> Starlette:
         Route("/skills", skills_list, methods=["GET"]),
         Route("/peers", registry_peers, methods=["GET"]),
         Route("/peers", register_peer, methods=["POST"]),
+        Route("/improve", trigger_improve, methods=["POST"]),
     ]
 
     middleware = [

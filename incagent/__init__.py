@@ -13,6 +13,7 @@ from incagent.messaging import AgentMessage, MessageBus, MessageType
 from incagent.negotiation import NegotiationEngine, NegotiationPolicy, NegotiationResult
 from incagent.registry import PeerAgent, Registry
 from incagent.resilience import CircuitBreaker, FallbackChain, ResilientExecutor, RetryWithBackoff
+from incagent.self_improve import SelfImproveEngine
 from incagent.skills import Skill, SkillManager
 from incagent.transaction import Transaction, TransactionManager
 
@@ -49,6 +50,7 @@ __all__ = [
     "ResilientExecutor",
     "ResilienceConfig",
     "RetryWithBackoff",
+    "SelfImproveEngine",
     "Skill",
     "SkillManager",
     "Transaction",
