@@ -11,11 +11,15 @@ from typing import Any
 from incagent.approval import ApprovalGateway, ApprovalStatus
 from incagent.config import AgentConfig, ApprovalConfig, LLMConfig, ResilienceConfig
 from incagent.contract import Contract
+from incagent.heartbeat import Heartbeat, HeartbeatConfig
 from incagent.identity import create_identity
 from incagent.ledger import Ledger
+from incagent.memory import Memory
 from incagent.messaging import AgentMessage, MessageBus, MessageType
 from incagent.negotiation import NegotiationEngine, NegotiationPolicy, NegotiationResult, NegotiationStatus
+from incagent.registry import Registry
 from incagent.resilience import ResilientExecutor
+from incagent.skills import SkillManager
 from incagent.transaction import TransactionManager
 
 logger = logging.getLogger("incagent")
@@ -32,9 +36,13 @@ class AgentState(str, Enum):
 class IncAgent:
     """An autonomous AI agent that transacts on behalf of a corporation.
 
-    Usage:
+    Usage (SDK mode):
         agent = IncAgent(name="Acme Corp", role="buyer")
         result = await agent.negotiate(contract, counterparty=other_agent)
+
+    Usage (Gateway mode — persistent daemon):
+        agent = IncAgent(name="Acme Corp", role="buyer", heartbeat=True)
+        await agent.serve()  # starts Gateway + Heartbeat
     """
 
     def __init__(
@@ -49,6 +57,15 @@ class IncAgent:
         llm: dict[str, Any] | LLMConfig | None = None,
         data_dir: str | Path | None = None,
         message_bus: MessageBus | None = None,
+        # New: OpenClaw-inspired options
+        heartbeat: bool | dict[str, Any] | HeartbeatConfig | None = None,
+        skills_dir: str | Path | None = None,
+        hub_url: str | None = None,
+        peers: list[str] | None = None,
+        host: str = "0.0.0.0",
+        port: int = 8400,
+        industries: list[str] | None = None,
+        capabilities: list[str] | None = None,
     ) -> None:
         # Identity
         self.identity, self._keypair = create_identity(name, role)
@@ -70,6 +87,8 @@ class IncAgent:
         self._config = AgentConfig(
             name=name,
             role=role,
+            host=host,
+            port=port,
             resilience=res_config,
             approval=approval_config,
             llm=llm_config,
@@ -82,7 +101,7 @@ class IncAgent:
         self._contracts: dict[str, Contract] = {}
         self._policies: dict[str, NegotiationPolicy] = {}
 
-        # Subsystems
+        # Core subsystems
         self._ledger = Ledger(self._config.data_dir / f"{self.identity.agent_id}.db")
         self._executor = ResilientExecutor(res_config)
         self._negotiation = NegotiationEngine(llm_config)
@@ -91,9 +110,39 @@ class IncAgent:
         self._bus = message_bus or MessageBus()
         self._bus.register(self.identity.agent_id)
 
+        # New subsystems
+        self._memory = Memory(self._config.data_dir / f"{self.identity.agent_id}_memory.db")
+        self._registry = Registry(hub_url=hub_url)
+        self._skills = SkillManager(
+            skills_dir=skills_dir or self._config.data_dir / "skills"
+        )
+
+        # Store metadata
+        self._industries = industries or []
+        self._capabilities = capabilities or []
+
+        # Heartbeat (autonomous mode)
+        if heartbeat:
+            hb_config = (
+                HeartbeatConfig(**heartbeat) if isinstance(heartbeat, dict)
+                else heartbeat if isinstance(heartbeat, HeartbeatConfig) else HeartbeatConfig()
+            )
+            self._heartbeat: Heartbeat | None = Heartbeat(hb_config)
+        else:
+            self._heartbeat = None
+
+        # Auto-register initial peers
+        if peers:
+            asyncio.get_event_loop().create_task(self._connect_peers(peers))
+
         # Log creation
         self._ledger.append(self.identity.agent_id, "agent_created", self.identity.to_public_dict())
         logger.info("IncAgent '%s' created [%s]", name, self.identity.fingerprint())
+
+    async def _connect_peers(self, peer_urls: list[str]) -> None:
+        """Probe and register initial peer agents."""
+        for url in peer_urls:
+            await self._registry.probe_peer(url)
 
     @property
     def agent_id(self) -> str:
@@ -102,6 +151,31 @@ class IncAgent:
     @property
     def name(self) -> str:
         return self.identity.name
+
+    # ── Gateway mode ─────────────────────────────────────────────────
+
+    async def serve(self, *, host: str | None = None, port: int | None = None) -> None:
+        """Start the agent as a persistent Gateway daemon.
+
+        This is the OpenClaw-inspired "always-on" mode:
+        - HTTP API for inter-agent communication
+        - Heartbeat loop for autonomous behavior
+        - Auto-discovery of peers
+        - Learning from every interaction
+        """
+        from incagent.gateway import Gateway
+
+        gw = Gateway(
+            self,
+            host=host or self._config.host,
+            port=port or self._config.port,
+        )
+        try:
+            await gw.start()
+        except KeyboardInterrupt:
+            await gw.stop()
+
+    # ── SDK mode (existing API) ──────────────────────────────────────
 
     def set_policy(self, contract_id: str, policy: NegotiationPolicy) -> None:
         """Set negotiation policy for a specific contract."""
@@ -135,6 +209,9 @@ class IncAgent:
         ))
 
         # Run negotiation with resilience
+        import time
+        start = time.monotonic()
+
         async def _do_negotiate() -> NegotiationResult:
             return await self._negotiation.negotiate(contract, neg_policy)
 
@@ -149,11 +226,34 @@ class IncAgent:
                 reason=f"Error: {e}",
             )
 
+        duration_ms = int((time.monotonic() - start) * 1000)
+
         self._ledger.append(self.agent_id, "negotiation_completed", {
             "contract_id": contract.contract_id,
             "status": result.status.value,
             "rounds": result.rounds,
         })
+
+        # Record in memory
+        self._memory.record_trade_attempt(
+            partner_id=counterparty.agent_id,
+            partner_name=counterparty.name,
+            contract_title=contract.title,
+            success=result.status == NegotiationStatus.AGREED,
+            final_price=result.final_terms.unit_price if result.final_terms else None,
+            quantity=result.final_terms.quantity if result.final_terms else None,
+            rounds=result.rounds,
+            duration_ms=duration_ms,
+        )
+
+        # Learn from result
+        if result.status == NegotiationStatus.AGREED and result.final_terms:
+            self._memory.learn_strategy(
+                strategy_type="pricing",
+                context=f"trade_with_{counterparty.name}",
+                insight=f"Agreed at ${result.final_terms.unit_price} after {result.rounds} rounds",
+                confidence=0.6,
+            )
 
         if result.status == NegotiationStatus.AGREED and result.final_terms:
             contract.terms = result.final_terms
@@ -236,11 +336,19 @@ class IncAgent:
             "agent_id": self.agent_id,
             "name": self.name,
             "state": self.state.value,
+            "role": self.identity.role,
             "circuit_breaker": self._executor.circuit.state.value,
             "ledger_valid": self.verify_ledger(),
             "pending_messages": self._bus.peek(self.agent_id),
+            "memory": self._memory.stats(),
+            "skills": len(self._skills.list_skills()),
+            "peers": len(self._registry.list_peers()),
+            "heartbeat_ticks": self._heartbeat.tick_count if self._heartbeat else 0,
         }
 
     def close(self) -> None:
         """Clean up resources."""
+        if self._heartbeat:
+            self._heartbeat.stop()
+        self._memory.close()
         self._ledger.close()
