@@ -22,6 +22,7 @@ from incagent.resilience import ResilientExecutor
 from incagent.delivery import DeliveryType
 from incagent.payment import PaymentConfig
 from incagent.self_improve import SelfImproveEngine
+from incagent.tax import TaxTracker
 from incagent.settlement import SettlementEngine, SettlementMode
 from incagent.skills import SkillManager
 from incagent.tools import ToolRegistry, ToolResult
@@ -131,6 +132,7 @@ class IncAgent:
 
         # New subsystems — all within per-org directory
         self._memory = Memory(org_dir / "memory.db")
+        self._tax = TaxTracker(org_dir / "tax.db")
         self._registry = Registry(hub_url=hub_url)
         self._skills = SkillManager(
             skills_dir=skills_dir or org_dir / "skills"
@@ -403,6 +405,17 @@ class IncAgent:
                 await self._settlement.verify_delivery(settlement.settlement_id)
                 await self._settlement.complete(settlement.settlement_id)
 
+            # Record in tax tracker
+            self._tax.record_payment(
+                record_type="expense" if is_buyer else "income",
+                counterparty_id=counterparty.agent_id,
+                counterparty_name=counterparty.name,
+                amount_usdc=amount,
+                tx_hash=settlement.payment.tx_hash if settlement.payment else "",
+                contract_id=contract.contract_id,
+                description=contract.title,
+            )
+
             self._transactions.complete(txn.transaction_id)
             contract.complete()
 
@@ -506,9 +519,16 @@ class IncAgent:
             "tools": self._tools.count,
         }
 
+    def get_tax_summary(self, tax_year: int | None = None) -> dict:
+        """Get tax summary for a year (defaults to current year)."""
+        from datetime import datetime, timezone
+        year = tax_year or datetime.now(timezone.utc).year
+        return self._tax.get_year_summary(year)
+
     def close(self) -> None:
         """Clean up resources."""
         if self._heartbeat:
             self._heartbeat.stop()
         self._memory.close()
         self._ledger.close()
+        self._tax.close()

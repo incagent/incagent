@@ -397,6 +397,18 @@ def create_app(gateway: Gateway, security: SecurityConfig | None = None) -> Star
         except Exception as e:
             return JSONResponse({"error": str(e)}, status_code=400)
 
+    async def metrics_view(request: Request) -> JSONResponse:
+        """GET /metrics — Prometheus metrics (public)."""
+        from starlette.responses import Response
+        from incagent.metrics import METRICS
+        return Response(METRICS.render(), media_type="text/plain; charset=utf-8")
+
+    async def tax_summary(request: Request) -> JSONResponse:
+        """GET /tax — tax year summary."""
+        year = request.query_params.get("year")
+        summary = gateway.agent.get_tax_summary(int(year) if year else None)
+        return JSONResponse(summary)
+
     async def audit_view(request: Request) -> JSONResponse:
         """GET /audit — view audit log (requires auth)."""
         if not audit:
@@ -433,6 +445,8 @@ def create_app(gateway: Gateway, security: SecurityConfig | None = None) -> Star
         Route("/delivery/webhook", delivery_webhook, methods=["POST"]),
         Route("/dispute", dispute_file, methods=["POST"]),
         Route("/audit", audit_view, methods=["GET"]),
+        Route("/metrics", metrics_view, methods=["GET"]),
+        Route("/tax", tax_summary, methods=["GET"]),
     ]
 
     # ── CORS — locked down by default ─────────────────────────────

@@ -39,7 +39,7 @@ class SecurityConfig(BaseModel):
     api_keys: list[str] = Field(default_factory=list, description="Allowed API keys (HMAC secrets)")
     require_auth: bool = Field(default=True, description="Require authentication on all endpoints")
     public_endpoints: list[str] = Field(
-        default_factory=lambda: ["/health", "/identity"],
+        default_factory=lambda: ["/health", "/identity", "/metrics"],
         description="Endpoints accessible without auth",
     )
 

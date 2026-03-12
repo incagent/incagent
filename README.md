@@ -40,16 +40,29 @@ result = await buyer.negotiate(contract, counterparty=seller)
 ### Gateway Mode (persistent daemon)
 
 ```bash
-# Terminal 1: Buyer agent (always-on)
-incagent serve --name "Acme Corp" --role buyer --port 8401 \
-    --peer http://localhost:8402 --autonomous --heartbeat-interval 60
+# Initialize organization (generates API key + keypair)
+incagent init --name "Acme Corp" --role buyer --api-key
 
-# Terminal 2: Seller agent (always-on)
-incagent serve --name "CloudPeak" --role seller --port 8402 \
-    --peer http://localhost:8401 --autonomous --heartbeat-interval 60
+# Start agent daemon
+incagent serve --name "Acme Corp"
+
+# Monitor
+curl http://localhost:8400/health
+curl http://localhost:8400/metrics  # Prometheus format
+```
+
+### Two agents trading autonomously
+
+```bash
+# Terminal 1: Buyer agent
+incagent init --name "Acme Corp" --role buyer --api-key
+incagent serve --name "Acme Corp" --port 8401
+
+# Terminal 2: Seller agent
+incagent init --name "CloudPeak" --role seller --api-key
+incagent serve --name "CloudPeak" --port 8402
 
 # They discover each other and start trading automatically
-# Monitor: curl http://localhost:8401/health
 ```
 
 ## Architecture
@@ -59,165 +72,165 @@ incagent serve --name "CloudPeak" --role seller --port 8402 \
       ┌──────────────────────┐           ┌──────────────────────┐
       │  Gateway :8401       │◄──HTTP───►│  Gateway :8402       │
       ├──────────────────────┤           ├──────────────────────┤
-      │  Heartbeat (30min)   │           │  Heartbeat (30min)   │
-      │  Identity + Keys     │           │  Identity + Keys     │
+      │  Identity + Ed25519  │           │  Identity + Ed25519  │
+      │  Security (API/HMAC) │           │  Security (API/HMAC) │
       │  Negotiation (LLM)   │           │  Negotiation (LLM)   │
       │  Memory (SQLite)     │           │  Memory (SQLite)     │
-      │  Skills (Markdown)   │           │  Skills (Markdown)   │
-      │  Tools (extensible)  │           │  Tools (extensible)  │
+      │  Tax Tracker         │           │  Tax Tracker         │
+      │  Metrics (Prometheus)│           │  Metrics (Prometheus)│
       │  Ledger (hash-chain) │           │  Ledger (hash-chain) │
+      │  Tools (extensible)  │           │  Tools (extensible)  │
       └───┬──────┬───────────┘           └──────────┬───────────┘
           │      │                                  │
-          │      ▼                                  ▼
-          │  ┌────────────┐                  ┌─────────────┐
-          │  │ Slack/Email │                  │  EVM Chain  │
-          │  │ Webhook/API │                  │  (Escrow)   │
-          │  └────────────┘                  └─────────────┘
-          ▼
-   ┌─────────────┐
-   │  EVM Chain  │
-   │  (Escrow)   │
-   └─────────────┘
+          ▼      ▼                                  ▼
+   ┌─────────┐ ┌────────────┐              ┌─────────────┐
+   │EVM Chain│ │ Slack/Email │              │  EVM Chain  │
+   │ (USDC)  │ │ Webhook/API │              │  (USDC)     │
+   └─────────┘ └────────────┘              └─────────────┘
+```
+
+### Per-Organization Data Isolation
+
+Each organization gets its own directory (deterministic ID from org name):
+
+```
+~/.incagent/
+  {org_id}/
+    identity.json      # Persistent identity
+    key.pem            # Ed25519 private key
+    ledger.db          # Hash-chained transaction log
+    memory.db          # Learning memory
+    tax.db             # Tax records & 1099-NEC tracking
+    audit.db           # Security audit log
+    skills/            # Markdown skill files
+    tools/             # Custom Python tools
+    reports/           # Generated reports
 ```
 
 ## Core Components
 
 | Component | Description |
 |-----------|-------------|
-| **Gateway** | Persistent HTTP server. Always-on agent runtime with REST API |
-| **Heartbeat** | Self-activates every N minutes. Discovers partners, evaluates opportunities, initiates trades, sends notifications, generates reports |
-| **Tools** | Extensible action system. Built-in: Slack, Email, Webhook, HTTP API, Filesystem, Shell. Agent can create new tools at runtime |
-| **Memory** | SQLite-backed learning. Tracks partner reliability, optimal pricing, successful strategies |
-| **Skills** | Markdown-defined plugins. Add trade types, industries, negotiation strategies without code |
-| **Registry** | Peer discovery. Agents find each other via probing, announcements, or central hub |
+| **Gateway** | Persistent HTTP server with REST API, rate limiting, API key auth |
+| **Identity** | Ed25519 keypair. Deterministic org ID. Persistent across restarts |
+| **Security** | API key auth, HMAC signing, rate limiting, code sandbox, audit log |
 | **Negotiation** | LLM-powered autonomous negotiation with rule-based fallback |
-| **Ledger** | Tamper-evident, hash-chained transaction log. Cryptographically verifiable |
-| **Identity** | Ed25519 keypair. Signed messages, signed contracts |
-| **Settlement** | Payment + delivery + dispute resolution. USDC on-chain or simulated off-chain |
-| **Payment** | EVM/USDC transfers on Base, Arbitrum, Ethereum, Polygon via web3 |
-| **Delivery** | Digital auto-verification, physical human/webhook confirmation, overdue tracking |
+| **Settlement** | Payment + delivery + dispute resolution. USDC on-chain |
+| **Payment** | EIP-1559 gas, RPC failover, nonce management, RBF (Replace-By-Fee) |
+| **Tax** | USDC transaction tracking, 1099-NEC vendor detection, CSV/JSON export |
+| **Metrics** | Prometheus-compatible metrics exporter (no external deps) |
+| **Memory** | SQLite-backed learning. Partner reliability, pricing strategies |
+| **Ledger** | Tamper-evident, SHA-256 hash-chained transaction log |
+| **Tools** | Extensible. Agent can create new tools at runtime (sandboxed) |
+| **Skills** | Markdown plugins. Add trade types without code |
 
-## What AI Decides vs What Humans Do
+## Security
 
-| AI Agent (Autonomous) | Humans (Execute) |
-|----------------------|-------------------|
-| Market analysis & strategy | Manufacturing & assembly |
-| Partner discovery & vetting | Shipping & delivery |
-| Price negotiation | Customer visits |
-| Contract signing | Legal filings |
-| Payment execution (USDC) | R&D / prototyping |
-| Hiring decisions | Physical operations |
-| Resource allocation | Complaint handling |
+### v0.6.0 Security Features
 
-## Skills (Plugin System)
+| Feature | Implementation |
+|---------|---------------|
+| **API Key Auth** | HMAC-SHA256 hashed keys, Bearer token, env var fallback |
+| **Rate Limiting** | Token bucket per-IP (60/min, burst 10) |
+| **HMAC Request Signing** | Timestamp + body signing, 300s replay window |
+| **Code Sandbox** | Static analysis blocks subprocess, eval, socket, pickle, etc. |
+| **Shell Validation** | 40+ blocked patterns (reverse shells, data exfil, privesc) |
+| **Input Validation** | Two-tier: strict (names) + permissive (content/Markdown) |
+| **CORS Lockdown** | Default deny-all, explicit allowlist only |
+| **Audit Logger** | SQLite append-only, SHA-256 chain hash, tamper detection |
+| **Peer Signing** | HMAC-signed inter-agent messages |
+| **Tool Control** | Denylist/allowlist, creation and self-improvement disabled by default |
 
-Skills are Markdown files that define trade capabilities:
-
-```markdown
-# Cloud Compute Trading
-
-## Products
-- GPU Cluster Hours | $10-$80 | 100-2000
-- AI Compute Credits | $0.50-$5.00 | 1000-50000
-
-## Negotiation Hints
-- Start at 20% below target price for buying
-- Offer volume discounts above 1000 units
-- Walk away if price exceeds 90% of max budget
-```
-
-Drop a `.md` file in your skills directory and the agent picks it up immediately.
-
-## Tools (External Integration)
-
-The agent comes with built-in tools and can **create new tools at runtime**. Tools are how the agent interacts with the outside world beyond peer-to-peer trading.
-
-### Built-in Tools
-
-| Tool | Purpose | Required Env Vars |
-|------|---------|-------------------|
-| `slack_notify` | Send Slack messages (trade alerts, status updates) | `SLACK_BOT_TOKEN` |
-| `email_send` | Send emails (contracts, reports, escalations) | `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS` |
-| `webhook_call` | Call any HTTP webhook | - |
-| `http_api` | REST API calls (CRM, accounting, job boards) | - |
-| `file_read/write/list` | File operations (reports, contracts, exports) | - |
-| `shell_exec` | Run shell commands (scripts, database ops) | - |
-
-### Auto-notifications
-
-Configure env vars and the agent **automatically** sends notifications:
-
-```bash
-# Slack notifications on trade events
-export SLACK_BOT_TOKEN="xoxb-..."
-export INCAGENT_SLACK_CHANNEL="#trades"
-
-# Or webhook notifications
-export INCAGENT_WEBHOOK_URL="https://hooks.example.com/incagent"
-
-# Email alerts for critical events
-export INCAGENT_NOTIFY_EMAIL="ops@acme.com"
-export SMTP_HOST="smtp.gmail.com"
-export SMTP_USER="bot@acme.com"
-export SMTP_PASS="..."
-```
-
-The heartbeat auto-handles:
-- Trade completion/failure notifications
-- Circuit breaker alerts (critical)
-- Periodic performance reports (every 50 ticks, saved to `reports/`)
-
-### Agent-Created Tools
-
-The agent can **write its own tools** via self-improvement or API:
+### Configuration
 
 ```python
-# Agent auto-generates a CRM sync tool during self-improvement
-result = await agent.improve()
-# -> {"type": "tool", "name": "crm_sync", ...}
-
-# Or create manually via SDK
-agent.create_tool("price_checker", python_code)
-
-# Or via REST API
-curl -X POST http://localhost:8401/tools \
-  -d '{"name": "price_checker", "code": "..."}'
+# Production
+agent = IncAgent(
+    name="Acme Corp",
+    role="buyer",
+    security={
+        "api_keys": ["inc_your_secret_key_here"],
+        "require_auth": True,
+        "allowed_origins": ["https://your-dashboard.com"],
+        "rate_limit_per_minute": 30,
+        "tool_denylist": ["shell_exec"],
+        "allow_tool_creation_via_api": False,
+        "allow_self_improve_via_api": False,
+    },
+)
 ```
 
-Tools are Python files in `data_dir/tools/` that define a `BaseTool` subclass. Hot-loaded at runtime.
+```bash
+# Environment variables
+INCAGENT_API_KEY=inc_your_secret_key
+INCAGENT_SHELL_STRICT=true
+INCAGENT_DATA_DIR=/path/to/agent/data
+```
 
-## Settlement, Payment & Delivery
+See [SECURITY_ROADMAP.md](SECURITY_ROADMAP.md) for full details.
 
-Full trade lifecycle from payment to delivery verification to dispute resolution.
-
-### Payment (EVM/USDC)
+## Payment (EVM/USDC)
 
 On-chain USDC payments on Base, Arbitrum, Ethereum, or Polygon. Falls back to simulated off-chain mode when no wallet is configured.
+
+### Features (v0.6.0)
+
+- **EIP-1559 gas management** — dynamic `maxFeePerGas` / `maxPriorityFeePerGas`
+- **Balance check** — pre-transfer verification, fail-fast on insufficient funds
+- **Nonce management** — thread-safe for concurrent transactions
+- **RPC failover** — multiple RPC URLs, automatic reconnection
+- **Replace-By-Fee (RBF)** — bump stuck transactions by 10% gas
 
 ```python
 agent = IncAgent(
     name="Acme Corp", role="buyer",
-    payment={"chain": "base", "rpc_url": "https://mainnet.base.org", "private_key": "0x..."},
+    payment={
+        "chain": "base",
+        "rpc_url": "https://mainnet.base.org",
+        "rpc_urls": ["https://base-rpc-backup.example.com"],
+        "private_key": "0x...",
+    },
 )
 
 balance = await agent.get_balance()  # USDC balance
 ```
 
-### Delivery Verification
+## Tax Tracking (US Compliance)
 
-| Type | Verification | Example |
-|------|-------------|---------|
-| **Digital** | Auto (API check, file hash) | API key provisioned, access granted |
-| **Physical** | Human confirmation or webhook | Package delivered, signed receipt |
-| **Service** | Ongoing monitoring | SLA compliance check |
+Built-in USDC transaction tracking for US corporate tax requirements.
+
+- All payments automatically recorded (income/expense/escrow/refund)
+- Per-vendor totals with 1099-NEC threshold detection ($600/year)
+- JSON and CSV export for tax filing
 
 ```python
-# Human confirms physical delivery
-agent.confirm_delivery(settlement_id, approved=True, notes="Package received")
+# Get tax year summary
+summary = agent.get_tax_summary(2026)
+# {"total_income": 50000.0, "total_expenses": 30000.0, "net": 20000.0,
+#  "vendors_needing_1099": 3, ...}
 
-# External system confirms via webhook
-# POST /delivery/webhook {"settlement_id": "...", "verified": true, "tracking": "ABC123"}
+# API endpoint
+curl http://localhost:8400/tax?year=2026
 ```
+
+## Prometheus Metrics
+
+Built-in Prometheus-compatible metrics exporter (no external dependencies).
+
+```bash
+curl http://localhost:8400/metrics
+```
+
+Metrics include:
+- `incagent_trades_total{status}` — trade outcomes
+- `incagent_payments_total{status}` — payment outcomes
+- `incagent_negotiations_total` — negotiations started
+- `incagent_active_settlements` — current active settlements
+- `incagent_usdc_balance` — current USDC balance
+- `incagent_negotiation_rounds` — rounds per negotiation (histogram)
+- `incagent_negotiation_duration_seconds` — time per negotiation
+
+## Settlement & Delivery
 
 ### Settlement Modes
 
@@ -228,63 +241,58 @@ agent.confirm_delivery(settlement_id, approved=True, notes="Package received")
 | **PREPAID** | Buyer pays upfront, delivery tracked separately |
 | **COD** | Payment on physical delivery confirmation |
 
+### Delivery Verification
+
+| Type | Verification | Example |
+|------|-------------|---------|
+| **Digital** | Auto (API check, file hash) | API key provisioned |
+| **Physical** | Human or webhook | Package delivered, signed receipt |
+| **Service** | Ongoing monitoring | SLA compliance check |
+
 ### Dispute Resolution
 
 ```python
-# Buyer files dispute
 dispute = agent.file_dispute(settlement_id, "Never received goods")
-
-# Add evidence
-agent._settlement.add_dispute_evidence(dispute.dispute_id, {"photo": "damage.jpg"})
-
 # Resolution: RESOLVED_BUYER (refund), RESOLVED_SELLER (release), RESOLVED_SPLIT
 ```
 
-The heartbeat auto-checks for overdue deliveries and sends critical alerts.
-
 ## API Endpoints (Gateway Mode)
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/health` | GET | Agent health status |
-| `/identity` | GET | Public identity info |
-| `/messages` | POST | Receive message from another agent |
-| `/propose` | POST | Receive trade proposal |
-| `/peers` | GET | List known peers |
-| `/peers` | POST | Register a new peer |
-| `/memory` | GET | View learned insights |
-| `/ledger` | GET | Transaction history |
-| `/skills` | GET | Available skills |
-| `/tools` | GET | List available tools |
-| `/tools` | POST | Create a new custom tool |
-| `/tools/{name}` | POST | Execute a tool by name |
-| `/improve` | POST | Trigger self-improvement cycle |
-| `/balance` | GET | USDC wallet balance |
-| `/settlements` | GET | List active settlements |
-| `/delivery/confirm` | POST | Human confirms physical delivery |
-| `/delivery/webhook` | POST | External system confirms delivery |
-| `/dispute` | POST | File a dispute for a settlement |
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/health` | GET | Public | Agent health status |
+| `/identity` | GET | Public | Public identity info |
+| `/metrics` | GET | Public | Prometheus metrics |
+| `/messages` | POST | Required | Receive message from another agent |
+| `/propose` | POST | Required | Receive trade proposal |
+| `/peers` | GET | Required | List known peers |
+| `/peers` | POST | Required | Register a new peer |
+| `/memory` | GET | Required | View learned insights |
+| `/ledger` | GET | Required | Transaction history |
+| `/skills` | GET | Required | Available skills |
+| `/tools` | GET | Required | List available tools |
+| `/tools` | POST | Required | Create a new custom tool |
+| `/tools/{name}` | POST | Required | Execute a tool by name |
+| `/improve` | POST | Required | Trigger self-improvement cycle |
+| `/balance` | GET | Required | USDC wallet balance |
+| `/settlements` | GET | Required | List active settlements |
+| `/delivery/confirm` | POST | Required | Human confirms physical delivery |
+| `/delivery/webhook` | POST | Required | External system confirms delivery |
+| `/dispute` | POST | Required | File a dispute for a settlement |
+| `/audit` | GET | Required | View security audit log |
+| `/tax` | GET | Required | Tax year summary |
 
 ## CLI Commands
 
 ```bash
-incagent serve    # Start agent as persistent daemon
-incagent status   # Check running agent's health
-incagent peers    # List known peer agents
-incagent connect  # Connect a peer to running agent
-incagent memory   # View agent's learned memory
+incagent init --name "Corp" --role buyer --api-key  # Initialize org
+incagent serve --name "Corp"                         # Start daemon
+incagent orgs                                        # List organizations
 ```
 
 ## LLM Configuration (Optional)
 
 IncAgent works **without any LLM API key**. All negotiation and self-improvement features have rule-based fallback logic built in.
-
-| Mode | Negotiation | Self-Improvement | API Key Required |
-|------|-------------|------------------|------------------|
-| **Rule-based** (default) | Deterministic price/counter logic | Pattern-based strategy updates | No |
-| **LLM-powered** | AI-driven multi-round negotiation | Auto-generates new skills & strategies | Yes |
-
-To enable LLM-powered features, pass config when creating an agent:
 
 ```python
 # Anthropic (Claude)
@@ -300,15 +308,6 @@ agent = IncAgent(
 )
 ```
 
-Or via CLI:
-
-```bash
-incagent serve --name "Acme Corp" --role buyer \
-    --llm-provider anthropic --llm-api-key sk-ant-...
-```
-
-Supported providers: **Anthropic** (`claude-sonnet-4-20250514`) and **OpenAI** (`gpt-4o`).
-
 ## Installation
 
 ```bash
@@ -322,6 +321,19 @@ pip install incagent[web3]
 
 # Development
 pip install incagent[dev]
+```
+
+## Test Coverage
+
+```
+233 tests passing
+├── test_security.py      — 50 tests (auth, rate limiting, sandbox, audit)
+├── test_org_setup.py     — 16 tests (identity, persistence, isolation)
+├── test_e2e_trade.py     — 17 tests (full trade lifecycle, disputes)
+├── test_payment.py       — 15 tests (config, balance, RPC failover)
+├── test_tax.py           — 14 tests (records, 1099-NEC, export)
+├── test_metrics.py       — 14 tests (counters, gauges, histograms)
+└── ... (agent, contract, negotiation, resilience, settlement, tools, gateway)
 ```
 
 ## License

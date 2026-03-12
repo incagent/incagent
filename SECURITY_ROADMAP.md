@@ -58,7 +58,33 @@
 
 ---
 
-## v0.6.0 — 次期実装予定
+## v0.6.0 — 実装済み (Current)
+
+### EIP-1559ガス管理 ✅
+- **動的ガス推定**: `maxFeePerGas = 2 * baseFee + maxPriorityFee`
+- **RBF (Replace-By-Fee)**: 10%ガスアップで再送信
+- **RPCフェイルオーバー**: 複数RPCエンドポイント対応、自動再接続
+- **ノンス管理**: `threading.Lock`でスレッドセーフ
+- **残高チェック**: 送金前にUSDC残高確認、不足時fail-fast
+
+### 税務トラッキング ✅
+- **TaxTracker**: SQLiteベースのUSDC取引記録
+- **レコードタイプ**: income, expense, escrow_in, escrow_out, refund
+- **1099-NEC検出**: ベンダー毎$600/年の閾値監視
+- **年次サマリ**: 総収入、総支出、純額、ベンダー数、1099対象数
+- **エクスポート**: JSON/CSV形式
+- **APIエンドポイント**: `GET /tax?year=2026`
+
+### Prometheusメトリクス ✅
+- **純Python実装**: 外部依存なし
+- **カウンター**: trades, payments, negotiations, tools, api_requests, auth_failures, disputes
+- **ゲージ**: agent_state, active_settlements, known_peers, usdc_balance, circuit_breaker
+- **ヒストグラム**: negotiation_rounds, negotiation_duration, payment_amount
+- **エンドポイント**: `GET /metrics`（公開、認証不要）
+
+---
+
+## v0.7.0 — 次期実装予定
 
 ### Tier 1: 必須（米国法人運用に不可欠）
 
@@ -69,15 +95,12 @@
 | **HTTPS強制** | TLS 1.3、証明書管理、HTTP→HTTPSリダイレクト | P0 |
 | **マルチシグウォレット** | 2-of-3最低。Safe (Gnosis Safe) or Fireblocks統合 | P0 |
 | **秘密鍵管理** | HashiCorp Vault or AWS Secrets Manager連携 | P0 |
-| **EIP-1559ガス管理** | 動的手数料、RBF、複数RPCフェイルオーバー | P1 |
 | **Money Transmitter評価** | 弁護士レビュー（各州ライセンス要件の確認） | P0 |
 
 ### Tier 2: コンプライアンス
 
 | 項目 | 内容 | 優先度 |
 |------|------|--------|
-| **税務トラッキング** | 全USDC入出金記録、キャピタルゲイン計算 | P1 |
-| **1099-NEC自動生成** | 年間$600超のベンダー支払い追跡 | P1 |
 | **不変監査ログ** | SQLite→PostgreSQL移行 or ブロックチェーンアンカリング | P1 |
 | **データ暗号化** | DB暗号化（SQLCipher or PostgreSQL pgcrypto） | P2 |
 | **データ保持ポリシー** | 自動アーカイブ・削除ルール | P2 |
@@ -86,7 +109,7 @@
 
 | 項目 | 内容 | 優先度 |
 |------|------|--------|
-| **Prometheus/Grafana** | メトリクスエクスポーター、アラート閾値 | P2 |
+| **Grafanaダッシュボード** | Prometheusメトリクスとの連携、アラート閾値 | P2 |
 | **DR/バックアップ** | DB複製、鍵バックアップ（暗号化してKMSへ） | P2 |
 | **配送トラッキング** | Shippo API統合、GPS検証 | P3 |
 | **WAF/DDoS防御** | Cloudflare or AWS WAF | P2 |
@@ -143,7 +166,10 @@ INCAGENT_DATA_DIR=/path/to/agent/data
 | テストファイル | テスト数 | カバー範囲 |
 |---------------|---------|-----------|
 | test_security.py | 50 | API Key, HMAC, Rate Limit, Input Validation, CodeSandbox, Shell Validation, Audit Logger, Peer Signing, Config Defaults |
-| 全テスト | 173 | セキュリティ変更による既存機能への回帰テスト含む |
+| test_payment.py | 15 | PaymentConfig, RPC failover, balance check, EIP-1559 |
+| test_tax.py | 14 | 税務記録、1099-NEC、エクスポート |
+| test_metrics.py | 14 | Counter, Gauge, Histogram, Registry |
+| 全テスト | 233 | v0.6.0全機能 + 既存回帰テスト |
 
 ---
 

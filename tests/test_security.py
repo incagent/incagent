@@ -454,4 +454,4 @@ class TestSecurityConfig:
 
     def test_public_endpoints_minimal(self):
         config = SecurityConfig()
-        assert set(config.public_endpoints) == {"/health", "/identity"}
+        assert set(config.public_endpoints) == {"/health", "/identity", "/metrics"}

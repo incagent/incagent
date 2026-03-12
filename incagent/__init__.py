@@ -20,9 +20,11 @@ from incagent.self_improve import SelfImproveEngine
 from incagent.settlement import Dispute, SettlementEngine, SettlementMode, SettlementRecord
 from incagent.skills import Skill, SkillManager
 from incagent.tools import BaseTool, ToolRegistry, ToolResult
+from incagent.tax import TaxTracker
+from incagent.metrics import MetricsRegistry, METRICS
 from incagent.transaction import Transaction, TransactionManager
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 
 __all__ = [
     "IncAgent",
@@ -79,5 +81,10 @@ __all__ = [
     "ToolResult",
     "Transaction",
     "TransactionManager",
+    "TaxTracker",
+    "MetricsRegistry",
+    "METRICS",
     "create_identity",
+    "init_org",
+    "org_data_dir",
 ]
