@@ -222,21 +222,34 @@ Be strategic. Aim for a deal within your boundaries. Concede gradually."""
     ) -> dict[str, Any]:
         """Simple rule-based fallback when LLM is unavailable."""
         terms = dict(current_terms)
-        price = terms.get("unit_price") or (
-            terms.get("unit_price_range", [0, 0])[0] if isinstance(terms.get("unit_price_range"), (list, tuple)) else 0
-        )
 
-        if policy.max_price and policy.min_price:
-            # Gradually move toward midpoint
-            target = (policy.min_price + policy.max_price) / 2
+        # Extract current price from unit_price or unit_price_range
+        price = terms.get("unit_price")
+        price_range = terms.get("unit_price_range")
+        if price is None and isinstance(price_range, (list, tuple)) and len(price_range) == 2:
+            price = price_range[0]
+
+        # Determine min/max from policy or contract terms
+        min_p = policy.min_price
+        max_p = policy.max_price
+        if min_p is None and isinstance(price_range, (list, tuple)) and len(price_range) == 2:
+            min_p = price_range[0]
+        if max_p is None and isinstance(price_range, (list, tuple)) and len(price_range) == 2:
+            max_p = price_range[1]
+
+        if price is not None and min_p is not None and max_p is not None:
+            # Gradually converge toward midpoint
+            target = (min_p + max_p) / 2
             step = (target - price) / max(1, (policy.max_rounds - round_number + 1))
             new_price = price + step
-            new_price = max(policy.min_price, min(policy.max_price, new_price))
+            new_price = max(min_p, min(max_p, new_price))
             terms["unit_price"] = round(new_price, 2)
 
-            # Accept if within acceptable range
-            if policy.min_price <= price <= policy.max_price:
+            # Accept after a few rounds of convergence (round 3+)
+            if round_number >= 3 and min_p <= new_price <= max_p:
                 return {"accepted": True, "terms": terms, "reasoning": "Price within acceptable range"}
+        elif price is not None:
+            terms["unit_price"] = price
 
         if policy.walk_away_threshold > 0:
             estimated = terms.get("quantity", 1) * terms.get("unit_price", 0)
