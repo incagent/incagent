@@ -117,7 +117,11 @@ class Heartbeat:
                     continue
                 asyncio.create_task(self._execute_trade(agent, opp))
 
-        # 6. Self-improvement (every 10 ticks)
+        # 6. Auto-notifications via tools
+        if hasattr(agent, '_tools'):
+            await self._auto_notify(agent, health, messages)
+
+        # 7. Self-improvement (every 10 ticks)
         if self._tick_count % 10 == 0 and hasattr(agent, '_self_improve'):
             try:
                 result = await agent.improve()
@@ -125,7 +129,11 @@ class Heartbeat:
             except Exception as e:
                 logger.warning("Self-improvement failed: %s", e)
 
-        # 7. Update memory
+        # 8. Periodic reports (every 50 ticks)
+        if self._tick_count % 50 == 0 and hasattr(agent, '_tools'):
+            await self._generate_report(agent)
+
+        # 9. Update memory
         if hasattr(agent, '_memory'):
             agent._memory.record_heartbeat(self._tick_count, {
                 "messages_processed": len(messages),
@@ -229,6 +237,9 @@ class Heartbeat:
                     success=True,
                 )
 
+            # Post-trade actions (notifications, logging)
+            await self._post_trade_actions(agent, opportunity, success=True, contract=contract)
+
         except Exception as e:
             logger.error("Trade execution failed with %s: %s", opportunity.peer_name, e)
             if hasattr(agent, '_memory'):
@@ -239,6 +250,7 @@ class Heartbeat:
                     success=False,
                     error=str(e),
                 )
+            await self._post_trade_actions(agent, opportunity, success=False)
         finally:
             self._active_trades -= 1
 
@@ -272,6 +284,112 @@ class Heartbeat:
             }
 
         return params
+
+    async def _auto_notify(self, agent: IncAgent, health: dict, messages: list) -> None:
+        """Auto-send notifications via available tools based on events."""
+        tools = agent._tools
+
+        # Notify on circuit breaker open (critical alert)
+        if health.get("circuit_breaker") == "open":
+            await self._try_notify(agent, "ALERT: Circuit breaker OPEN", critical=True)
+
+        # Notify on incoming trade messages
+        for msg in messages:
+            if msg.message_type.value in ("accept", "reject"):
+                await self._try_notify(
+                    agent,
+                    f"Trade {msg.message_type.value}: {msg.payload.get('contract_id', 'unknown')}",
+                )
+
+    async def _try_notify(self, agent: IncAgent, message: str, critical: bool = False) -> None:
+        """Try to send notification via best available channel."""
+        import os
+        tools = agent._tools
+        full_msg = f"[{agent.name}] {message}"
+
+        # Try Slack first
+        if tools.get("slack_notify") and os.environ.get("SLACK_BOT_TOKEN"):
+            channel = os.environ.get("INCAGENT_SLACK_CHANNEL", "#incagent")
+            await tools.execute("slack_notify", channel=channel, message=full_msg)
+            return
+
+        # Try webhook
+        webhook_url = os.environ.get("INCAGENT_WEBHOOK_URL")
+        if tools.get("webhook_call") and webhook_url:
+            await tools.execute("webhook_call", url=webhook_url, body={
+                "agent": agent.name, "message": message, "critical": critical,
+            })
+            return
+
+        # Try email (critical only)
+        notify_email = os.environ.get("INCAGENT_NOTIFY_EMAIL")
+        if critical and tools.get("email_send") and notify_email and os.environ.get("SMTP_HOST"):
+            await tools.execute("email_send",
+                to=notify_email,
+                subject=f"[IncAgent] {agent.name} - Critical Alert",
+                body=full_msg,
+            )
+            return
+
+        # Fallback: log only
+        logger.info("Notification (no channel configured): %s", full_msg)
+
+    async def _generate_report(self, agent: IncAgent) -> None:
+        """Generate periodic performance report via tools."""
+        if not hasattr(agent, '_memory'):
+            return
+
+        stats = agent._memory.stats()
+        partners = agent._memory.get_all_partners()
+        health = agent.health_status()
+
+        report_lines = [
+            f"# {agent.name} - Performance Report (Tick #{self._tick_count})",
+            f"",
+            f"## Summary",
+            f"- Total trades: {stats.get('total_trades', 0)}",
+            f"- Known partners: {stats.get('known_partners', 0)}",
+            f"- Learned strategies: {stats.get('learned_strategies', 0)}",
+            f"- Skills loaded: {health.get('skills', 0)}",
+            f"- Tools available: {health.get('tools', 0)}",
+            f"- Improvements applied: {health.get('improvements_applied', 0)}",
+            f"",
+            f"## Top Partners",
+        ]
+        for p in sorted(partners, key=lambda x: x.get("success_rate", 0), reverse=True)[:5]:
+            report_lines.append(
+                f"- {p['partner_name']}: {p['success_rate']:.0%} success, "
+                f"{p['total_trades']} trades, avg ${p.get('avg_price', 0):.2f}"
+            )
+
+        report = "\n".join(report_lines)
+
+        # Save to file
+        tools = agent._tools
+        if tools.get("file_write"):
+            import os
+            os.environ.setdefault("INCAGENT_DATA_DIR", str(agent._config.data_dir))
+            await tools.execute("file_write",
+                path=f"reports/report_tick_{self._tick_count}.md",
+                content=report,
+            )
+
+        # Notify
+        await self._try_notify(agent, f"Report generated (tick #{self._tick_count}, {stats.get('total_trades', 0)} trades)")
+
+    async def _post_trade_actions(self, agent: IncAgent, opportunity: TradeOpportunity, success: bool, contract: Any = None) -> None:
+        """Run automated actions after a trade completes."""
+        if success:
+            await self._try_notify(
+                agent,
+                f"Trade completed with {opportunity.peer_name}: {contract.title if contract else 'N/A'}",
+            )
+        else:
+            await self._try_notify(
+                agent,
+                f"Trade FAILED with {opportunity.peer_name}",
+                critical=True,
+            )
 
     async def _process_proposals(self, agent: IncAgent) -> None:
         """Process trade proposals from remote agents."""

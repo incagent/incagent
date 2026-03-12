@@ -64,14 +64,20 @@ incagent serve --name "CloudPeak" --role seller --port 8402 \
       │  Negotiation (LLM)   │           │  Negotiation (LLM)   │
       │  Memory (SQLite)     │           │  Memory (SQLite)     │
       │  Skills (Markdown)   │           │  Skills (Markdown)   │
+      │  Tools (extensible)  │           │  Tools (extensible)  │
       │  Ledger (hash-chain) │           │  Ledger (hash-chain) │
-      └──────────┬───────────┘           └──────────┬───────────┘
-                 │                                  │
-                 ▼                                  ▼
-          ┌─────────────┐                    ┌─────────────┐
-          │  EVM Chain  │◄───── USDC ───────►│  EVM Chain  │
-          │  (Escrow)   │                    │  (Escrow)   │
-          └─────────────┘                    └─────────────┘
+      └───┬──────┬───────────┘           └──────────┬───────────┘
+          │      │                                  │
+          │      ▼                                  ▼
+          │  ┌────────────┐                  ┌─────────────┐
+          │  │ Slack/Email │                  │  EVM Chain  │
+          │  │ Webhook/API │                  │  (Escrow)   │
+          │  └────────────┘                  └─────────────┘
+          ▼
+   ┌─────────────┐
+   │  EVM Chain  │
+   │  (Escrow)   │
+   └─────────────┘
 ```
 
 ## Core Components
@@ -79,7 +85,8 @@ incagent serve --name "CloudPeak" --role seller --port 8402 \
 | Component | Description |
 |-----------|-------------|
 | **Gateway** | Persistent HTTP server. Always-on agent runtime with REST API |
-| **Heartbeat** | Self-activates every N minutes. Discovers partners, evaluates opportunities, initiates trades |
+| **Heartbeat** | Self-activates every N minutes. Discovers partners, evaluates opportunities, initiates trades, sends notifications, generates reports |
+| **Tools** | Extensible action system. Built-in: Slack, Email, Webhook, HTTP API, Filesystem, Shell. Agent can create new tools at runtime |
 | **Memory** | SQLite-backed learning. Tracks partner reliability, optimal pricing, successful strategies |
 | **Skills** | Markdown-defined plugins. Add trade types, industries, negotiation strategies without code |
 | **Registry** | Peer discovery. Agents find each other via probing, announcements, or central hub |
@@ -118,6 +125,64 @@ Skills are Markdown files that define trade capabilities:
 
 Drop a `.md` file in your skills directory and the agent picks it up immediately.
 
+## Tools (External Integration)
+
+The agent comes with built-in tools and can **create new tools at runtime**. Tools are how the agent interacts with the outside world beyond peer-to-peer trading.
+
+### Built-in Tools
+
+| Tool | Purpose | Required Env Vars |
+|------|---------|-------------------|
+| `slack_notify` | Send Slack messages (trade alerts, status updates) | `SLACK_BOT_TOKEN` |
+| `email_send` | Send emails (contracts, reports, escalations) | `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS` |
+| `webhook_call` | Call any HTTP webhook | - |
+| `http_api` | REST API calls (CRM, accounting, job boards) | - |
+| `file_read/write/list` | File operations (reports, contracts, exports) | - |
+| `shell_exec` | Run shell commands (scripts, database ops) | - |
+
+### Auto-notifications
+
+Configure env vars and the agent **automatically** sends notifications:
+
+```bash
+# Slack notifications on trade events
+export SLACK_BOT_TOKEN="xoxb-..."
+export INCAGENT_SLACK_CHANNEL="#trades"
+
+# Or webhook notifications
+export INCAGENT_WEBHOOK_URL="https://hooks.example.com/incagent"
+
+# Email alerts for critical events
+export INCAGENT_NOTIFY_EMAIL="ops@acme.com"
+export SMTP_HOST="smtp.gmail.com"
+export SMTP_USER="bot@acme.com"
+export SMTP_PASS="..."
+```
+
+The heartbeat auto-handles:
+- Trade completion/failure notifications
+- Circuit breaker alerts (critical)
+- Periodic performance reports (every 50 ticks, saved to `reports/`)
+
+### Agent-Created Tools
+
+The agent can **write its own tools** via self-improvement or API:
+
+```python
+# Agent auto-generates a CRM sync tool during self-improvement
+result = await agent.improve()
+# -> {"type": "tool", "name": "crm_sync", ...}
+
+# Or create manually via SDK
+agent.create_tool("price_checker", python_code)
+
+# Or via REST API
+curl -X POST http://localhost:8401/tools \
+  -d '{"name": "price_checker", "code": "..."}'
+```
+
+Tools are Python files in `data_dir/tools/` that define a `BaseTool` subclass. Hot-loaded at runtime.
+
 ## API Endpoints (Gateway Mode)
 
 | Endpoint | Method | Description |
@@ -131,6 +196,10 @@ Drop a `.md` file in your skills directory and the agent picks it up immediately
 | `/memory` | GET | View learned insights |
 | `/ledger` | GET | Transaction history |
 | `/skills` | GET | Available skills |
+| `/tools` | GET | List available tools |
+| `/tools` | POST | Create a new custom tool |
+| `/tools/{name}` | POST | Execute a tool by name |
+| `/improve` | POST | Trigger self-improvement cycle |
 
 ## CLI Commands
 
