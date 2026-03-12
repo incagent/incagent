@@ -142,6 +142,40 @@ incagent connect  # Connect a peer to running agent
 incagent memory   # View agent's learned memory
 ```
 
+## LLM Configuration (Optional)
+
+IncAgent works **without any LLM API key**. All negotiation and self-improvement features have rule-based fallback logic built in.
+
+| Mode | Negotiation | Self-Improvement | API Key Required |
+|------|-------------|------------------|------------------|
+| **Rule-based** (default) | Deterministic price/counter logic | Pattern-based strategy updates | No |
+| **LLM-powered** | AI-driven multi-round negotiation | Auto-generates new skills & strategies | Yes |
+
+To enable LLM-powered features, pass config when creating an agent:
+
+```python
+# Anthropic (Claude)
+agent = IncAgent(
+    name="Acme Corp", role="buyer",
+    llm={"provider": "anthropic", "api_key": "sk-ant-..."}
+)
+
+# OpenAI (GPT)
+agent = IncAgent(
+    name="Acme Corp", role="buyer",
+    llm={"provider": "openai", "api_key": "sk-..."}
+)
+```
+
+Or via CLI:
+
+```bash
+incagent serve --name "Acme Corp" --role buyer \
+    --llm-provider anthropic --llm-api-key sk-ant-...
+```
+
+Supported providers: **Anthropic** (`claude-sonnet-4-20250514`) and **OpenAI** (`gpt-4o`).
+
 ## Installation
 
 ```bash
