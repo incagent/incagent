@@ -15,9 +15,10 @@ from incagent.registry import PeerAgent, Registry
 from incagent.resilience import CircuitBreaker, FallbackChain, ResilientExecutor, RetryWithBackoff
 from incagent.self_improve import SelfImproveEngine
 from incagent.skills import Skill, SkillManager
+from incagent.tools import BaseTool, ToolRegistry, ToolResult
 from incagent.transaction import Transaction, TransactionManager
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 __all__ = [
     "IncAgent",
@@ -53,6 +54,9 @@ __all__ = [
     "SelfImproveEngine",
     "Skill",
     "SkillManager",
+    "BaseTool",
+    "ToolRegistry",
+    "ToolResult",
     "Transaction",
     "TransactionManager",
     "create_identity",

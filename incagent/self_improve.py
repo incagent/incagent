@@ -22,6 +22,7 @@ from typing import Any
 from incagent.config import LLMConfig
 from incagent.memory import Memory
 from incagent.skills import Skill, SkillManager
+from incagent.tools import ToolRegistry
 
 logger = logging.getLogger("incagent.self_improve")
 
@@ -35,11 +36,13 @@ class SelfImproveEngine:
         skills: SkillManager,
         llm_config: LLMConfig | None = None,
         skills_dir: Path | str | None = None,
+        tools: ToolRegistry | None = None,
     ) -> None:
         self._memory = memory
         self._skills = skills
         self._llm_config = llm_config or LLMConfig()
         self._skills_dir = Path(skills_dir) if skills_dir else None
+        self._tools = tools
         self._client: Any = None
         self._improvements_applied: int = 0
 
@@ -172,9 +175,12 @@ class SelfImproveEngine:
 ## Current Skills
 {json.dumps(existing_skills, indent=2)}
 
+## Available Tools
+{json.dumps(self._tools.list_names() if self._tools else [], indent=2)}
+
 Based on this data, generate ONE improvement. Respond with JSON:
 {{
-    "type": "skill" | "strategy" | "policy",
+    "type": "skill" | "strategy" | "policy" | "tool",
     "name": "improvement name",
     "description": "what this improves and why",
     "content": "... the actual content ...",
@@ -184,6 +190,7 @@ Based on this data, generate ONE improvement. Respond with JSON:
 For type "skill": content should be a valid Markdown skill file.
 For type "strategy": content should be a strategy insight to save.
 For type "policy": content should be updated negotiation parameters (JSON).
+For type "tool": content should be Python code defining a BaseTool subclass with name, description, parameters, and execute() method. The tool extends the agent's capabilities (e.g., API integrations, notifications, file operations).
 
 Be specific and data-driven. Base your improvement on the actual patterns in the data."""
 
@@ -262,6 +269,8 @@ Be specific and data-driven. Base your improvement on the actual patterns in the
             return self._apply_strategy(improvement)
         elif imp_type == "policy":
             return self._apply_policy(improvement)
+        elif imp_type == "tool":
+            return self._apply_tool(improvement)
 
         return False
 
@@ -323,6 +332,28 @@ Be specific and data-driven. Base your improvement on the actual patterns in the
         self._improvements_applied += 1
         logger.info("Applied policy improvement: %s", improvement.get("name"))
         return True
+
+    def _apply_tool(self, improvement: dict[str, Any]) -> bool:
+        """Create a new tool from generated Python code."""
+        if not self._tools:
+            logger.warning("No tool registry configured, cannot create tool")
+            return False
+
+        name = improvement.get("name", "auto_tool")
+        code = improvement.get("content", "")
+        if not code:
+            return False
+
+        success = self._tools.create_tool(name, code)
+        if success:
+            self._improvements_applied += 1
+            logger.info("Applied tool improvement: %s", name)
+            self._memory.learn_strategy(
+                "self_improvement", f"tool_{name}",
+                improvement.get("description", "Auto-generated tool"),
+                confidence=0.4,
+            )
+        return success
 
     # ── Full cycle ───────────────────────────────────────────────────
 

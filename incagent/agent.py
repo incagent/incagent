@@ -21,6 +21,7 @@ from incagent.registry import Registry
 from incagent.resilience import ResilientExecutor
 from incagent.self_improve import SelfImproveEngine
 from incagent.skills import SkillManager
+from incagent.tools import ToolRegistry, ToolResult
 from incagent.transaction import TransactionManager
 
 logger = logging.getLogger("incagent")
@@ -118,12 +119,18 @@ class IncAgent:
             skills_dir=skills_dir or self._config.data_dir / "skills"
         )
 
+        # Tool system (external integrations + agent-extensible)
+        self._tools = ToolRegistry(
+            custom_tools_dir=self._config.data_dir / "tools",
+        )
+
         # Self-improvement engine
         self._self_improve = SelfImproveEngine(
             memory=self._memory,
             skills=self._skills,
             llm_config=llm_config,
             skills_dir=skills_dir or self._config.data_dir / "skills",
+            tools=self._tools,
         )
 
         # Store metadata
@@ -339,9 +346,36 @@ class IncAgent:
         """Verify the integrity of this agent's ledger."""
         return self._ledger.verify_chain()
 
+    # ── Tool system ────────────────────────────────────────────────
+
+    async def use_tool(self, tool_name: str, **kwargs: Any) -> ToolResult:
+        """Execute a tool by name. The agent can call any registered tool
+        to interact with external systems (Slack, email, APIs, filesystem, shell)."""
+        result = await self._tools.execute(tool_name, **kwargs)
+        self._ledger.append(self.agent_id, "tool_used", {
+            "tool": tool_name,
+            "success": result.success,
+            "error": result.error,
+        })
+        return result
+
+    def create_tool(self, name: str, code: str) -> bool:
+        """Create a new tool at runtime. The agent writes a Python file
+        that defines a BaseTool subclass, then hot-loads it.
+        This is how the agent extends its own capabilities."""
+        success = self._tools.create_tool(name, code)
+        if success:
+            self._ledger.append(self.agent_id, "tool_created", {"tool": name})
+            logger.info("Agent created new tool: %s", name)
+        return success
+
+    def list_tools(self) -> list[dict[str, Any]]:
+        """List all available tools."""
+        return self._tools.list_tools()
+
     async def improve(self) -> dict[str, Any]:
         """Run one self-improvement cycle. The agent analyzes its performance
-        and generates strategy/skill improvements using LLM (or rules)."""
+        and generates strategy/skill/tool improvements using LLM (or rules)."""
         return await self._self_improve.improve()
 
     def health_status(self) -> dict[str, Any]:
@@ -359,6 +393,7 @@ class IncAgent:
             "peers": len(self._registry.list_peers()),
             "heartbeat_ticks": self._heartbeat.tick_count if self._heartbeat else 0,
             "improvements_applied": self._self_improve.improvements_count,
+            "tools": self._tools.count,
         }
 
     def close(self) -> None:

@@ -119,6 +119,34 @@ def create_app(gateway: Gateway) -> Starlette:
         except Exception as e:
             return JSONResponse({"error": str(e)}, status_code=500)
 
+    async def tools_list(request: Request) -> JSONResponse:
+        """GET /tools — list all available tools."""
+        tools = gateway.agent.list_tools()
+        return JSONResponse({"tools": tools, "count": len(tools)})
+
+    async def tools_execute(request: Request) -> JSONResponse:
+        """POST /tools/{name} — execute a tool by name."""
+        tool_name = request.path_params["name"]
+        try:
+            body = await request.json()
+            result = await gateway.agent.use_tool(tool_name, **body)
+            return JSONResponse(result.to_dict())
+        except Exception as e:
+            return JSONResponse({"success": False, "error": str(e)}, status_code=400)
+
+    async def tools_create(request: Request) -> JSONResponse:
+        """POST /tools — create a new custom tool."""
+        try:
+            body = await request.json()
+            name = body.get("name", "")
+            code = body.get("code", "")
+            if not name or not code:
+                return JSONResponse({"error": "name and code required"}, status_code=400)
+            success = gateway.agent.create_tool(name, code)
+            return JSONResponse({"success": success, "tool": name})
+        except Exception as e:
+            return JSONResponse({"error": str(e)}, status_code=400)
+
     routes = [
         Route("/health", health, methods=["GET"]),
         Route("/identity", identity, methods=["GET"]),
@@ -130,6 +158,9 @@ def create_app(gateway: Gateway) -> Starlette:
         Route("/peers", registry_peers, methods=["GET"]),
         Route("/peers", register_peer, methods=["POST"]),
         Route("/improve", trigger_improve, methods=["POST"]),
+        Route("/tools", tools_list, methods=["GET"]),
+        Route("/tools", tools_create, methods=["POST"]),
+        Route("/tools/{name}", tools_execute, methods=["POST"]),
     ]
 
     middleware = [
