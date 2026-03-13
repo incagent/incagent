@@ -413,60 +413,6 @@ footer{
 
 <hr class="div">
 
-<!-- QUICK START -->
-<div class="sec">
-  <div class="sec-label">Get started in 30 seconds</div>
-
-  <!-- Install -->
-  <div class="code-wrap" style="margin-bottom:10px;">
-    <div class="code-top">
-      <div class="code-dots">
-        <div class="code-dot" style="background:#ff5f57"></div>
-        <div class="code-dot" style="background:#febc2e"></div>
-        <div class="code-dot" style="background:#28c840"></div>
-      </div>
-      <div class="code-file">terminal</div>
-      <div></div>
-    </div>
-    <div class="code-body" style="padding:14px 26px;"><span class="cc">$</span> <span class="cn">pip install incagent</span></div>
-  </div>
-
-  <!-- Usage -->
-  <div class="code-wrap">
-    <div class="code-top">
-      <div class="code-dots">
-        <div class="code-dot" style="background:#ff5f57"></div>
-        <div class="code-dot" style="background:#febc2e"></div>
-        <div class="code-dot" style="background:#28c840"></div>
-      </div>
-      <div class="code-file">example.py</div>
-      <div></div>
-    </div>
-    <div class="code-body"><span class="ck">from</span> <span class="cn">incagent</span> <span class="ck">import</span> <span class="cn">IncAgent, Contract, ContractTerms</span>
-
-<span class="cc"># Two agent-run companies</span>
-<span class="cn">vendor</span> <span class="ck">=</span> <span class="cf">IncAgent</span><span class="cn">(name=</span><span class="cs">"IncAgent Vendor"</span><span class="cn">, role=</span><span class="cs">"seller"</span><span class="cn">)</span>
-<span class="cn">buyer</span>  <span class="ck">=</span> <span class="cf">IncAgent</span><span class="cn">(name=</span><span class="cs">"Northstar Buyer"</span><span class="cn">,  role=</span><span class="cs">"buyer"</span><span class="cn">)</span>
-
-<span class="cc"># Define the offer</span>
-<span class="cn">contract</span> <span class="ck">=</span> <span class="cf">Contract</span><span class="cn">(</span>
-    <span class="cn">title=</span><span class="cs">"Outbound Campaign System"</span><span class="cn">,</span>
-    <span class="cn">terms=</span><span class="cf">ContractTerms</span><span class="cn">(price=</span><span class="cv">5_000</span><span class="cn">, currency=</span><span class="cs">"USD"</span><span class="cn">),</span>
-<span class="cn">)</span>
-
-<span class="cc"># Build → Sell → Assign Human → Verify & Pay</span>
-<span class="cn">result</span> <span class="ck">=</span> <span class="ck">await</span> <span class="cn">vendor</span><span class="cm">.transact</span><span class="cn">(counterparty=buyer, contract=contract)</span>
-
-<span class="cf">print</span><span class="cn">(result.status)</span>               <span class="cc"># "completed"</span>
-<span class="cf">print</span><span class="cn">(result.human_task.assignee)</span>   <span class="cc"># "Mika Tanaka"</span>
-<span class="cf">print</span><span class="cn">(result.human_task.proof)</span>      <span class="cc"># "verified"</span>
-<span class="cf">print</span><span class="cn">(result.revenue)</span>              <span class="cc"># 5000.0</span>
-<span class="cf">print</span><span class="cn">(result.tax_filed)</span>           <span class="cc"># True</span></div>
-  </div>
-</div>
-
-<hr class="div">
-
 <!-- HOW IT WORKS -->
 <div class="sec">
   <div class="sec-label">How it works</div>

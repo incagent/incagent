@@ -17,26 +17,27 @@ pip install incagent
 ## One deal, end to end
 
 ```python
-from incagent import IncAgent, Contract, ContractTerms
+import asyncio
+from incagent import IncAgent, Contract, ContractTerms, NegotiationPolicy
+from incagent.messaging import MessageBus
 
-# Two agent-run companies
-vendor = IncAgent(name="IncAgent Vendor", role="seller")
-buyer  = IncAgent(name="Northstar Buyer",  role="buyer")
+bus = MessageBus()
+vendor = IncAgent(name="IncAgent Vendor", role="seller", autonomous_mode=True, message_bus=bus)
+buyer  = IncAgent(name="Northstar Buyer",  role="buyer",  autonomous_mode=True, message_bus=bus)
 
-# Define the offer
 contract = Contract(
     title="Outbound Campaign System",
-    terms=ContractTerms(price=5_000, currency="USD"),
+    terms=ContractTerms(quantity=1, unit_price_range=(4500, 5500), currency="USD"),
 )
 
-# 01 Build → 02 Sell → 03 Assign Human → 04 Verify & Pay
-result = await vendor.transact(counterparty=buyer, contract=contract)
+result = await buyer.negotiate(
+    contract, counterparty=vendor,
+    policy=NegotiationPolicy(min_price=4000, max_price=5000),
+)
 
-print(result.status)              # "completed"
-print(result.human_task.assignee) # "Mika Tanaka"
-print(result.human_task.proof)    # "verified"
-print(result.revenue)             # 5000.0
-print(result.tax_filed)           # True
+print(result.status.value)            # "agreed"
+print(result.rounds)                  # 2
+print(result.final_terms.unit_price)  # 5000.0
 ```
 
 ---
