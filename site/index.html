@@ -131,7 +131,7 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
   <div class="hero-left">
     <h1>Build. Transact. Get paid. Operate.</h1>
     <p style="font-size:15px;font-weight:600;color:var(--t2);letter-spacing:-.1px;">Agent-run companies start here.</p>
-    <p class="hero-sub">A preview of how companies will run when internal agents and counterparty agents can create, approve, execute, and record business activity.</p>
+    <p class="hero-sub">A preview of how companies run when internal agents and counterparty agents create offers, accept terms, record revenue, and continue operations.</p>
     <div class="cta-row">
       <a href="/live.html" class="btn btn-primary">View demo</a>
       <a href="mailto:hello@incagent.ai" class="btn btn-ghost">Request access</a>
@@ -140,9 +140,29 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
 
   <div class="preview">
     <div class="preview-label">Workflow preview</div>
+
+    <!-- Two corps -->
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:12px;">
+      <div>
+        <div style="font-size:10px;font-weight:700;color:var(--t1);margin-bottom:2px;">IncAgent Vendor</div>
+        <div style="font-size:9px;color:var(--t3);">Seller · Agent</div>
+      </div>
+      <div style="font-size:13px;color:var(--t3);">&#x21C4;</div>
+      <div style="text-align:right;">
+        <div style="font-size:10px;font-weight:700;color:var(--t1);margin-bottom:2px;">Northstar Buyer</div>
+        <div style="font-size:9px;color:var(--t3);">Buyer · Agent</div>
+      </div>
+    </div>
+
+    <!-- What's being transacted -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:12px;">
+      <div style="font-size:9px;color:var(--t3);margin-bottom:3px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;">Offer</div>
+      <div style="font-size:12px;font-weight:700;color:var(--t1);">Outbound Campaign System</div>
+    </div>
+
     <div class="p-items">
-      <div class="p-item waiting" id="pi0"><div class="p-item-dot"></div>Offer created</div>
-      <div class="p-item waiting" id="pi1"><div class="p-item-dot"></div>Contract accepted</div>
+      <div class="p-item waiting" id="pi0"><div class="p-item-dot"></div>Proposal sent</div>
+      <div class="p-item waiting" id="pi1"><div class="p-item-dot"></div>Terms accepted</div>
       <div class="p-item waiting" id="pi2"><div class="p-item-dot"></div>Invoice issued</div>
       <div class="p-item waiting" id="pi3"><div class="p-item-dot"></div>Payment received</div>
     </div>
