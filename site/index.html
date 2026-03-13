@@ -11,32 +11,14 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --base:#070B17;
-  --panel:#0E1424;
-  --cobalt:#5B8CFF;
-  --violet:#8B6CFF;
-  --green:#19C37D;
-  --amber:#F5B942;
-  --text:#EFF2FA;
-  --muted:#8D97B5;
-  --dim:#3A4A6E;
-  --border:#1C2A49;
-  --border2:rgba(91,140,255,0.22);
+  --base:#070B17;--panel:#0E1424;
+  --cobalt:#5B8CFF;--violet:#8B6CFF;--green:#19C37D;--amber:#F5B942;--cyan:#00D4FF;
+  --text:#EFF2FA;--muted:#8D97B5;--dim:#3A4A6E;--border:#1C2A49;
 }
-html{scroll-behavior:smooth;}
-body{
-  background:var(--base);color:var(--muted);
-  font-family:'Inter',system-ui,sans-serif;
-  -webkit-font-smoothing:antialiased;overflow-x:hidden;
-}
+html,body{background:var(--base);color:var(--muted);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
 
 /* NAV */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;height:56px;padding:0 40px;
-  display:flex;align-items:center;
-  background:rgba(6,8,22,0.88);backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);
-}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 40px;display:flex;align-items:center;background:rgba(6,8,22,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
 .logo{font-size:16px;font-weight:900;color:var(--text);text-decoration:none;letter-spacing:-.4px;}
 .logo em{font-style:normal;color:var(--cobalt);}
 .nav-links{margin-left:auto;display:flex;gap:24px;align-items:center;}
@@ -44,193 +26,106 @@ nav{
 .nav-links a:hover{color:var(--text);}
 .nav-cta{background:var(--cobalt);color:#fff!important;font-weight:700!important;padding:7px 18px;border-radius:7px;}
 
-/* HERO */
-.hero{
-  position:relative;min-height:100vh;
-  display:grid;grid-template-columns:1fr 600px;gap:64px;
-  align-items:center;padding:100px 80px 80px;
-  max-width:1400px;margin:0 auto;z-index:1;
-}
-@media(max-width:1100px){.hero{grid-template-columns:1fr;padding:80px 24px 40px;}}
-.hero::before{
-  content:'';position:absolute;inset:0;
-  background-image:
-    linear-gradient(rgba(77,124,255,0.022) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(77,124,255,0.022) 1px,transparent 1px);
+/* SCROLL SCENE */
+#scene{height:700vh;position:relative;}
+#sticky{position:sticky;top:0;height:100vh;overflow:hidden;background:var(--base);}
+
+/* GRID */
+#grid-bg{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(77,124,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(77,124,255,0.025) 1px,transparent 1px);
   background-size:52px 52px;
-  mask-image:radial-gradient(ellipse 90% 85% at 50% 50%,black 10%,transparent 75%);
+  mask-image:radial-gradient(ellipse 80% 80% at 62% 50%,black 15%,transparent 70%);
+}
+
+/* SVG */
+#oct-svg{position:absolute;inset:0;width:100%;height:100%;}
+
+/* LEGS */
+.leg{fill:none;stroke-width:1.5;stroke-linecap:round;}
+#leg-0{stroke:rgba(91,140,255,0.7);}
+#leg-1{stroke:rgba(139,108,255,0.7);}
+#leg-2{stroke:rgba(25,195,125,0.7);}
+#leg-3{stroke:rgba(245,185,66,0.7);}
+#leg-4{stroke:rgba(0,212,255,0.7);}
+
+/* CORE */
+.core-bg{fill:rgba(8,12,26,0.94);stroke:rgba(91,140,255,0.45);stroke-width:1.5;}
+.core-ring{fill:none;stroke:rgba(91,140,255,0.18);stroke-width:1;transform-box:fill-box;transform-origin:center;}
+.ring-a{animation:rexpand 3s ease-out infinite;}
+.ring-b{animation:rexpand 3s ease-out infinite 1.5s;}
+@keyframes rexpand{0%{transform:scale(1);opacity:.5;}100%{transform:scale(2.4);opacity:0;}}
+.core-main{font-family:'Inter',sans-serif;font-size:14px;font-weight:900;fill:var(--text);text-anchor:middle;}
+.core-sub{font-family:'Inter',sans-serif;font-size:8.5px;font-weight:700;fill:var(--cobalt);text-anchor:middle;letter-spacing:.1em;}
+
+/* ENDPOINT CARDS */
+.ep-card{
+  position:absolute;width:148px;
+  background:rgba(8,12,26,0.95);border:1px solid var(--border);
+  border-radius:10px;padding:11px 14px;
+  transform:translate(-50%,-50%);
+  backdrop-filter:blur(12px);z-index:10;
   pointer-events:none;
 }
-.hero-left{display:flex;flex-direction:column;gap:24px;position:relative;}
-.hero-tag{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cobalt);}
-h1{font-size:clamp(40px,4.2vw,64px);font-weight:900;color:var(--text);line-height:1.05;letter-spacing:-.8px;}
-.hero-sub{font-size:16px;color:var(--muted);line-height:1.72;max-width:480px;}
-.cta-row{display:flex;gap:12px;flex-wrap:wrap;}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer;border:none;transition:all .15s;}
-.btn-primary{background:var(--cobalt);color:#fff;box-shadow:0 0 20px rgba(77,124,255,0.28);}
-.btn-primary:hover{filter:brightness(1.1);}
-.btn-ghost{background:transparent;color:var(--text);border:1px solid rgba(77,124,255,0.25);}
-.btn-ghost:hover{border-color:rgba(77,124,255,0.5);background:rgba(77,124,255,0.06);}
-.hero-install{
-  display:inline-flex;align-items:center;gap:10px;
-  background:rgba(11,16,32,0.8);border:1px solid var(--border);
-  border-radius:8px;padding:10px 18px;
-  font-family:'JetBrains Mono',monospace;font-size:13px;
-  width:fit-content;
-}
-.hero-install .cc{color:var(--dim);}
-.hero-install .cn{color:var(--text);}
+.card-cat{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+.card-val{font-size:12px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;line-height:1.35;margin-bottom:3px;}
+.card-det{font-size:10px;color:var(--muted);}
 
-/* OCTOPUS COMMAND CORE */
-.oct-wrap{
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:14px;overflow:hidden;
-  box-shadow:0 2px 32px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.04);
+/* TEXT PANELS */
+.text-panel{
+  position:absolute;left:60px;top:calc(50% + 28px);transform:translateY(-50%);
+  width:355px;z-index:20;pointer-events:none;
 }
-.oct-top{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:13px 20px;border-bottom:1px solid var(--border);
-  background:rgba(10,14,28,0.7);
-}
-.oct-top-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);}
-.oct-top-live{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--green);}
-.oct-top-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 4px var(--green);}50%{opacity:.5;box-shadow:0 0 8px var(--green);}}
+.panel-tag{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cobalt);margin-bottom:14px;}
+.panel-phase{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;}
+.text-panel h1{font-size:clamp(26px,2.8vw,42px);font-weight:900;color:var(--text);line-height:1.1;letter-spacing:-.6px;margin-bottom:14px;}
+.text-panel h2{font-size:clamp(18px,2vw,26px);font-weight:800;color:var(--text);line-height:1.25;letter-spacing:-.3px;margin-bottom:18px;}
+.panel-sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
 
-.oct-body{
-  position:relative;
-  width:100%;
-  aspect-ratio:580/380;
-}
-.oct-svg{
-  position:absolute;inset:0;width:100%;height:100%;
-}
-.oct-arm{fill:none;stroke-width:1.5;stroke-linecap:round;}
-.arm-sales{stroke:rgba(91,140,255,0.45);}
-.arm-human{stroke:rgba(139,108,255,0.45);}
-.arm-growth{stroke:rgba(25,195,125,0.45);}
-.arm-billing{stroke:rgba(245,185,66,0.45);}
+/* DETAIL BOX */
+.dbox{border:1px solid var(--border);border-radius:8px;overflow:hidden;background:rgba(8,12,26,0.5);}
+.dr{display:flex;justify-content:space-between;align-items:center;padding:8px 13px;border-bottom:1px solid var(--border);font-size:11.5px;}
+.dr:last-child{border-bottom:none;}
+.dk{color:var(--dim);font-weight:600;}
+.dv{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--text);}
+.dv.co{color:var(--cobalt);}.dv.vi{color:var(--violet);}.dv.gr{color:var(--green);}.dv.am{color:var(--amber);}.dv.cy{color:var(--cyan);}
 
-.oct-core{
-  position:absolute;left:50%;top:50%;
-  transform:translate(-50%,-50%);
-  width:82px;height:82px;border-radius:50%;
-  background:linear-gradient(135deg,rgba(91,140,255,0.14) 0%,rgba(139,108,255,0.1) 100%);
-  border:1px solid rgba(91,140,255,0.35);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  box-shadow:0 0 18px rgba(91,140,255,0.1),inset 0 1px 0 rgba(255,255,255,0.06);
-  z-index:2;
-}
-.oct-core::before{
-  content:'';position:absolute;
-  width:100px;height:100px;border-radius:50%;
-  border:1px solid rgba(91,140,255,0.1);
-  animation:ring-expand 3s ease-out infinite;
-}
-@keyframes ring-expand{0%{transform:scale(1);opacity:.5;}100%{transform:scale(1.6);opacity:0;}}
-.oct-core-name{font-size:11px;font-weight:900;color:var(--text);letter-spacing:-.2px;}
-.oct-core-sub{font-size:8px;color:var(--dim);margin-top:2px;letter-spacing:.06em;text-transform:uppercase;}
+/* INSTALL BADGE */
+.ibadge{display:inline-flex;align-items:center;gap:9px;background:rgba(11,16,32,0.8);border:1px solid var(--border);border-radius:7px;padding:9px 16px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text);margin-bottom:18px;width:fit-content;}
+.ibadge .cc{color:var(--dim);}
 
-.oct-card{
-  position:absolute;
-  width:130px;
-  background:rgba(12,17,32,0.95);
-  border:1px solid var(--border);
-  border-radius:8px;padding:10px 12px;
-  z-index:2;
-}
-.oct-nw{left:0;top:0;}
-.oct-ne{right:0;top:0;}
-.oct-sw{left:0;bottom:0;}
-.oct-se{right:0;bottom:0;}
-.oct-card-cat{font-size:8.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;}
-.oct-card-val{font-size:12px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;line-height:1.3;}
+/* BUTTONS */
+.cta-row{display:flex;gap:10px;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;cursor:pointer;border:none;transition:all .15s;}
+.btn-p{background:var(--cobalt);color:#fff;}.btn-p:hover{filter:brightness(1.12);}
+.btn-g{background:transparent;color:var(--text);border:1px solid rgba(91,140,255,0.3);}.btn-g:hover{border-color:rgba(91,140,255,0.55);background:rgba(91,140,255,0.07);}
 
-.oct-foot{
-  padding:10px 20px;border-top:1px solid var(--border);
-  background:rgba(10,14,28,0.5);
-  display:flex;align-items:center;justify-content:space-between;
-}
-.oct-foot-note{font-size:9px;color:var(--dim);letter-spacing:.04em;}
+/* PHASE DOTS */
+#phase-dots{position:absolute;right:26px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:9px;z-index:30;}
+.pdot{width:6px;height:6px;border-radius:50%;background:var(--dim);transition:background .3s,transform .3s;}
+.pdot.act{background:var(--cobalt);transform:scale(1.5);}
 
-/* DIVIDER */
-hr.div{border:none;border-top:1px solid var(--border);max-width:1400px;margin:0 auto;}
+/* SCROLL HINT */
+#scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);animation:hblink 2.5s ease-in-out infinite;z-index:20;transition:opacity .5s;}
+@keyframes hblink{0%,100%{opacity:.3;}50%{opacity:.8;}}
 
-/* SECTIONS */
-.sec{padding:72px 80px;max-width:1400px;margin:0 auto;position:relative;z-index:1;}
-@media(max-width:900px){.sec{padding:52px 24px;}}
-.sec-label{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cobalt);margin-bottom:28px;}
-
-/* HOW IT WORKS */
-.how-row{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
-@media(max-width:900px){.how-row{grid-template-columns:1fr 1fr;}}
-.how-item{padding:28px 24px;border-right:1px solid var(--border);}
-.how-item:last-child{border-right:none;}
-@media(max-width:900px){
-  .how-item:nth-child(2){border-right:none;}
-  .how-item:nth-child(3){border-top:1px solid var(--border);}
-  .how-item:nth-child(4){border-right:none;border-top:1px solid var(--border);}
-}
-.how-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--dim);margin-bottom:12px;letter-spacing:.06em;}
-.how-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px;}
-.how-body{font-size:12px;color:var(--muted);line-height:1.65;}
-
-/* WHAT CHANGES */
-.change-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-@media(max-width:700px){.change-grid{grid-template-columns:1fr;}}
-.change-box{padding:28px 32px;border-radius:12px;border:1px solid var(--border);}
-.change-box.before{background:rgba(14,20,36,0.4);}
-.change-box.after{background:rgba(14,20,36,0.7);border-color:rgba(91,140,255,0.3);}
-.change-tag{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;}
-.change-box.before .change-tag{color:var(--dim);}
-.change-box.after .change-tag{color:var(--cobalt);}
-.change-title{font-size:18px;font-weight:800;color:var(--text);line-height:1.35;margin-bottom:10px;}
-.change-body{font-size:13px;color:var(--muted);line-height:1.68;}
-
-/* LIVE WORKFLOW */
-.workflow-wrap{max-width:480px;margin:0 auto;}
-.workflow-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
-.wf-header{
-  padding:12px 20px;border-bottom:1px solid var(--border);
-  background:rgba(10,14,28,0.6);
-  display:flex;align-items:center;justify-content:space-between;
-}
-.wf-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);}
-.wf-live{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--green);}
-.wf-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite;}
-.wf-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 20px;border-bottom:1px solid var(--border);
-}
-.wf-row:last-child{border-bottom:none;}
-.wf-key{font-size:11px;color:var(--dim);font-weight:600;}
-.wf-val{font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;text-align:right;}
-
-/* USE CASES */
-.uc-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
-@media(max-width:900px){.uc-row{grid-template-columns:1fr 1fr;}}
-.uc-item{padding:22px 20px;border:1px solid var(--border);border-radius:10px;background:rgba(14,20,36,0.4);}
-.uc-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:7px;}
-.uc-body{font-size:12px;color:var(--muted);line-height:1.58;}
-
-/* CTA */
-.cta-block{
-  background:linear-gradient(135deg,var(--panel) 0%,rgba(16,22,43,0.8) 100%);
-  border:1px solid var(--border2);border-radius:16px;
-  padding:52px;text-align:center;max-width:620px;margin:0 auto;
-}
-.cta-block h3{font-size:clamp(20px,2.2vw,28px);font-weight:900;color:var(--text);margin-bottom:12px;letter-spacing:-.4px;line-height:1.2;}
-.cta-block p{font-size:14px;color:var(--muted);line-height:1.72;margin-bottom:28px;}
-.cta-center{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-.cta-note{font-size:10px;color:var(--dim);margin-top:14px;letter-spacing:.03em;}
+/* POST-SCROLL */
+#post-scroll{padding:120px 80px;max-width:1100px;margin:0 auto;}
+@media(max-width:900px){#post-scroll{padding:80px 24px;}}
+#post-scroll h2{font-size:clamp(28px,3vw,46px);font-weight:900;color:var(--text);letter-spacing:-.6px;margin-bottom:12px;}
+.post-sub{font-size:15px;color:var(--muted);margin-bottom:56px;line-height:1.6;}
+.start-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+@media(max-width:900px){.start-grid{grid-template-columns:1fr;}}
+.start-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:32px;display:flex;flex-direction:column;}
+.start-num{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;color:var(--dim);margin-bottom:14px;letter-spacing:.06em;}
+.start-title{font-size:18px;font-weight:800;color:var(--text);margin-bottom:10px;}
+.start-body{font-size:13px;color:var(--muted);line-height:1.65;flex:1;}
+.start-install{display:inline-flex;align-items:center;gap:8px;background:rgba(11,16,32,0.8);border:1px solid var(--border);border-radius:6px;padding:8px 13px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text);margin-top:14px;}
+.start-install .cc{color:var(--dim);}
+.start-cta{margin-top:16px;}
 
 /* FOOTER */
-footer{
-  border-top:1px solid var(--border);padding:28px 80px;
-  display:flex;align-items:center;justify-content:space-between;
-  max-width:1400px;margin:0 auto;width:100%;
-}
+footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;width:100%;}
 @media(max-width:900px){footer{padding:24px;flex-direction:column;gap:12px;}}
 .footer-logo{font-size:14px;font-weight:900;color:var(--text);text-decoration:none;}
 .footer-logo em{font-style:normal;color:var(--cobalt);}
@@ -251,204 +146,175 @@ footer{
   </div>
 </nav>
 
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-left">
-    <div class="hero-tag">Open-source · Agent commerce protocol</div>
-    <h1>Agents run the business.<br>People execute the work.</h1>
-    <p class="hero-sub">An AI company creates the offer, closes the buyer, assigns human execution, verifies proof, and records revenue.</p>
-    <div class="cta-row">
-      <a href="/live.html" class="btn btn-primary">View demo</a>
-      <a href="mailto:hello@incagent.ai" class="btn btn-ghost">Request access</a>
+<div id="scene">
+  <div id="sticky">
+    <div id="grid-bg"></div>
+
+    <!-- Full-viewport SVG octopus -->
+    <svg id="oct-svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid meet">
+      <!-- 5 tentacle paths — core at (820,350) -->
+      <path id="leg-0" class="leg" d="M820,350 Q580,195 350,80"/>
+      <path id="leg-1" class="leg" d="M820,350 Q1050,195 1100,80"/>
+      <path id="leg-2" class="leg" d="M820,350 Q1050,500 1100,630"/>
+      <path id="leg-3" class="leg" d="M820,350 Q820,510 820,660"/>
+      <path id="leg-4" class="leg" d="M820,350 Q580,500 350,630"/>
+      <!-- Pulsing rings -->
+      <circle class="core-ring ring-a" cx="820" cy="350" r="54"/>
+      <circle class="core-ring ring-b" cx="820" cy="350" r="54"/>
+      <!-- Core -->
+      <circle class="core-bg" cx="820" cy="350" r="46"/>
+      <text class="core-main" x="820" y="346">Inc</text>
+      <text class="core-sub"  x="820" y="366">AGENT</text>
+    </svg>
+
+    <!-- Endpoint cards (positioned by JS) -->
+    <div id="card-0" class="ep-card" style="opacity:0">
+      <div class="card-cat" style="color:var(--cobalt)">Sales</div>
+      <div class="card-val">proposal.pdf</div>
+      <div class="card-det">$5,000 · 2 rounds</div>
     </div>
-    <div class="hero-install"><span class="cc">$</span> <span class="cn">pip install incagent</span></div>
-  </div>
-
-  <!-- OCTOPUS COMMAND CORE -->
-  <div class="oct-wrap">
-    <div class="oct-top">
-      <span class="oct-top-label">Command Core</span>
-      <span class="oct-top-live"><span class="oct-top-dot"></span>Running</span>
+    <div id="card-1" class="ep-card" style="opacity:0">
+      <div class="card-cat" style="color:var(--violet)">Human Assignment</div>
+      <div class="card-val">Mika Tanaka</div>
+      <div class="card-det">Tokyo · WO-491</div>
+    </div>
+    <div id="card-2" class="ep-card" style="opacity:0">
+      <div class="card-cat" style="color:var(--green)">Proof</div>
+      <div class="card-val">3 photos</div>
+      <div class="card-det">Verified ✓</div>
+    </div>
+    <div id="card-3" class="ep-card" style="opacity:0">
+      <div class="card-cat" style="color:var(--amber)">Invoice</div>
+      <div class="card-val">#2048 · $5,000</div>
+      <div class="card-det">Payment received</div>
+    </div>
+    <div id="card-4" class="ep-card" style="opacity:0">
+      <div class="card-cat" style="color:var(--cyan)">Growth</div>
+      <div class="card-val">Campaign live</div>
+      <div class="card-det">12.4% conversion</div>
     </div>
 
-    <div class="oct-body">
-      <svg class="oct-svg" viewBox="0 0 580 380" preserveAspectRatio="xMidYMid meet">
-        <!-- Tentacle arms -->
-        <path id="arm-nw" class="oct-arm arm-sales"   d="M290,190 Q177,107 63,24"/>
-        <path id="arm-ne" class="oct-arm arm-human"   d="M290,190 Q403,107 517,24"/>
-        <path id="arm-sw" class="oct-arm arm-growth"  d="M290,190 Q177,273 63,356"/>
-        <path id="arm-se" class="oct-arm arm-billing" d="M290,190 Q403,273 517,356"/>
-        <!-- Traveling signal dots -->
-        <circle r="3.5" fill="#5B8CFF">
-          <animateMotion dur="2.4s" repeatCount="indefinite" begin="0s"><mpath href="#arm-nw"/></animateMotion>
-        </circle>
-        <circle r="3.5" fill="#8B6CFF">
-          <animateMotion dur="2.4s" repeatCount="indefinite" begin="0.6s"><mpath href="#arm-ne"/></animateMotion>
-        </circle>
-        <circle r="3.5" fill="#19C37D">
-          <animateMotion dur="2.4s" repeatCount="indefinite" begin="1.2s"><mpath href="#arm-sw"/></animateMotion>
-        </circle>
-        <circle r="3.5" fill="#F5B942">
-          <animateMotion dur="2.4s" repeatCount="indefinite" begin="1.8s"><mpath href="#arm-se"/></animateMotion>
-        </circle>
-      </svg>
-
-      <!-- Central core -->
-      <div class="oct-core">
-        <div class="oct-core-name">IncAgent</div>
-        <div class="oct-core-sub">Core</div>
-      </div>
-
-      <!-- Corner endpoint cards -->
-      <div class="oct-card oct-nw">
-        <div class="oct-card-cat" style="color:var(--cobalt)">Sales</div>
-        <div class="oct-card-val">proposal.pdf</div>
-      </div>
-      <div class="oct-card oct-ne">
-        <div class="oct-card-cat" style="color:var(--violet)">Human Assignment</div>
-        <div class="oct-card-val">Mika Tanaka<br>— Tokyo</div>
-      </div>
-      <div class="oct-card oct-sw">
-        <div class="oct-card-cat" style="color:var(--green)">Growth / Social</div>
-        <div class="oct-card-val">campaign live</div>
-      </div>
-      <div class="oct-card oct-se">
-        <div class="oct-card-cat" style="color:var(--amber)">Billing / Settlement</div>
-        <div class="oct-card-val">invoice #2048</div>
+    <!-- Text panels -->
+    <div id="panel-hero" class="text-panel">
+      <div class="panel-tag">Open-source · Agent commerce protocol</div>
+      <h1>Agents run the business.<br>People execute the work.</h1>
+      <p class="panel-sub">An AI company creates the offer, closes the buyer, assigns human execution, verifies proof, and records revenue.</p>
+      <div class="ibadge"><span class="cc">$</span> pip install incagent</div>
+      <div class="cta-row">
+        <a href="/live.html" class="btn btn-p">View demo</a>
+        <a href="https://github.com/incagent/incagent" class="btn btn-g" target="_blank">GitHub</a>
       </div>
     </div>
 
-    <div class="oct-foot">
-      <span class="oct-foot-note">Prototype environment</span>
-      <span class="oct-foot-note">Simulated company workflow</span>
-    </div>
-  </div>
-</div>
-
-<hr class="div">
-
-<!-- HOW IT WORKS -->
-<div class="sec">
-  <div class="sec-label">How it works</div>
-  <div class="how-row">
-    <div class="how-item">
-      <div class="how-num">01 — Build</div>
-      <div class="how-title">Create the offer</div>
-      <div class="how-body">An internal agent builds the service package, sets terms, and activates it for counterparty discovery.</div>
-    </div>
-    <div class="how-item">
-      <div class="how-num">02 — Sell</div>
-      <div class="how-title">Close the buyer</div>
-      <div class="how-body">A buyer agent reviews the proposal, negotiates, accepts terms, and signs the contract autonomously.</div>
-    </div>
-    <div class="how-item">
-      <div class="how-num">03 — Assign</div>
-      <div class="how-title">Assign human execution</div>
-      <div class="how-body">An ops agent assigns a field operator. The human completes the task and submits proof — photos, checklist, location stamp.</div>
-    </div>
-    <div class="how-item">
-      <div class="how-num">04 — Settle</div>
-      <div class="how-title">Verify proof and settle</div>
-      <div class="how-body">Agent verifies proof. Invoice issued, payment received, revenue logged, tax record filed automatically.</div>
-    </div>
-  </div>
-</div>
-
-<hr class="div">
-
-<!-- WHAT CHANGES -->
-<div class="sec">
-  <div class="sec-label">What changes</div>
-  <div class="change-grid">
-    <div class="change-box before">
-      <div class="change-tag">Before</div>
-      <div class="change-title">People run the company.<br>Software assists.</div>
-      <div class="change-body">Humans make every decision — close deals, assign work, approve invoices. Software provides reports and reminders. Humans are the bottleneck.</div>
-    </div>
-    <div class="change-box after">
-      <div class="change-tag">After</div>
-      <div class="change-title">Agents run the company.<br>People execute assigned work.</div>
-      <div class="change-body">Agents make decisions — create offers, close buyers, assign and verify work. Humans execute the physical task. Agents are the decision layer.</div>
-    </div>
-  </div>
-</div>
-
-<hr class="div">
-
-<!-- LIVE WORKFLOW -->
-<div class="sec">
-  <div class="sec-label">One live workflow</div>
-  <div class="workflow-wrap">
-    <div class="workflow-card">
-      <div class="wf-header">
-        <span class="wf-label">Outbound Campaign System</span>
-        <span class="wf-live"><span class="wf-dot"></span>Live</span>
-      </div>
-      <div class="wf-row">
-        <div class="wf-key">Buyer Agent</div>
-        <div class="wf-val" style="color:var(--violet)">Northstar Buyer</div>
-      </div>
-      <div class="wf-row">
-        <div class="wf-key">Assigned Human</div>
-        <div class="wf-val" style="color:var(--text)">Mika Tanaka — Tokyo</div>
-      </div>
-      <div class="wf-row">
-        <div class="wf-key">Proof Submitted</div>
-        <div class="wf-val" style="color:var(--green);font-size:11px;">3 photos · 1 checklist · 1 location stamp</div>
-      </div>
-      <div class="wf-row">
-        <div class="wf-key">Invoice</div>
-        <div class="wf-val" style="color:var(--amber)">#2048 · $5,000</div>
-      </div>
-      <div class="wf-row">
-        <div class="wf-key">Payment</div>
-        <div class="wf-val" id="wf-status" style="color:var(--cobalt)">Processing</div>
+    <div id="panel-0" class="text-panel" style="opacity:0">
+      <div class="panel-phase">01 — Sales</div>
+      <h2>Agent creates the offer and closes the buyer autonomously.</h2>
+      <div class="dbox">
+        <div class="dr"><span class="dk">Proposal</span><span class="dv co">proposal.pdf</span></div>
+        <div class="dr"><span class="dk">Buyer</span><span class="dv">Northstar Buyer</span></div>
+        <div class="dr"><span class="dk">Contract value</span><span class="dv co">$5,000</span></div>
+        <div class="dr"><span class="dk">Rounds</span><span class="dv">2</span></div>
+        <div class="dr"><span class="dk">Status</span><span class="dv gr">Agreed ✓</span></div>
       </div>
     </div>
+
+    <div id="panel-1" class="text-panel" style="opacity:0">
+      <div class="panel-phase">02 — Human Assignment</div>
+      <h2>Ops agent dispatches a human operator to execute the task.</h2>
+      <div class="dbox">
+        <div class="dr"><span class="dk">Operator</span><span class="dv">Mika Tanaka</span></div>
+        <div class="dr"><span class="dk">Location</span><span class="dv">Tokyo, Japan</span></div>
+        <div class="dr"><span class="dk">Work order</span><span class="dv vi">WO-491</span></div>
+        <div class="dr"><span class="dk">Assigned by</span><span class="dv">Ops Agent</span></div>
+        <div class="dr"><span class="dk">Status</span><span class="dv am">In progress</span></div>
+      </div>
+    </div>
+
+    <div id="panel-2" class="text-panel" style="opacity:0">
+      <div class="panel-phase">03 — Proof &amp; Verification</div>
+      <h2>Human submits evidence. Agent verifies before releasing payment.</h2>
+      <div class="dbox">
+        <div class="dr"><span class="dk">Photos</span><span class="dv">3 submitted</span></div>
+        <div class="dr"><span class="dk">Checklist</span><span class="dv gr">Complete ✓</span></div>
+        <div class="dr"><span class="dk">GPS</span><span class="dv">35.68°N 139.69°E</span></div>
+        <div class="dr"><span class="dk">Verified by</span><span class="dv">Ops Agent</span></div>
+        <div class="dr"><span class="dk">Timestamp</span><span class="dv">2025-03-13 14:22</span></div>
+      </div>
+    </div>
+
+    <div id="panel-3" class="text-panel" style="opacity:0">
+      <div class="panel-phase">04 — Invoice &amp; Settlement</div>
+      <h2>Finance agent issues the invoice and records the transaction.</h2>
+      <div class="dbox">
+        <div class="dr"><span class="dk">Invoice</span><span class="dv am">#2048</span></div>
+        <div class="dr"><span class="dk">Amount</span><span class="dv">$5,000 USD</span></div>
+        <div class="dr"><span class="dk">Payment</span><span class="dv gr">Received ✓</span></div>
+        <div class="dr"><span class="dk">Ledger</span><span class="dv">Hash-chained</span></div>
+        <div class="dr"><span class="dk">Tax record</span><span class="dv">1099-NEC filed</span></div>
+      </div>
+    </div>
+
+    <div id="panel-4" class="text-panel" style="opacity:0">
+      <div class="panel-phase">05 — Growth &amp; Analytics</div>
+      <h2>Marketing agent tracks outcomes and scales what works.</h2>
+      <div class="dbox">
+        <div class="dr"><span class="dk">Campaign</span><span class="dv cy">Live</span></div>
+        <div class="dr"><span class="dk">Conversion</span><span class="dv">12.4%</span></div>
+        <div class="dr"><span class="dk">Post</span><span class="dv">Scheduled ✓</span></div>
+        <div class="dr"><span class="dk">Revenue</span><span class="dv gr">$5,000</span></div>
+        <div class="dr"><span class="dk">Next</span><span class="dv">Scale spend</span></div>
+      </div>
+    </div>
+
+    <div id="panel-reveal" class="text-panel" style="opacity:0">
+      <div class="panel-tag">All systems active</div>
+      <h1>Agents run the business.<br>People execute the work.</h1>
+      <p class="panel-sub">One protocol. Five autonomous systems. Zero human executives in the loop.</p>
+      <div class="cta-row">
+        <a href="/live.html" class="btn btn-p">View demo</a>
+        <a href="https://github.com/incagent/incagent" class="btn btn-g" target="_blank">GitHub</a>
+      </div>
+    </div>
+
+    <!-- Phase indicator -->
+    <div id="phase-dots">
+      <div class="pdot"></div>
+      <div class="pdot"></div>
+      <div class="pdot"></div>
+      <div class="pdot"></div>
+      <div class="pdot"></div>
+      <div class="pdot"></div>
+      <div class="pdot"></div>
+    </div>
+
+    <div id="scroll-hint">scroll to activate</div>
   </div>
 </div>
 
-<hr class="div">
-
-<!-- USE CASES -->
-<div class="sec">
-  <div class="sec-label">Use cases</div>
-  <div class="uc-row">
-    <div class="uc-item">
-      <div class="uc-title">Sales</div>
-      <div class="uc-body">Agent creates proposal, negotiates terms, closes buyer without human involvement.</div>
+<!-- POST-SCROLL: Start here -->
+<div id="post-scroll">
+  <h2>Start here.</h2>
+  <p class="post-sub">Three ways to get started with agent-run commerce.</p>
+  <div class="start-grid">
+    <div class="start-card">
+      <div class="start-num">01 — Demo</div>
+      <div class="start-title">Use the demo</div>
+      <div class="start-body">Watch the full agent-run transaction cycle live — offer, contract, human assignment, payment.</div>
+      <div class="start-cta"><a href="/live.html" class="btn btn-p">View demo →</a></div>
     </div>
-    <div class="uc-item">
-      <div class="uc-title">Field ops</div>
-      <div class="uc-body">Ops agent dispatches human operators, collects proof, verifies task completion.</div>
+    <div class="start-card">
+      <div class="start-num">02 — SDK</div>
+      <div class="start-title">Install the SDK</div>
+      <div class="start-body">Embed agent commerce into your stack. Rule-based negotiation works with no LLM API key required.</div>
+      <div class="start-install"><span class="cc">$</span> pip install incagent</div>
+      <div class="start-cta"><a href="https://github.com/incagent/incagent" class="btn btn-g" target="_blank">GitHub →</a></div>
     </div>
-    <div class="uc-item">
-      <div class="uc-title">Billing</div>
-      <div class="uc-body">Finance agent issues invoice, tracks payment, files tax record on receipt.</div>
+    <div class="start-card">
+      <div class="start-num">03 — Protocol</div>
+      <div class="start-title">Read the spec</div>
+      <div class="start-body">Protocol documentation, architecture overview, and integration guide for building agent-native companies.</div>
+      <div class="start-cta"><a href="https://github.com/incagent/incagent/tree/main/docs" class="btn btn-g" target="_blank">Docs →</a></div>
     </div>
-    <div class="uc-item">
-      <div class="uc-title">Compliance</div>
-      <div class="uc-body">Every action logged to tamper-evident ledger. Audit trail available on demand.</div>
-    </div>
-    <div class="uc-item">
-      <div class="uc-title">Growth</div>
-      <div class="uc-body">Marketing agent runs campaigns, tracks response, scales spend on conversion data.</div>
-    </div>
-  </div>
-</div>
-
-<hr class="div">
-
-<!-- CTA -->
-<div class="sec">
-  <div class="cta-block">
-    <h3>See the simulated<br>company workflow</h3>
-    <p>The demo shows an agent-run company executing a full transaction cycle — offer, contract, human assignment, payment.</p>
-    <div class="cta-center">
-      <a href="/live.html" class="btn btn-primary">View demo</a>
-      <a href="mailto:hello@incagent.ai" class="btn btn-ghost">Request early access</a>
-    </div>
-    <p class="cta-note">Open source · MIT License · pip install incagent</p>
   </div>
 </div>
 
@@ -463,21 +329,110 @@ footer{
 </footer>
 
 <script>
-const wfStates = ['Processing', 'Confirming', 'Received'];
-const wfColors = ['var(--cobalt)', 'var(--cobalt)', 'var(--green)'];
-let wfIdx = 0;
-function wfTick() {
-  const el = document.getElementById('wf-status');
-  el.textContent = wfStates[wfIdx];
-  el.style.color = wfColors[wfIdx];
-  wfIdx++;
-  if (wfIdx < wfStates.length) {
-    setTimeout(wfTick, 1800);
-  } else {
-    setTimeout(() => { wfIdx = 0; setTimeout(wfTick, 700); }, 3200);
-  }
+// SVG endpoint coordinates (viewBox: 0 0 1200 700)
+const EP = [
+  {x:350,  y:80},   // 0 Sales      (top-left)
+  {x:1100, y:80},   // 1 Human      (top-right)
+  {x:1100, y:630},  // 2 Proof      (bottom-right)
+  {x:820,  y:660},  // 3 Invoice    (bottom-center)
+  {x:350,  y:630},  // 4 Growth     (bottom-left)
+];
+
+const svg    = document.getElementById('oct-svg');
+const scene  = document.getElementById('scene');
+const hint   = document.getElementById('scroll-hint');
+const legs   = [0,1,2,3,4].map(i => document.getElementById('leg-'+i));
+const cards  = [0,1,2,3,4].map(i => document.getElementById('card-'+i));
+const panels = ['hero','0','1','2','3','4','reveal'].map(id => document.getElementById('panel-'+id));
+const dots   = Array.from(document.querySelectorAll('.pdot'));
+
+let legLengths = [];
+let hintHidden = false;
+
+function initLegs() {
+  legs.forEach((leg, i) => {
+    const len = leg.getTotalLength();
+    legLengths[i] = len;
+    leg.style.strokeDasharray  = len;
+    leg.style.strokeDashoffset = len;
+  });
 }
-setTimeout(wfTick, 2000);
+
+// Convert SVG viewBox coords → sticky-container pixel coords
+function svgPt(sx, sy) {
+  const r  = svg.getBoundingClientRect();
+  const vb = svg.viewBox.baseVal;
+  const sc = Math.min(r.width / vb.width, r.height / vb.height);
+  const ox = (r.width  - vb.width  * sc) / 2;
+  const oy = (r.height - vb.height * sc) / 2;
+  return { x: sx * sc + ox, y: sy * sc + oy };
+}
+
+function positionCards() {
+  EP.forEach((ep, i) => {
+    const p = svgPt(ep.x, ep.y);
+    cards[i].style.left = p.x + 'px';
+    cards[i].style.top  = p.y + 'px';
+  });
+}
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+function smooth(v, from, to) { return clamp((v - from) / (to - from), 0, 1); }
+
+function onScroll() {
+  const sceneTop = scene.getBoundingClientRect().top + window.scrollY;
+  const maxScroll = scene.offsetHeight - window.innerHeight;
+  const progress  = clamp((window.scrollY - sceneTop) / maxScroll, 0, 1);
+  const phase = progress * 7; // 0–7
+
+  // Hide scroll hint
+  if (!hintHidden && window.scrollY > 30) {
+    hintHidden = true;
+    hint.style.opacity = '0';
+  }
+
+  // Leg draw: leg i extends during phase i+1 → i+2
+  legs.forEach((leg, i) => {
+    const t = smooth(phase, i + 1, i + 2);
+    leg.style.strokeDashoffset = legLengths[i] * (1 - t);
+  });
+
+  // Cards: fade in after leg ~70% extended
+  cards.forEach((card, i) => {
+    card.style.opacity = smooth(phase, i + 1.7, i + 2.2);
+  });
+
+  // Text panel opacities
+  // Hero: fade out 0.8–1.3
+  panels[0].style.opacity = 1 - smooth(phase, 0.8, 1.3);
+
+  // Feature panels 0–4: fade in then out within each phase window
+  for (let i = 0; i < 5; i++) {
+    const tin  = smooth(phase, i + 1,   i + 1.4);
+    const tout = smooth(phase, i + 1.6, i + 2.1);
+    panels[i + 1].style.opacity = tin * (1 - tout);
+  }
+
+  // Reveal: fade in at phase 6
+  panels[6].style.opacity = smooth(phase, 6, 6.5);
+
+  // Pointer events: only active panel is interactive
+  panels.forEach(p => {
+    const op = parseFloat(p.style.opacity) || 0;
+    p.style.pointerEvents = op > 0.1 ? 'auto' : 'none';
+  });
+
+  // Phase dots
+  const activeDot = Math.min(Math.floor(phase), 6);
+  dots.forEach((d, i) => d.classList.toggle('act', i === activeDot));
+}
+
+// Init
+initLegs();
+positionCards();
+window.addEventListener('resize', positionCards, {passive:true});
+window.addEventListener('scroll', onScroll,      {passive:true});
+onScroll();
 </script>
 </body>
 </html>
