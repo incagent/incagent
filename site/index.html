@@ -72,7 +72,7 @@ nav{
 /* HERO */
 .hero{
   position:relative;min-height:100vh;
-  display:grid;grid-template-columns:1fr 460px;gap:56px;
+  display:grid;grid-template-columns:1fr 530px;gap:56px;
   align-items:center;padding:80px 80px 60px;
   max-width:1300px;margin:0 auto;z-index:1;
 }
@@ -82,10 +82,13 @@ nav{
 .hero::before{
   content:'';position:absolute;inset:0;
   background-image:
-    linear-gradient(rgba(77,124,255,0.035) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(77,124,255,0.035) 1px,transparent 1px);
-  background-size:52px 52px;
-  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 80%);
+    linear-gradient(rgba(77,124,255,0.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(77,124,255,0.028) 1px,transparent 1px),
+    /* ledger lines — slightly stronger horizontal rules */
+    linear-gradient(transparent 33%, rgba(77,124,255,0.055) 33%, rgba(77,124,255,0.055) calc(33% + 1px), transparent calc(33% + 1px)),
+    linear-gradient(transparent 66%, rgba(77,124,255,0.04) 66%, rgba(77,124,255,0.04) calc(66% + 1px), transparent calc(66% + 1px));
+  background-size:52px 52px, 52px 52px, 100% 100%, 100% 100%;
+  mask-image:radial-gradient(ellipse 95% 90% at 50% 50%,black 20%,transparent 80%);
   pointer-events:none;
 }
 
@@ -114,9 +117,10 @@ h1{font-size:clamp(32px,3.6vw,52px);font-weight:900;color:var(--text);line-heigh
   border-radius:16px;
   position:relative;overflow:hidden;
   box-shadow:
-    0 0 80px rgba(77,124,255,0.08),
-    0 0 200px rgba(122,92,255,0.05),
-    inset 0 1px 0 rgba(255,255,255,0.06);
+    0 0 60px rgba(77,124,255,0.18),
+    0 0 140px rgba(77,124,255,0.10),
+    0 0 280px rgba(122,92,255,0.09),
+    inset 0 1px 0 rgba(255,255,255,0.07);
 }
 /* Glass reflection */
 .instrument::after{
@@ -174,15 +178,26 @@ h1{font-size:clamp(32px,3.6vw,52px);font-weight:900;color:var(--text);line-heigh
 .inst-offer-label{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);}
 .inst-offer-name{font-size:12px;font-weight:700;color:var(--text);}
 
-/* Layer 3: Steps */
-.inst-steps{padding:12px 16px;display:flex;flex-direction:column;gap:5px;border-bottom:1px solid var(--border);}
-.inst-step{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:500;padding:5px 8px;border-radius:6px;border:1px solid transparent;transition:all .35s;}
-.inst-step.done{background:var(--green-d);border-color:var(--green-m);color:var(--green);}
-.inst-step.active{background:rgba(77,124,255,0.08);border-color:rgba(77,124,255,0.3);color:var(--text);}
-.inst-step.waiting{color:var(--dim);}
-.inst-step-dot{width:7px;height:7px;border-radius:50%;border:1.5px solid currentColor;flex-shrink:0;transition:all .35s;}
-.inst-step.done .inst-step-dot{background:var(--green);border-color:var(--green);}
-.inst-step.active .inst-step-dot{background:var(--cobalt);border-color:var(--cobalt);box-shadow:0 0 6px var(--cobalt);}
+/* Layer 3: Transaction object flow */
+.inst-flow{padding:14px 16px;border-bottom:1px solid var(--border);}
+.inst-flow-label{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:8px;}
+.inst-flow-track{display:flex;align-items:center;gap:0;}
+.inst-obj{flex:1;display:flex;justify-content:center;}
+.inst-obj-line{flex-shrink:0;width:12px;height:1px;background:var(--border2);}
+.inst-obj-chip{
+  padding:5px 0;border-radius:4px;width:100%;text-align:center;
+  font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:.04em;
+  background:rgba(255,255,255,0.02);border:1px solid var(--border);
+  color:var(--dim);transition:all .4s;white-space:nowrap;
+}
+.inst-obj-chip.active{
+  color:var(--cobalt);border-color:rgba(77,124,255,0.4);
+  background:rgba(77,124,255,0.1);box-shadow:0 0 14px rgba(77,124,255,0.22);
+}
+.inst-obj-chip.done{
+  color:var(--green);border-color:rgba(24,195,126,0.28);
+  background:rgba(24,195,126,0.06);
+}
 
 /* Status strip */
 .inst-status{
@@ -311,16 +326,10 @@ footer{
     <div class="hero-tag">Open-source · Agent commerce protocol</div>
     <h1>Build. Transact.<br>Get paid. Operate.</h1>
     <p class="hero-tagline">Agent-run companies start here.</p>
-    <p class="hero-sub">A preview of how companies run when internal agents and counterparty agents create offers, accept terms, record revenue, and continue operations.</p>
+    <p class="hero-sub">One agent creates the offer.<br>Another accepts the terms.<br>Revenue is recorded.<br>Operations continue.</p>
     <div class="cta-row">
       <a href="/live.html" class="btn btn-primary">View demo</a>
       <a href="mailto:hello@incagent.ai" class="btn btn-ghost">Request access</a>
-    </div>
-    <div class="hero-gets">
-      <div class="hero-get">Internal agents build and price the offer</div>
-      <div class="hero-get">Counterparty agent negotiates and accepts terms</div>
-      <div class="hero-get">Invoice, payment, and 1099-NEC run automatically</div>
-      <div class="hero-get">Every action logged to an auditable ledger</div>
     </div>
   </div>
 
@@ -355,12 +364,18 @@ footer{
       <div style="font-size:11px;font-weight:700;color:var(--amber);font-family:'JetBrains Mono',monospace;">$5,000</div>
     </div>
 
-    <!-- Layer 3: Steps -->
-    <div class="inst-steps">
-      <div class="inst-step waiting" id="is0"><div class="inst-step-dot"></div>Proposal sent</div>
-      <div class="inst-step waiting" id="is1"><div class="inst-step-dot"></div>Terms accepted</div>
-      <div class="inst-step waiting" id="is2"><div class="inst-step-dot"></div>Invoice issued</div>
-      <div class="inst-step waiting" id="is3"><div class="inst-step-dot"></div>Payment received</div>
+    <!-- Layer 3: Transaction object flow -->
+    <div class="inst-flow">
+      <div class="inst-flow-label">Transaction objects</div>
+      <div class="inst-flow-track">
+        <div class="inst-obj"><div class="inst-obj-chip" id="io0">PROPOSAL</div></div>
+        <div class="inst-obj-line"></div>
+        <div class="inst-obj"><div class="inst-obj-chip" id="io1">CONTRACT</div></div>
+        <div class="inst-obj-line"></div>
+        <div class="inst-obj"><div class="inst-obj-chip" id="io2">INVOICE</div></div>
+        <div class="inst-obj-line"></div>
+        <div class="inst-obj"><div class="inst-obj-chip" id="io3">PAYMENT</div></div>
+      </div>
     </div>
 
     <!-- Status strip -->
@@ -518,15 +533,15 @@ footer{
 const STEP_MS = 1900;
 let cur = 0;
 
-function setIs(i, state) {
-  const el = document.getElementById(`is${i}`);
-  el.className = `inst-step ${state}`;
+function setChip(i, cls) {
+  const el = document.getElementById('io' + i);
+  if (el) el.className = 'inst-obj-chip' + (cls ? ' ' + cls : '');
 }
 
 function tick() {
-  if (cur > 0) setIs(cur - 1, 'done');
+  if (cur > 0) setChip(cur - 1, 'done');
   if (cur < 4) {
-    setIs(cur, 'active');
+    setChip(cur, 'active');
     cur++;
     setTimeout(tick, STEP_MS);
   } else {
@@ -535,7 +550,7 @@ function tick() {
     document.getElementById('is-status').textContent = 'Complete';
     document.getElementById('is-status').style.color = 'var(--green)';
     setTimeout(() => {
-      for (let i = 0; i < 4; i++) setIs(i, 'waiting');
+      for (let i = 0; i < 4; i++) setChip(i, '');
       document.getElementById('is-rev').textContent = '—';
       document.getElementById('is-rev').style.color = 'var(--dim)';
       document.getElementById('is-status').textContent = 'Active';

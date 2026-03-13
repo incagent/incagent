@@ -127,7 +127,7 @@ body::before{
 .nnote{font-size:13px;color:var(--dim);}
 
 /* TRANSACT 3-col */
-.tx3{display:grid;grid-template-columns:1fr 90px 1fr;gap:0;flex:1;min-height:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.tx3{display:grid;grid-template-columns:1fr 120px 1fr;gap:0;flex:1;min-height:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
 .txc{display:flex;flex-direction:column;padding:12px 10px;gap:8px;overflow-y:auto;}
 .txc-l{border-right:1px solid var(--border);}
 .txc-r{border-left:1px solid var(--border);}
@@ -136,9 +136,9 @@ body::before{
 .txc-role{font-size:13px;color:var(--dim);margin-top:2px;}
 
 /* Rail */
-.rail{display:flex;flex-direction:column;align-items:center;padding:12px 4px;background:rgba(77,124,255,0.02);border-right:1px solid var(--border);position:relative;}
-.rail::before{content:'';position:absolute;top:0;bottom:0;left:50%;width:1px;background:linear-gradient(transparent,rgba(77,124,255,0.18) 30%,rgba(77,124,255,0.18) 70%,transparent);}
-.rail-lbl{font-size:7px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(77,124,255,0.4);writing-mode:vertical-rl;position:absolute;top:50%;transform:translateY(-50%);}
+.rail{display:flex;flex-direction:column;align-items:center;padding:12px 4px;background:rgba(77,124,255,0.04);border-right:1px solid var(--border);position:relative;}
+.rail::before{content:'';position:absolute;top:0;bottom:0;left:50%;width:2px;margin-left:-1px;background:linear-gradient(transparent,rgba(77,124,255,0.3) 20%,rgba(77,124,255,0.3) 80%,transparent);box-shadow:0 0 8px rgba(77,124,255,0.15);}
+.rail-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(77,124,255,0.5);writing-mode:vertical-rl;position:absolute;top:50%;transform:translateY(-50%);}
 .txcard{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--panel2);border:1px solid var(--border2);border-radius:5px;padding:4px 8px;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;white-space:nowrap;opacity:0;z-index:5;}
 .txcard.fr{animation:fr 1.3s ease-in-out forwards;}
 .txcard.fl{animation:fl 1.3s ease-in-out forwards;}
