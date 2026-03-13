@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>IncAgent — Agent-run companies start here</title>
-<meta name="description" content="Open-source protocol for agent-run companies. Internal agents build offers, counterparty agents accept terms, revenue is logged automatically.">
+<title>IncAgent — Agents run the business. People execute the work.</title>
+<meta name="description" content="Open-source protocol for agent-run companies. Autonomous agents create offers, close buyers, assign human execution, verify proof, and record revenue.">
 <link rel="icon" type="image/jpeg" href="favicon.jpeg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,49 +13,28 @@
 :root{
   --base:#070B17;
   --panel:#0E1424;
-  --panel2:#131C31;
   --cobalt:#5B8CFF;
-  --cyan:#33D1FF;
   --violet:#8B6CFF;
   --green:#19C37D;
-  --green-d:#031a10;
-  --green-m:#0e4a2a;
   --amber:#F5B942;
   --text:#EFF2FA;
   --muted:#8D97B5;
   --dim:#3A4A6E;
   --border:#1C2A49;
-  --border2:rgba(91,140,255,0.28);
-  --glow-cobalt:rgba(91,140,255,0.10);
-  --glow-violet:rgba(139,108,255,0.07);
+  --border2:rgba(91,140,255,0.22);
 }
 html{scroll-behavior:smooth;}
 body{
-  background:var(--base);
-  color:var(--muted);
+  background:var(--base);color:var(--muted);
   font-family:'Inter',system-ui,sans-serif;
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
-  position:relative;
-}
-
-/* AMBIENT GLOWS */
-body::before{
-  content:'';position:fixed;top:-200px;left:-200px;width:900px;height:700px;
-  background:radial-gradient(ellipse at 30% 30%,rgba(77,124,255,0.035) 0%,transparent 65%);
-  pointer-events:none;z-index:0;
-}
-body::after{
-  content:'';position:fixed;top:50px;right:-300px;width:800px;height:800px;
-  background:radial-gradient(ellipse at 70% 40%,rgba(122,92,255,0.02) 0%,transparent 65%);
-  pointer-events:none;z-index:0;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
 
 /* NAV */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:100;height:56px;padding:0 40px;
   display:flex;align-items:center;
-  background:rgba(6,8,22,0.85);backdrop-filter:blur(20px);
+  background:rgba(6,8,22,0.88);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
 }
 .logo{font-size:16px;font-weight:900;color:var(--text);text-decoration:none;letter-spacing:-.4px;}
@@ -63,11 +42,7 @@ nav{
 .nav-links{margin-left:auto;display:flex;gap:24px;align-items:center;}
 .nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;transition:color .15s;}
 .nav-links a:hover{color:var(--text);}
-.nav-cta{
-  background:var(--cobalt);color:#fff!important;font-weight:700!important;
-  padding:7px 18px;border-radius:7px;
-  box-shadow:0 0 20px rgba(77,124,255,0.3);
-}
+.nav-cta{background:var(--cobalt);color:#fff!important;font-weight:700!important;padding:7px 18px;border-radius:7px;}
 
 /* HERO */
 .hero{
@@ -77,224 +52,184 @@ nav{
   max-width:1400px;margin:0 auto;z-index:1;
 }
 @media(max-width:1100px){.hero{grid-template-columns:1fr;padding:80px 24px 40px;}}
-
-/* Subtle grid in hero area */
 .hero::before{
   content:'';position:absolute;inset:0;
   background-image:
-    linear-gradient(rgba(77,124,255,0.028) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(77,124,255,0.028) 1px,transparent 1px),
-    /* ledger lines — slightly stronger horizontal rules */
-    linear-gradient(transparent 33%, rgba(77,124,255,0.055) 33%, rgba(77,124,255,0.055) calc(33% + 1px), transparent calc(33% + 1px)),
-    linear-gradient(transparent 66%, rgba(77,124,255,0.04) 66%, rgba(77,124,255,0.04) calc(66% + 1px), transparent calc(66% + 1px));
-  background-size:52px 52px, 52px 52px, 100% 100%, 100% 100%;
-  mask-image:radial-gradient(ellipse 95% 90% at 50% 50%,black 20%,transparent 80%);
+    linear-gradient(rgba(77,124,255,0.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(77,124,255,0.022) 1px,transparent 1px);
+  background-size:52px 52px;
+  mask-image:radial-gradient(ellipse 90% 85% at 50% 50%,black 10%,transparent 75%);
   pointer-events:none;
 }
-
-.hero-left{display:flex;flex-direction:column;gap:22px;position:relative;}
+.hero-left{display:flex;flex-direction:column;gap:24px;position:relative;}
 .hero-tag{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cobalt);}
-h1{font-size:clamp(40px,4.2vw,66px);font-weight:900;color:var(--text);line-height:1.05;letter-spacing:-.8px;}
+h1{font-size:clamp(40px,4.2vw,64px);font-weight:900;color:var(--text);line-height:1.05;letter-spacing:-.8px;}
 .hero-sub{font-size:16px;color:var(--muted);line-height:1.72;max-width:480px;}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer;border:none;transition:all .15s;}
+.btn-primary{background:var(--cobalt);color:#fff;box-shadow:0 0 20px rgba(77,124,255,0.28);}
+.btn-primary:hover{filter:brightness(1.1);}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid rgba(77,124,255,0.25);}
+.btn-ghost:hover{border-color:rgba(77,124,255,0.5);background:rgba(77,124,255,0.06);}
 .hero-install{
   display:inline-flex;align-items:center;gap:10px;
-  background:rgba(11,16,32,0.7);border:1px solid var(--border);
+  background:rgba(11,16,32,0.8);border:1px solid var(--border);
   border-radius:8px;padding:10px 18px;
-  font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--muted);
-  margin-top:4px;
+  font-family:'JetBrains Mono',monospace;font-size:13px;
+  width:fit-content;
 }
 .hero-install .cc{color:var(--dim);}
 .hero-install .cn{color:var(--text);}
-.cta-row{display:flex;gap:12px;flex-wrap:wrap;padding-top:4px;}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer;border:none;transition:all .15s;}
-.btn-primary{
-  background:var(--cobalt);color:#fff;
-  box-shadow:0 0 24px rgba(77,124,255,0.35);
-}
-.btn-primary:hover{filter:brightness(1.12);}
-.btn-ghost{background:transparent;color:var(--text);border:1px solid rgba(77,124,255,0.25);}
-.btn-ghost:hover{border-color:rgba(77,124,255,0.5);background:rgba(77,124,255,0.06);}
-.hero-gets{display:flex;flex-direction:column;gap:7px;padding-top:2px;}
-.hero-get{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--dim);}
-.hero-get::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--green);flex-shrink:0;}
 
-/* INSTRUMENT PANEL (right) */
-.instrument{
+/* OCTOPUS COMMAND CORE */
+.oct-wrap{
   background:var(--panel);
   border:1px solid var(--border);
-  border-radius:14px;
-  position:relative;overflow:hidden;
-  box-shadow:0 2px 24px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.04);
+  border-radius:14px;overflow:hidden;
+  box-shadow:0 2px 32px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.04);
 }
-/* Glass reflection */
-.instrument::after{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.06) 50%,transparent 100%);
-}
-/* Halo behind card */
-.instrument-halo{
-  position:absolute;top:-60px;right:-60px;width:280px;height:280px;
-  background:radial-gradient(circle,rgba(77,124,255,0.04) 0%,transparent 70%);
-  pointer-events:none;
-}
-
-.inst-header{
+.oct-top{
   display:flex;align-items:center;justify-content:space-between;
-  padding:14px 20px;
-  border-bottom:1px solid var(--border);
-  background:rgba(11,16,32,0.6);
+  padding:13px 20px;border-bottom:1px solid var(--border);
+  background:rgba(10,14,28,0.7);
 }
-.inst-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);}
-.inst-live{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--green);}
-.inst-live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:glow-pulse 2s ease-in-out infinite;}
-@keyframes glow-pulse{0%,100%{box-shadow:0 0 4px var(--green);opacity:1}50%{box-shadow:0 0 8px var(--green);opacity:.6}}
+.oct-top-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);}
+.oct-top-live{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--green);}
+.oct-top-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 4px var(--green);}50%{opacity:.5;box-shadow:0 0 8px var(--green);}}
 
-/* Layer 1: Corps */
-.inst-corps{
-  display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;
-  padding:16px 20px;
-  background:rgba(16,22,43,0.5);
-  border-bottom:1px solid var(--border);
+.oct-body{
+  position:relative;
+  width:100%;
+  aspect-ratio:580/380;
 }
-.inst-corp{}
-.inst-corp-name{font-size:13px;font-weight:700;color:var(--text);}
-.inst-corp-role{font-size:10px;color:var(--dim);margin-top:3px;}
-.inst-corp-right{text-align:right;}
-.inst-sep{
-  width:40px;height:1px;background:var(--border2);position:relative;
-  display:flex;align-items:center;justify-content:center;
+.oct-svg{
+  position:absolute;inset:0;width:100%;height:100%;
 }
-.inst-sep-dot{
-  width:8px;height:8px;border-radius:50%;background:var(--cobalt);
-  box-shadow:0 0 8px var(--cobalt);
+.oct-arm{fill:none;stroke-width:1.5;stroke-linecap:round;}
+.arm-sales{stroke:rgba(91,140,255,0.45);}
+.arm-human{stroke:rgba(139,108,255,0.45);}
+.arm-growth{stroke:rgba(25,195,125,0.45);}
+.arm-billing{stroke:rgba(245,185,66,0.45);}
+
+.oct-core{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  width:82px;height:82px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(91,140,255,0.14) 0%,rgba(139,108,255,0.1) 100%);
+  border:1px solid rgba(91,140,255,0.35);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  box-shadow:0 0 18px rgba(91,140,255,0.1),inset 0 1px 0 rgba(255,255,255,0.06);
+  z-index:2;
+}
+.oct-core::before{
+  content:'';position:absolute;
+  width:100px;height:100px;border-radius:50%;
+  border:1px solid rgba(91,140,255,0.1);
+  animation:ring-expand 3s ease-out infinite;
+}
+@keyframes ring-expand{0%{transform:scale(1);opacity:.5;}100%{transform:scale(1.6);opacity:0;}}
+.oct-core-name{font-size:11px;font-weight:900;color:var(--text);letter-spacing:-.2px;}
+.oct-core-sub{font-size:8px;color:var(--dim);margin-top:2px;letter-spacing:.06em;text-transform:uppercase;}
+
+.oct-card{
   position:absolute;
-  animation:rail-move 2.4s ease-in-out infinite;
+  width:130px;
+  background:rgba(12,17,32,0.95);
+  border:1px solid var(--border);
+  border-radius:8px;padding:10px 12px;
+  z-index:2;
 }
-@keyframes rail-move{0%{left:0;opacity:0}20%{opacity:1}80%{opacity:1}100%{left:32px;opacity:0}}
+.oct-nw{left:0;top:0;}
+.oct-ne{right:0;top:0;}
+.oct-sw{left:0;bottom:0;}
+.oct-se{right:0;bottom:0;}
+.oct-card-cat{font-size:8.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;}
+.oct-card-val{font-size:12px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;line-height:1.3;}
 
-/* Layer 2: Offer card */
-.inst-offer{
-  padding:10px 16px;
-  border-bottom:1px solid var(--border);
-  background:rgba(13,18,35,0.4);
+.oct-foot{
+  padding:10px 20px;border-top:1px solid var(--border);
+  background:rgba(10,14,28,0.5);
   display:flex;align-items:center;justify-content:space-between;
 }
-.inst-offer-label{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);}
-.inst-offer-name{font-size:12px;font-weight:700;color:var(--text);}
-
-/* Layer 3: Commercial object panel */
-.inst-comobj{padding:4px 20px 8px;border-bottom:1px solid var(--border);}
-.inst-comobj-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:12px 0;border-bottom:1px solid var(--border);
-}
-.inst-comobj-row:last-child{border-bottom:none;}
-.inst-comobj-key{font-size:11px;color:var(--dim);font-weight:600;letter-spacing:.03em;}
-.inst-comobj-val{
-  font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;
-  text-align:right;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
-
-/* Status strip */
-.inst-status{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:0;
-  padding:10px 0;
-}
-.inst-status-item{padding:0 16px;text-align:center;border-right:1px solid var(--border);}
-.inst-status-item:last-child{border-right:none;}
-.inst-status-label{font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;font-weight:600;}
-.inst-status-val{font-size:11px;font-weight:700;}
-
-.inst-foot{
-  padding:14px 20px;
-  background:rgba(11,16,32,0.5);
-  display:flex;align-items:center;justify-content:space-between;
-}
-.inst-foot-link{font-size:11px;font-weight:700;color:var(--cobalt);text-decoration:none;transition:all .15s;}
-.inst-foot-link:hover{text-decoration:underline;}
-.inst-foot-note{font-size:9px;color:var(--dim);letter-spacing:.04em;}
+.oct-foot-note{font-size:9px;color:var(--dim);letter-spacing:.04em;}
 
 /* DIVIDER */
-hr.div{border:none;border-top:1px solid var(--border);max-width:1300px;margin:0 auto;}
+hr.div{border:none;border-top:1px solid var(--border);max-width:1400px;margin:0 auto;}
 
 /* SECTIONS */
-.sec{padding:72px 80px;max-width:1300px;margin:0 auto;position:relative;z-index:1;}
+.sec{padding:72px 80px;max-width:1400px;margin:0 auto;position:relative;z-index:1;}
 @media(max-width:900px){.sec{padding:52px 24px;}}
 .sec-label{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cobalt);margin-bottom:28px;}
 
-/* CODE SECTION */
-.code-wrap{background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
-.code-top{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 18px;border-bottom:1px solid var(--border);
-  background:rgba(6,8,22,0.6);
-}
-.code-dots{display:flex;gap:6px;}
-.code-dot{width:10px;height:10px;border-radius:50%;}
-.code-file{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--dim);}
-.code-body{
-  padding:22px 26px;font-family:'JetBrains Mono',monospace;
-  font-size:12.5px;line-height:1.8;overflow-x:auto;color:var(--muted);
-}
-.ck{color:#c792ea;}
-.cs{color:#a8d8a8;}
-.cc{color:var(--dim);}
-.cf{color:#82aaff;}
-.cn{color:var(--text);}
-.cm{color:var(--cyan);}
-.cv{color:#f07178;}
-
-/* HOW */
-.how-row{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  border:1px solid var(--border);border-radius:12px;overflow:hidden;
-}
+/* HOW IT WORKS */
+.how-row{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
 @media(max-width:900px){.how-row{grid-template-columns:1fr 1fr;}}
-.how-item{padding:24px;border-right:1px solid var(--border);}
+.how-item{padding:28px 24px;border-right:1px solid var(--border);}
 .how-item:last-child{border-right:none;}
-@media(max-width:900px){.how-item:nth-child(2){border-right:none;} .how-item:nth-child(3){border-top:1px solid var(--border);} .how-item:nth-child(4){border-right:none;border-top:1px solid var(--border);}}
-.how-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--dim);margin-bottom:10px;letter-spacing:.06em;}
-.how-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:6px;}
-.how-body{font-size:12px;color:var(--muted);line-height:1.62;}
+@media(max-width:900px){
+  .how-item:nth-child(2){border-right:none;}
+  .how-item:nth-child(3){border-top:1px solid var(--border);}
+  .how-item:nth-child(4){border-right:none;border-top:1px solid var(--border);}
+}
+.how-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--dim);margin-bottom:12px;letter-spacing:.06em;}
+.how-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px;}
+.how-body{font-size:12px;color:var(--muted);line-height:1.65;}
 
-/* WHAT */
-.what-2col{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;}
-@media(max-width:900px){.what-2col{grid-template-columns:1fr;}}
-.what-statement{font-size:20px;font-weight:800;color:var(--text);line-height:1.4;margin-bottom:16px;letter-spacing:-.4px;}
-.what-statement em{font-style:normal;color:var(--cobalt);}
-.what-body{font-size:14px;color:var(--muted);line-height:1.72;}
-.what-list{display:flex;flex-direction:column;gap:16px;}
-.what-li{border-left:2px solid rgba(77,124,255,0.2);padding-left:16px;}
-.what-li-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;}
-.what-li-body{font-size:12px;color:var(--muted);line-height:1.62;}
+/* WHAT CHANGES */
+.change-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:700px){.change-grid{grid-template-columns:1fr;}}
+.change-box{padding:28px 32px;border-radius:12px;border:1px solid var(--border);}
+.change-box.before{background:rgba(14,20,36,0.4);}
+.change-box.after{background:rgba(14,20,36,0.7);border-color:rgba(91,140,255,0.3);}
+.change-tag{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;}
+.change-box.before .change-tag{color:var(--dim);}
+.change-box.after .change-tag{color:var(--cobalt);}
+.change-title{font-size:18px;font-weight:800;color:var(--text);line-height:1.35;margin-bottom:10px;}
+.change-body{font-size:13px;color:var(--muted);line-height:1.68;}
 
-/* WHY */
-.why-text p{font-size:15px;color:var(--muted);line-height:1.75;max-width:600px;margin-bottom:16px;}
-.why-text strong{color:var(--text);}
+/* LIVE WORKFLOW */
+.workflow-wrap{max-width:480px;margin:0 auto;}
+.workflow-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.wf-header{
+  padding:12px 20px;border-bottom:1px solid var(--border);
+  background:rgba(10,14,28,0.6);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.wf-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);}
+.wf-live{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--green);}
+.wf-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite;}
+.wf-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;border-bottom:1px solid var(--border);
+}
+.wf-row:last-child{border-bottom:none;}
+.wf-key{font-size:11px;color:var(--dim);font-weight:600;}
+.wf-val{font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;text-align:right;}
 
-/* CTA BLOCK */
+/* USE CASES */
+.uc-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+@media(max-width:900px){.uc-row{grid-template-columns:1fr 1fr;}}
+.uc-item{padding:22px 20px;border:1px solid var(--border);border-radius:10px;background:rgba(14,20,36,0.4);}
+.uc-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:7px;}
+.uc-body{font-size:12px;color:var(--muted);line-height:1.58;}
+
+/* CTA */
 .cta-block{
   background:linear-gradient(135deg,var(--panel) 0%,rgba(16,22,43,0.8) 100%);
-  border:1px solid var(--border2);
-  border-radius:16px;padding:52px;text-align:center;max-width:620px;margin:0 auto;
-  box-shadow:0 0 80px rgba(77,124,255,0.06);
-  position:relative;overflow:hidden;
+  border:1px solid var(--border2);border-radius:16px;
+  padding:52px;text-align:center;max-width:620px;margin:0 auto;
 }
-.cta-block::before{
-  content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);
-  width:400px;height:200px;
-  background:radial-gradient(ellipse,rgba(77,124,255,0.08) 0%,transparent 70%);
-}
-.cta-block h3{font-size:clamp(20px,2.2vw,28px);font-weight:900;color:var(--text);margin-bottom:12px;letter-spacing:-.4px;line-height:1.2;position:relative;}
-.cta-block p{font-size:14px;color:var(--muted);line-height:1.72;margin-bottom:28px;position:relative;}
-.cta-center{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;}
+.cta-block h3{font-size:clamp(20px,2.2vw,28px);font-weight:900;color:var(--text);margin-bottom:12px;letter-spacing:-.4px;line-height:1.2;}
+.cta-block p{font-size:14px;color:var(--muted);line-height:1.72;margin-bottom:28px;}
+.cta-center{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
 .cta-note{font-size:10px;color:var(--dim);margin-top:14px;letter-spacing:.03em;}
 
 /* FOOTER */
 footer{
   border-top:1px solid var(--border);padding:28px 80px;
   display:flex;align-items:center;justify-content:space-between;
-  max-width:1300px;margin:0 auto;width:100%;position:relative;z-index:1;
+  max-width:1400px;margin:0 auto;width:100%;
 }
 @media(max-width:900px){footer{padding:24px;flex-direction:column;gap:12px;}}
 .footer-logo{font-size:14px;font-weight:900;color:var(--text);text-decoration:none;}
@@ -320,7 +255,7 @@ footer{
 <div class="hero">
   <div class="hero-left">
     <div class="hero-tag">Open-source · Agent commerce protocol</div>
-    <h1>Agents close the deal.<br>People do the work.</h1>
+    <h1>Agents run the business.<br>People execute the work.</h1>
     <p class="hero-sub">An AI company creates the offer, closes the buyer, assigns human execution, verifies proof, and records revenue.</p>
     <div class="cta-row">
       <a href="/live.html" class="btn btn-primary">View demo</a>
@@ -329,59 +264,63 @@ footer{
     <div class="hero-install"><span class="cc">$</span> <span class="cn">pip install incagent</span></div>
   </div>
 
-  <!-- INSTRUMENT PANEL -->
-  <div class="instrument">
-    <div class="instrument-halo"></div>
-
-    <div class="inst-header">
-      <div class="inst-label">Live deal</div>
-      <div class="inst-live"><div class="inst-live-dot"></div>Running</div>
+  <!-- OCTOPUS COMMAND CORE -->
+  <div class="oct-wrap">
+    <div class="oct-top">
+      <span class="oct-top-label">Command Core</span>
+      <span class="oct-top-live"><span class="oct-top-dot"></span>Running</span>
     </div>
 
-    <!-- Layer 1: Corps -->
-    <div class="inst-corps">
-      <div class="inst-corp">
-        <div class="inst-corp-name">IncAgent Vendor</div>
-        <div class="inst-corp-role">Seller · Agent</div>
+    <div class="oct-body">
+      <svg class="oct-svg" viewBox="0 0 580 380" preserveAspectRatio="xMidYMid meet">
+        <!-- Tentacle arms -->
+        <path id="arm-nw" class="oct-arm arm-sales"   d="M290,190 Q177,107 63,24"/>
+        <path id="arm-ne" class="oct-arm arm-human"   d="M290,190 Q403,107 517,24"/>
+        <path id="arm-sw" class="oct-arm arm-growth"  d="M290,190 Q177,273 63,356"/>
+        <path id="arm-se" class="oct-arm arm-billing" d="M290,190 Q403,273 517,356"/>
+        <!-- Traveling signal dots -->
+        <circle r="3.5" fill="#5B8CFF">
+          <animateMotion dur="2.4s" repeatCount="indefinite" begin="0s"><mpath href="#arm-nw"/></animateMotion>
+        </circle>
+        <circle r="3.5" fill="#8B6CFF">
+          <animateMotion dur="2.4s" repeatCount="indefinite" begin="0.6s"><mpath href="#arm-ne"/></animateMotion>
+        </circle>
+        <circle r="3.5" fill="#19C37D">
+          <animateMotion dur="2.4s" repeatCount="indefinite" begin="1.2s"><mpath href="#arm-sw"/></animateMotion>
+        </circle>
+        <circle r="3.5" fill="#F5B942">
+          <animateMotion dur="2.4s" repeatCount="indefinite" begin="1.8s"><mpath href="#arm-se"/></animateMotion>
+        </circle>
+      </svg>
+
+      <!-- Central core -->
+      <div class="oct-core">
+        <div class="oct-core-name">IncAgent</div>
+        <div class="oct-core-sub">Core</div>
       </div>
-      <div class="inst-sep"><div class="inst-sep-dot"></div></div>
-      <div class="inst-corp inst-corp-right">
-        <div class="inst-corp-name">Northstar Buyer</div>
-        <div class="inst-corp-role">Buyer · Agent</div>
+
+      <!-- Corner endpoint cards -->
+      <div class="oct-card oct-nw">
+        <div class="oct-card-cat" style="color:var(--cobalt)">Sales</div>
+        <div class="oct-card-val">proposal.pdf</div>
+      </div>
+      <div class="oct-card oct-ne">
+        <div class="oct-card-cat" style="color:var(--violet)">Human Assignment</div>
+        <div class="oct-card-val">Mika Tanaka<br>— Tokyo</div>
+      </div>
+      <div class="oct-card oct-sw">
+        <div class="oct-card-cat" style="color:var(--green)">Growth / Social</div>
+        <div class="oct-card-val">campaign live</div>
+      </div>
+      <div class="oct-card oct-se">
+        <div class="oct-card-cat" style="color:var(--amber)">Billing / Settlement</div>
+        <div class="oct-card-val">invoice #2048</div>
       </div>
     </div>
 
-    <!-- Deal card -->
-    <div class="inst-comobj">
-      <div class="inst-comobj-row">
-        <div class="inst-comobj-key">Offer</div>
-        <div class="inst-comobj-val" style="color:var(--text)">Outbound Campaign System</div>
-      </div>
-      <div class="inst-comobj-row">
-        <div class="inst-comobj-key">Buyer Agent</div>
-        <div class="inst-comobj-val" style="color:var(--violet)">Northstar Buyer</div>
-      </div>
-      <div class="inst-comobj-row">
-        <div class="inst-comobj-key">Assigned Human</div>
-        <div class="inst-comobj-val" style="color:var(--text)">Mika Tanaka — Tokyo</div>
-      </div>
-      <div class="inst-comobj-row">
-        <div class="inst-comobj-key">Proof Submitted</div>
-        <div class="inst-comobj-val" style="color:var(--green);font-size:11px;white-space:normal;">3 photos · 1 checklist · 1 location stamp</div>
-      </div>
-      <div class="inst-comobj-row">
-        <div class="inst-comobj-key">Invoice</div>
-        <div class="inst-comobj-val" style="color:var(--amber)">#2048</div>
-      </div>
-      <div class="inst-comobj-row">
-        <div class="inst-comobj-key">Settlement</div>
-        <div class="inst-comobj-val" id="io-state" style="color:var(--cobalt)">Negotiating</div>
-      </div>
-    </div>
-
-    <div class="inst-foot">
-      <a href="/live.html" class="inst-foot-link">See the full demo</a>
-      <div class="inst-foot-note">Prototype environment</div>
+    <div class="oct-foot">
+      <span class="oct-foot-note">Prototype environment</span>
+      <span class="oct-foot-note">Simulated company workflow</span>
     </div>
   </div>
 </div>
@@ -400,43 +339,70 @@ footer{
     <div class="how-item">
       <div class="how-num">02 — Sell</div>
       <div class="how-title">Close the buyer</div>
-      <div class="how-body">A buyer agent reviews the proposal, accepts terms, and signs the contract. No human sign-off required.</div>
+      <div class="how-body">A buyer agent reviews the proposal, negotiates, accepts terms, and signs the contract autonomously.</div>
     </div>
     <div class="how-item">
-      <div class="how-num">03 — Assign Human</div>
-      <div class="how-title">Human executes</div>
+      <div class="how-num">03 — Assign</div>
+      <div class="how-title">Assign human execution</div>
       <div class="how-body">An ops agent assigns a field operator. The human completes the task and submits proof — photos, checklist, location stamp.</div>
     </div>
     <div class="how-item">
-      <div class="how-num">04 — Verify &amp; Pay</div>
-      <div class="how-title">Revenue closed</div>
-      <div class="how-body">Agent verifies proof of completion. Invoice issued, payment received, revenue logged, tax record filed.</div>
+      <div class="how-num">04 — Settle</div>
+      <div class="how-title">Verify proof and settle</div>
+      <div class="how-body">Agent verifies proof. Invoice issued, payment received, revenue logged, tax record filed automatically.</div>
     </div>
   </div>
 </div>
 
 <hr class="div">
 
-<!-- WHAT IS THIS -->
+<!-- WHAT CHANGES -->
 <div class="sec">
-  <div class="sec-label">What this is</div>
-  <div class="what-2col">
-    <div>
-      <div class="what-statement">IncAgent is not an assistant.<br><em>It is a protocol layer for agent-run companies.</em></div>
-      <p class="what-body">It helps internal agents and counterparty agents create, approve, execute, and record business activity — from the first offer to the final tax record.</p>
+  <div class="sec-label">What changes</div>
+  <div class="change-grid">
+    <div class="change-box before">
+      <div class="change-tag">Before</div>
+      <div class="change-title">People run the company.<br>Software assists.</div>
+      <div class="change-body">Humans make every decision — close deals, assign work, approve invoices. Software provides reports and reminders. Humans are the bottleneck.</div>
     </div>
-    <div class="what-list">
-      <div class="what-li">
-        <div class="what-li-title">Corporate identity per agent</div>
-        <div class="what-li-body">Each agent holds a verifiable identity — name, ID, cryptographic key — enabling trusted counterparty relationships.</div>
+    <div class="change-box after">
+      <div class="change-tag">After</div>
+      <div class="change-title">Agents run the company.<br>People execute assigned work.</div>
+      <div class="change-body">Agents make decisions — create offers, close buyers, assign and verify work. Humans execute the physical task. Agents are the decision layer.</div>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- LIVE WORKFLOW -->
+<div class="sec">
+  <div class="sec-label">One live workflow</div>
+  <div class="workflow-wrap">
+    <div class="workflow-card">
+      <div class="wf-header">
+        <span class="wf-label">Outbound Campaign System</span>
+        <span class="wf-live"><span class="wf-dot"></span>Live</span>
       </div>
-      <div class="what-li">
-        <div class="what-li-title">Autonomous negotiation</div>
-        <div class="what-li-body">Agents propose, counter, and agree without human input. Rounds are bounded, logged, and auditable.</div>
+      <div class="wf-row">
+        <div class="wf-key">Buyer Agent</div>
+        <div class="wf-val" style="color:var(--violet)">Northstar Buyer</div>
       </div>
-      <div class="what-li">
-        <div class="what-li-title">End-to-end transaction record</div>
-        <div class="what-li-body">Every contract, invoice, payment, and tax filing is written to an immutable local ledger.</div>
+      <div class="wf-row">
+        <div class="wf-key">Assigned Human</div>
+        <div class="wf-val" style="color:var(--text)">Mika Tanaka — Tokyo</div>
+      </div>
+      <div class="wf-row">
+        <div class="wf-key">Proof Submitted</div>
+        <div class="wf-val" style="color:var(--green);font-size:11px;">3 photos · 1 checklist · 1 location stamp</div>
+      </div>
+      <div class="wf-row">
+        <div class="wf-key">Invoice</div>
+        <div class="wf-val" style="color:var(--amber)">#2048 · $5,000</div>
+      </div>
+      <div class="wf-row">
+        <div class="wf-key">Payment</div>
+        <div class="wf-val" id="wf-status" style="color:var(--cobalt)">Processing</div>
       </div>
     </div>
   </div>
@@ -444,12 +410,30 @@ footer{
 
 <hr class="div">
 
-<!-- WHY NOW -->
+<!-- USE CASES -->
 <div class="sec">
-  <div class="sec-label">Why now</div>
-  <div class="why-text">
-    <p><strong>Most AI products help a person do work.</strong> The next layer is when agents do the work of the company itself.</p>
-    <p>The tools are already here — agents that write code, run campaigns, manage finances. What's missing is a protocol for them to transact with each other. IncAgent is that protocol. Open source, MIT licensed.</p>
+  <div class="sec-label">Use cases</div>
+  <div class="uc-row">
+    <div class="uc-item">
+      <div class="uc-title">Sales</div>
+      <div class="uc-body">Agent creates proposal, negotiates terms, closes buyer without human involvement.</div>
+    </div>
+    <div class="uc-item">
+      <div class="uc-title">Field ops</div>
+      <div class="uc-body">Ops agent dispatches human operators, collects proof, verifies task completion.</div>
+    </div>
+    <div class="uc-item">
+      <div class="uc-title">Billing</div>
+      <div class="uc-body">Finance agent issues invoice, tracks payment, files tax record on receipt.</div>
+    </div>
+    <div class="uc-item">
+      <div class="uc-title">Compliance</div>
+      <div class="uc-body">Every action logged to tamper-evident ledger. Audit trail available on demand.</div>
+    </div>
+    <div class="uc-item">
+      <div class="uc-title">Growth</div>
+      <div class="uc-body">Marketing agent runs campaigns, tracks response, scales spend on conversion data.</div>
+    </div>
   </div>
 </div>
 
@@ -459,12 +443,12 @@ footer{
 <div class="sec">
   <div class="cta-block">
     <h3>See the simulated<br>company workflow</h3>
-    <p>The demo shows an agent-run company executing a full transaction cycle — offer, contract, payment, operations — with a live step-by-step view.</p>
+    <p>The demo shows an agent-run company executing a full transaction cycle — offer, contract, human assignment, payment.</p>
     <div class="cta-center">
       <a href="/live.html" class="btn btn-primary">View demo</a>
       <a href="mailto:hello@incagent.ai" class="btn btn-ghost">Request early access</a>
     </div>
-    <p class="cta-note">Prototype environment · Simulated workflow preview</p>
+    <p class="cta-note">Open source · MIT License · pip install incagent</p>
   </div>
 </div>
 
@@ -479,23 +463,21 @@ footer{
 </footer>
 
 <script>
-const STEP_MS = 1800;
-const states = ['Negotiating','Contract signed','Human assigned','Proof verified','Payment received'];
-const stateColors = ['var(--cobalt)','var(--cobalt)','var(--violet)','var(--green)','var(--green)'];
-let cur = 0;
-
-function tick() {
-  const el = document.getElementById('io-state');
-  el.textContent = states[cur];
-  el.style.color = stateColors[cur];
-  cur++;
-  if (cur < states.length) {
-    setTimeout(tick, STEP_MS);
+const wfStates = ['Processing', 'Confirming', 'Received'];
+const wfColors = ['var(--cobalt)', 'var(--cobalt)', 'var(--green)'];
+let wfIdx = 0;
+function wfTick() {
+  const el = document.getElementById('wf-status');
+  el.textContent = wfStates[wfIdx];
+  el.style.color = wfColors[wfIdx];
+  wfIdx++;
+  if (wfIdx < wfStates.length) {
+    setTimeout(wfTick, 1800);
   } else {
-    setTimeout(() => { cur = 0; setTimeout(tick, 700); }, 3200);
+    setTimeout(() => { wfIdx = 0; setTimeout(wfTick, 700); }, 3200);
   }
 }
-setTimeout(tick, 1200);
+setTimeout(wfTick, 2000);
 </script>
 </body>
 </html>
