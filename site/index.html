@@ -15,10 +15,13 @@
   --cobalt:#5B8CFF;--violet:#8B6CFF;--green:#19C37D;--amber:#F5B942;--cyan:#00D4FF;
   --text:#EFF2FA;--muted:#8D97B5;--dim:#3A4A6E;--border:#1C2A49;
 }
-html,body{background:var(--base);color:var(--muted);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+html{background:var(--base);}
+body{background:var(--base);color:var(--muted);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 40px;display:flex;align-items:center;background:rgba(6,8,22,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 40px;
+  display:flex;align-items:center;
+  background:rgba(6,8,22,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
 .logo{font-size:16px;font-weight:900;color:var(--text);text-decoration:none;letter-spacing:-.4px;}
 .logo em{font-style:normal;color:var(--cobalt);}
 .nav-links{margin-left:auto;display:flex;gap:24px;align-items:center;}
@@ -26,16 +29,23 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 40px;d
 .nav-links a:hover{color:var(--text);}
 .nav-cta{background:var(--cobalt);color:#fff!important;font-weight:700!important;padding:7px 18px;border-radius:7px;}
 
-/* SCROLL SCENE */
-#scene{height:700vh;position:relative;}
-#sticky{position:sticky;top:0;height:100vh;overflow:hidden;background:var(--base);}
+/* SCROLL SPACER */
+#scene{height:700vh;}
+
+/* FIXED ANIMATION FRAME */
+#anim-wrap{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  z-index:1;background:var(--base);
+}
 
 /* GRID */
 #grid-bg{
   position:absolute;inset:0;pointer-events:none;
-  background-image:linear-gradient(rgba(77,124,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(77,124,255,0.025) 1px,transparent 1px);
+  background-image:
+    linear-gradient(rgba(77,124,255,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(77,124,255,0.03) 1px,transparent 1px);
   background-size:52px 52px;
-  mask-image:radial-gradient(ellipse 80% 80% at 62% 50%,black 15%,transparent 70%);
+  mask-image:radial-gradient(ellipse 80% 80% at 62% 50%,black 15%,transparent 72%);
 }
 
 /* SVG */
@@ -43,29 +53,28 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 40px;d
 
 /* LEGS */
 .leg{fill:none;stroke-width:1.5;stroke-linecap:round;}
-#leg-0{stroke:rgba(91,140,255,0.7);}
-#leg-1{stroke:rgba(139,108,255,0.7);}
-#leg-2{stroke:rgba(25,195,125,0.7);}
-#leg-3{stroke:rgba(245,185,66,0.7);}
-#leg-4{stroke:rgba(0,212,255,0.7);}
+#leg-0{stroke:rgba(91,140,255,0.72);}
+#leg-1{stroke:rgba(139,108,255,0.72);}
+#leg-2{stroke:rgba(25,195,125,0.72);}
+#leg-3{stroke:rgba(245,185,66,0.72);}
+#leg-4{stroke:rgba(0,212,255,0.72);}
 
 /* CORE */
-.core-bg{fill:rgba(8,12,26,0.94);stroke:rgba(91,140,255,0.45);stroke-width:1.5;}
-.core-ring{fill:none;stroke:rgba(91,140,255,0.18);stroke-width:1;transform-box:fill-box;transform-origin:center;}
+.core-bg{fill:rgba(8,12,26,0.95);stroke:rgba(91,140,255,0.5);stroke-width:2;}
+.core-ring{fill:none;stroke:rgba(91,140,255,0.2);stroke-width:1;transform-box:fill-box;transform-origin:center;}
 .ring-a{animation:rexpand 3s ease-out infinite;}
 .ring-b{animation:rexpand 3s ease-out infinite 1.5s;}
-@keyframes rexpand{0%{transform:scale(1);opacity:.5;}100%{transform:scale(2.4);opacity:0;}}
-.core-main{font-family:'Inter',sans-serif;font-size:14px;font-weight:900;fill:var(--text);text-anchor:middle;}
-.core-sub{font-family:'Inter',sans-serif;font-size:8.5px;font-weight:700;fill:var(--cobalt);text-anchor:middle;letter-spacing:.1em;}
+@keyframes rexpand{0%{transform:scale(1);opacity:.5;}100%{transform:scale(2.2);opacity:0;}}
+.core-main{font-family:'Inter',sans-serif;font-size:15px;font-weight:900;fill:#EFF2FA;text-anchor:middle;}
+.core-sub{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;fill:#5B8CFF;text-anchor:middle;letter-spacing:.1em;}
 
 /* ENDPOINT CARDS */
 .ep-card{
-  position:absolute;width:148px;
+  position:absolute;width:150px;
   background:rgba(8,12,26,0.95);border:1px solid var(--border);
-  border-radius:10px;padding:11px 14px;
+  border-radius:10px;padding:12px 14px;
   transform:translate(-50%,-50%);
-  backdrop-filter:blur(12px);z-index:10;
-  pointer-events:none;
+  backdrop-filter:blur(12px);z-index:10;pointer-events:none;
 }
 .card-cat{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
 .card-val{font-size:12px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;line-height:1.35;margin-bottom:3px;}
@@ -73,13 +82,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 40px;d
 
 /* TEXT PANELS */
 .text-panel{
-  position:absolute;left:60px;top:calc(50% + 28px);transform:translateY(-50%);
-  width:355px;z-index:20;pointer-events:none;
+  position:absolute;left:60px;
+  width:360px;z-index:20;pointer-events:none;
+  /* vertical centering applied via JS for reliability */
 }
 .panel-tag{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cobalt);margin-bottom:14px;}
 .panel-phase{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;}
-.text-panel h1{font-size:clamp(26px,2.8vw,42px);font-weight:900;color:var(--text);line-height:1.1;letter-spacing:-.6px;margin-bottom:14px;}
-.text-panel h2{font-size:clamp(18px,2vw,26px);font-weight:800;color:var(--text);line-height:1.25;letter-spacing:-.3px;margin-bottom:18px;}
+.text-panel h1{font-size:clamp(26px,2.8vw,42px);font-weight:900;color:#EFF2FA;line-height:1.1;letter-spacing:-.6px;margin-bottom:14px;}
+.text-panel h2{font-size:clamp(18px,2vw,26px);font-weight:800;color:#EFF2FA;line-height:1.25;letter-spacing:-.3px;margin-bottom:18px;}
 .panel-sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
 
 /* DETAIL BOX */
@@ -101,7 +111,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 40px;d
 .btn-g{background:transparent;color:var(--text);border:1px solid rgba(91,140,255,0.3);}.btn-g:hover{border-color:rgba(91,140,255,0.55);background:rgba(91,140,255,0.07);}
 
 /* PHASE DOTS */
-#phase-dots{position:absolute;right:26px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:9px;z-index:30;}
+#phase-dots{position:absolute;right:28px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:9px;z-index:30;}
 .pdot{width:6px;height:6px;border-radius:50%;background:var(--dim);transition:background .3s,transform .3s;}
 .pdot.act{background:var(--cobalt);transform:scale(1.5);}
 
@@ -109,8 +119,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 40px;d
 #scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);animation:hblink 2.5s ease-in-out infinite;z-index:20;transition:opacity .5s;}
 @keyframes hblink{0%,100%{opacity:.3;}50%{opacity:.8;}}
 
-/* POST-SCROLL */
-#post-scroll{padding:120px 80px;max-width:1100px;margin:0 auto;}
+/* POST-SCROLL: covers the fixed frame once scene is past */
+#post-scroll{position:relative;z-index:10;background:var(--base);padding:120px 80px;max-width:1100px;margin:0 auto;}
 @media(max-width:900px){#post-scroll{padding:80px 24px;}}
 #post-scroll h2{font-size:clamp(28px,3vw,46px);font-weight:900;color:var(--text);letter-spacing:-.6px;margin-bottom:12px;}
 .post-sub{font-size:15px;color:var(--muted);margin-bottom:56px;line-height:1.6;}
@@ -124,8 +134,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 40px;d
 .start-install .cc{color:var(--dim);}
 .start-cta{margin-top:16px;}
 
-/* FOOTER */
-footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;width:100%;}
+/* FOOTER: also above fixed frame */
+footer{position:relative;z-index:10;background:var(--base);border-top:1px solid var(--border);padding:28px 80px;display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;width:100%;}
 @media(max-width:900px){footer{padding:24px;flex-direction:column;gap:12px;}}
 .footer-logo{font-size:14px;font-weight:900;color:var(--text);text-decoration:none;}
 .footer-logo em{font-style:normal;color:var(--cobalt);}
@@ -146,152 +156,150 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
   </div>
 </nav>
 
-<div id="scene">
-  <div id="sticky">
-    <div id="grid-bg"></div>
+<!-- Scroll spacer: creates 700vh of scroll height -->
+<div id="scene"></div>
 
-    <!-- Full-viewport SVG octopus -->
-    <svg id="oct-svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid meet">
-      <!-- 5 tentacle paths — core at (820,350) -->
-      <path id="leg-0" class="leg" d="M820,350 Q580,195 350,80"/>
-      <path id="leg-1" class="leg" d="M820,350 Q1050,195 1100,80"/>
-      <path id="leg-2" class="leg" d="M820,350 Q1050,500 1100,630"/>
-      <path id="leg-3" class="leg" d="M820,350 Q820,510 820,660"/>
-      <path id="leg-4" class="leg" d="M820,350 Q580,500 350,630"/>
-      <!-- Pulsing rings -->
-      <circle class="core-ring ring-a" cx="820" cy="350" r="54"/>
-      <circle class="core-ring ring-b" cx="820" cy="350" r="54"/>
-      <!-- Core -->
-      <circle class="core-bg" cx="820" cy="350" r="46"/>
-      <text class="core-main" x="820" y="346">Inc</text>
-      <text class="core-sub"  x="820" y="366">AGENT</text>
-    </svg>
+<!-- Fixed animation frame: always covers viewport, post-scroll covers it after -->
+<div id="anim-wrap">
+  <div id="grid-bg"></div>
 
-    <!-- Endpoint cards (positioned by JS) -->
-    <div id="card-0" class="ep-card" style="opacity:0">
-      <div class="card-cat" style="color:var(--cobalt)">Sales</div>
-      <div class="card-val">proposal.pdf</div>
-      <div class="card-det">$5,000 · 2 rounds</div>
-    </div>
-    <div id="card-1" class="ep-card" style="opacity:0">
-      <div class="card-cat" style="color:var(--violet)">Human Assignment</div>
-      <div class="card-val">Mika Tanaka</div>
-      <div class="card-det">Tokyo · WO-491</div>
-    </div>
-    <div id="card-2" class="ep-card" style="opacity:0">
-      <div class="card-cat" style="color:var(--green)">Proof</div>
-      <div class="card-val">3 photos</div>
-      <div class="card-det">Verified ✓</div>
-    </div>
-    <div id="card-3" class="ep-card" style="opacity:0">
-      <div class="card-cat" style="color:var(--amber)">Invoice</div>
-      <div class="card-val">#2048 · $5,000</div>
-      <div class="card-det">Payment received</div>
-    </div>
-    <div id="card-4" class="ep-card" style="opacity:0">
-      <div class="card-cat" style="color:var(--cyan)">Growth</div>
-      <div class="card-val">Campaign live</div>
-      <div class="card-det">12.4% conversion</div>
-    </div>
+  <svg id="oct-svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid meet">
+    <!-- 5 tentacle paths — core at (820,350) -->
+    <path id="leg-0" class="leg" d="M820,350 Q580,195 350,80"/>
+    <path id="leg-1" class="leg" d="M820,350 Q1050,195 1100,80"/>
+    <path id="leg-2" class="leg" d="M820,350 Q1050,500 1100,630"/>
+    <path id="leg-3" class="leg" d="M820,350 Q820,510 820,660"/>
+    <path id="leg-4" class="leg" d="M820,350 Q580,500 350,630"/>
+    <!-- Core pulse rings -->
+    <circle class="core-ring ring-a" cx="820" cy="350" r="54"/>
+    <circle class="core-ring ring-b" cx="820" cy="350" r="54"/>
+    <!-- Core -->
+    <circle class="core-bg" cx="820" cy="350" r="46"/>
+    <text class="core-main" x="820" y="346">Inc</text>
+    <text class="core-sub"  x="820" y="366">AGENT</text>
+  </svg>
 
-    <!-- Text panels -->
-    <div id="panel-hero" class="text-panel">
-      <div class="panel-tag">Open-source · Agent commerce protocol</div>
-      <h1>Agents run the business.<br>People execute the work.</h1>
-      <p class="panel-sub">An AI company creates the offer, closes the buyer, assigns human execution, verifies proof, and records revenue.</p>
-      <div class="ibadge"><span class="cc">$</span> pip install incagent</div>
-      <div class="cta-row">
-        <a href="/live.html" class="btn btn-p">View demo</a>
-        <a href="https://github.com/incagent/incagent" class="btn btn-g" target="_blank">GitHub</a>
-      </div>
-    </div>
-
-    <div id="panel-0" class="text-panel" style="opacity:0">
-      <div class="panel-phase">01 — Sales</div>
-      <h2>Agent creates the offer and closes the buyer autonomously.</h2>
-      <div class="dbox">
-        <div class="dr"><span class="dk">Proposal</span><span class="dv co">proposal.pdf</span></div>
-        <div class="dr"><span class="dk">Buyer</span><span class="dv">Northstar Buyer</span></div>
-        <div class="dr"><span class="dk">Contract value</span><span class="dv co">$5,000</span></div>
-        <div class="dr"><span class="dk">Rounds</span><span class="dv">2</span></div>
-        <div class="dr"><span class="dk">Status</span><span class="dv gr">Agreed ✓</span></div>
-      </div>
-    </div>
-
-    <div id="panel-1" class="text-panel" style="opacity:0">
-      <div class="panel-phase">02 — Human Assignment</div>
-      <h2>Ops agent dispatches a human operator to execute the task.</h2>
-      <div class="dbox">
-        <div class="dr"><span class="dk">Operator</span><span class="dv">Mika Tanaka</span></div>
-        <div class="dr"><span class="dk">Location</span><span class="dv">Tokyo, Japan</span></div>
-        <div class="dr"><span class="dk">Work order</span><span class="dv vi">WO-491</span></div>
-        <div class="dr"><span class="dk">Assigned by</span><span class="dv">Ops Agent</span></div>
-        <div class="dr"><span class="dk">Status</span><span class="dv am">In progress</span></div>
-      </div>
-    </div>
-
-    <div id="panel-2" class="text-panel" style="opacity:0">
-      <div class="panel-phase">03 — Proof &amp; Verification</div>
-      <h2>Human submits evidence. Agent verifies before releasing payment.</h2>
-      <div class="dbox">
-        <div class="dr"><span class="dk">Photos</span><span class="dv">3 submitted</span></div>
-        <div class="dr"><span class="dk">Checklist</span><span class="dv gr">Complete ✓</span></div>
-        <div class="dr"><span class="dk">GPS</span><span class="dv">35.68°N 139.69°E</span></div>
-        <div class="dr"><span class="dk">Verified by</span><span class="dv">Ops Agent</span></div>
-        <div class="dr"><span class="dk">Timestamp</span><span class="dv">2025-03-13 14:22</span></div>
-      </div>
-    </div>
-
-    <div id="panel-3" class="text-panel" style="opacity:0">
-      <div class="panel-phase">04 — Invoice &amp; Settlement</div>
-      <h2>Finance agent issues the invoice and records the transaction.</h2>
-      <div class="dbox">
-        <div class="dr"><span class="dk">Invoice</span><span class="dv am">#2048</span></div>
-        <div class="dr"><span class="dk">Amount</span><span class="dv">$5,000 USD</span></div>
-        <div class="dr"><span class="dk">Payment</span><span class="dv gr">Received ✓</span></div>
-        <div class="dr"><span class="dk">Ledger</span><span class="dv">Hash-chained</span></div>
-        <div class="dr"><span class="dk">Tax record</span><span class="dv">1099-NEC filed</span></div>
-      </div>
-    </div>
-
-    <div id="panel-4" class="text-panel" style="opacity:0">
-      <div class="panel-phase">05 — Growth &amp; Analytics</div>
-      <h2>Marketing agent tracks outcomes and scales what works.</h2>
-      <div class="dbox">
-        <div class="dr"><span class="dk">Campaign</span><span class="dv cy">Live</span></div>
-        <div class="dr"><span class="dk">Conversion</span><span class="dv">12.4%</span></div>
-        <div class="dr"><span class="dk">Post</span><span class="dv">Scheduled ✓</span></div>
-        <div class="dr"><span class="dk">Revenue</span><span class="dv gr">$5,000</span></div>
-        <div class="dr"><span class="dk">Next</span><span class="dv">Scale spend</span></div>
-      </div>
-    </div>
-
-    <div id="panel-reveal" class="text-panel" style="opacity:0">
-      <div class="panel-tag">All systems active</div>
-      <h1>Agents run the business.<br>People execute the work.</h1>
-      <p class="panel-sub">One protocol. Five autonomous systems. Zero human executives in the loop.</p>
-      <div class="cta-row">
-        <a href="/live.html" class="btn btn-p">View demo</a>
-        <a href="https://github.com/incagent/incagent" class="btn btn-g" target="_blank">GitHub</a>
-      </div>
-    </div>
-
-    <!-- Phase indicator -->
-    <div id="phase-dots">
-      <div class="pdot"></div>
-      <div class="pdot"></div>
-      <div class="pdot"></div>
-      <div class="pdot"></div>
-      <div class="pdot"></div>
-      <div class="pdot"></div>
-      <div class="pdot"></div>
-    </div>
-
-    <div id="scroll-hint">scroll to activate</div>
+  <!-- Endpoint cards -->
+  <div id="card-0" class="ep-card" style="opacity:0">
+    <div class="card-cat" style="color:#5B8CFF">Sales</div>
+    <div class="card-val">proposal.pdf</div>
+    <div class="card-det">$5,000 · 2 rounds</div>
   </div>
+  <div id="card-1" class="ep-card" style="opacity:0">
+    <div class="card-cat" style="color:#8B6CFF">Human Assignment</div>
+    <div class="card-val">Mika Tanaka</div>
+    <div class="card-det">Tokyo · WO-491</div>
+  </div>
+  <div id="card-2" class="ep-card" style="opacity:0">
+    <div class="card-cat" style="color:#19C37D">Proof</div>
+    <div class="card-val">3 photos</div>
+    <div class="card-det">Verified ✓</div>
+  </div>
+  <div id="card-3" class="ep-card" style="opacity:0">
+    <div class="card-cat" style="color:#F5B942">Invoice</div>
+    <div class="card-val">#2048 · $5,000</div>
+    <div class="card-det">Payment received</div>
+  </div>
+  <div id="card-4" class="ep-card" style="opacity:0">
+    <div class="card-cat" style="color:#00D4FF">Growth</div>
+    <div class="card-val">Campaign live</div>
+    <div class="card-det">12.4% conversion</div>
+  </div>
+
+  <!-- Hero panel (visible at start) -->
+  <div id="panel-hero" class="text-panel">
+    <div class="panel-tag">Open-source · Agent commerce protocol</div>
+    <h1>Agents run the business.<br>People execute the work.</h1>
+    <p class="panel-sub">An AI company creates the offer, closes the buyer, assigns human execution, verifies proof, and records revenue.</p>
+    <div class="ibadge"><span class="cc">$</span> pip install incagent</div>
+    <div class="cta-row">
+      <a href="/live.html" class="btn btn-p">View demo</a>
+      <a href="https://github.com/incagent/incagent" class="btn btn-g" target="_blank">GitHub</a>
+    </div>
+  </div>
+
+  <!-- Feature panels (hidden initially) -->
+  <div id="panel-0" class="text-panel" style="opacity:0">
+    <div class="panel-phase">01 — Sales</div>
+    <h2>Agent creates the offer and closes the buyer autonomously.</h2>
+    <div class="dbox">
+      <div class="dr"><span class="dk">Proposal</span><span class="dv co">proposal.pdf</span></div>
+      <div class="dr"><span class="dk">Buyer</span><span class="dv">Northstar Buyer</span></div>
+      <div class="dr"><span class="dk">Contract value</span><span class="dv co">$5,000</span></div>
+      <div class="dr"><span class="dk">Rounds</span><span class="dv">2</span></div>
+      <div class="dr"><span class="dk">Status</span><span class="dv gr">Agreed ✓</span></div>
+    </div>
+  </div>
+
+  <div id="panel-1" class="text-panel" style="opacity:0">
+    <div class="panel-phase">02 — Human Assignment</div>
+    <h2>Ops agent dispatches a human operator to execute the task.</h2>
+    <div class="dbox">
+      <div class="dr"><span class="dk">Operator</span><span class="dv">Mika Tanaka</span></div>
+      <div class="dr"><span class="dk">Location</span><span class="dv">Tokyo, Japan</span></div>
+      <div class="dr"><span class="dk">Work order</span><span class="dv vi">WO-491</span></div>
+      <div class="dr"><span class="dk">Assigned by</span><span class="dv">Ops Agent</span></div>
+      <div class="dr"><span class="dk">Status</span><span class="dv am">In progress</span></div>
+    </div>
+  </div>
+
+  <div id="panel-2" class="text-panel" style="opacity:0">
+    <div class="panel-phase">03 — Proof &amp; Verification</div>
+    <h2>Human submits evidence. Agent verifies before releasing payment.</h2>
+    <div class="dbox">
+      <div class="dr"><span class="dk">Photos</span><span class="dv">3 submitted</span></div>
+      <div class="dr"><span class="dk">Checklist</span><span class="dv gr">Complete ✓</span></div>
+      <div class="dr"><span class="dk">GPS</span><span class="dv">35.68°N 139.69°E</span></div>
+      <div class="dr"><span class="dk">Verified by</span><span class="dv">Ops Agent</span></div>
+      <div class="dr"><span class="dk">Timestamp</span><span class="dv">2025-03-13 14:22</span></div>
+    </div>
+  </div>
+
+  <div id="panel-3" class="text-panel" style="opacity:0">
+    <div class="panel-phase">04 — Invoice &amp; Settlement</div>
+    <h2>Finance agent issues the invoice and records the transaction.</h2>
+    <div class="dbox">
+      <div class="dr"><span class="dk">Invoice</span><span class="dv am">#2048</span></div>
+      <div class="dr"><span class="dk">Amount</span><span class="dv">$5,000 USD</span></div>
+      <div class="dr"><span class="dk">Payment</span><span class="dv gr">Received ✓</span></div>
+      <div class="dr"><span class="dk">Ledger</span><span class="dv">Hash-chained</span></div>
+      <div class="dr"><span class="dk">Tax record</span><span class="dv">1099-NEC filed</span></div>
+    </div>
+  </div>
+
+  <div id="panel-4" class="text-panel" style="opacity:0">
+    <div class="panel-phase">05 — Growth &amp; Analytics</div>
+    <h2>Marketing agent tracks outcomes and scales what works.</h2>
+    <div class="dbox">
+      <div class="dr"><span class="dk">Campaign</span><span class="dv cy">Live</span></div>
+      <div class="dr"><span class="dk">Conversion</span><span class="dv">12.4%</span></div>
+      <div class="dr"><span class="dk">Post</span><span class="dv">Scheduled ✓</span></div>
+      <div class="dr"><span class="dk">Revenue</span><span class="dv gr">$5,000</span></div>
+      <div class="dr"><span class="dk">Next</span><span class="dv">Scale spend</span></div>
+    </div>
+  </div>
+
+  <div id="panel-reveal" class="text-panel" style="opacity:0">
+    <div class="panel-tag">All systems active</div>
+    <h1>Agents run the business.<br>People execute the work.</h1>
+    <p class="panel-sub">One protocol. Five autonomous systems. Zero human executives in the loop.</p>
+    <div class="cta-row">
+      <a href="/live.html" class="btn btn-p">View demo</a>
+      <a href="https://github.com/incagent/incagent" class="btn btn-g" target="_blank">GitHub</a>
+    </div>
+  </div>
+
+  <!-- Phase indicator -->
+  <div id="phase-dots">
+    <div class="pdot"></div><div class="pdot"></div><div class="pdot"></div>
+    <div class="pdot"></div><div class="pdot"></div><div class="pdot"></div>
+    <div class="pdot"></div>
+  </div>
+
+  <div id="scroll-hint">scroll to activate</div>
 </div>
 
-<!-- POST-SCROLL: Start here -->
+<!-- POST-SCROLL: solid bg covers fixed frame -->
 <div id="post-scroll">
   <h2>Start here.</h2>
   <p class="post-sub">Three ways to get started with agent-run commerce.</p>
@@ -329,22 +337,26 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
 </footer>
 
 <script>
-// SVG endpoint coordinates (viewBox: 0 0 1200 700)
+// SVG endpoint coords (viewBox: 0 0 1200 700)
 const EP = [
-  {x:350,  y:80},   // 0 Sales      (top-left)
-  {x:1100, y:80},   // 1 Human      (top-right)
-  {x:1100, y:630},  // 2 Proof      (bottom-right)
-  {x:820,  y:660},  // 3 Invoice    (bottom-center)
-  {x:350,  y:630},  // 4 Growth     (bottom-left)
+  {x:350,  y:80},   // 0 Sales
+  {x:1100, y:80},   // 1 Human
+  {x:1100, y:630},  // 2 Proof
+  {x:820,  y:660},  // 3 Invoice
+  {x:350,  y:630},  // 4 Growth
 ];
 
-const svg    = document.getElementById('oct-svg');
-const scene  = document.getElementById('scene');
-const hint   = document.getElementById('scroll-hint');
-const legs   = [0,1,2,3,4].map(i => document.getElementById('leg-'+i));
-const cards  = [0,1,2,3,4].map(i => document.getElementById('card-'+i));
-const panels = ['hero','0','1','2','3','4','reveal'].map(id => document.getElementById('panel-'+id));
-const dots   = Array.from(document.querySelectorAll('.pdot'));
+const scene     = document.getElementById('scene');
+const animWrap  = document.getElementById('anim-wrap');
+const svg       = document.getElementById('oct-svg');
+const hint      = document.getElementById('scroll-hint');
+const legs      = [0,1,2,3,4].map(i => document.getElementById('leg-'+i));
+const cards     = [0,1,2,3,4].map(i => document.getElementById('card-'+i));
+const allPanels = ['hero','0','1','2','3','4','reveal'].map(id => document.getElementById('panel-'+id));
+const dots      = Array.from(document.querySelectorAll('.pdot'));
+
+// Give scene its height (in JS so we can reference vh)
+scene.style.height = '700vh';
 
 let legLengths = [];
 let hintHidden = false;
@@ -354,11 +366,21 @@ function initLegs() {
     const len = leg.getTotalLength();
     legLengths[i] = len;
     leg.style.strokeDasharray  = len;
-    leg.style.strokeDashoffset = len;
+    leg.style.strokeDashoffset = len; // start hidden
   });
 }
 
-// Convert SVG viewBox coords → sticky-container pixel coords
+// Lay panels out vertically centered (done in JS so vh is reliable)
+function layoutPanels() {
+  const vh = window.innerHeight;
+  const top = Math.round(vh / 2 + 28); // 50vh + half-nav offset
+  allPanels.forEach(p => {
+    p.style.top = top + 'px';
+    p.style.transform = 'translateY(-50%)';
+  });
+}
+
+// Convert SVG viewBox → screen pixel (fixed wrap = full viewport)
 function svgPt(sx, sy) {
   const r  = svg.getBoundingClientRect();
   const vb = svg.viewBox.baseVal;
@@ -376,63 +398,61 @@ function positionCards() {
   });
 }
 
-function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
-function smooth(v, from, to) { return clamp((v - from) / (to - from), 0, 1); }
+function clamp(v, lo, hi)     { return Math.max(lo, Math.min(hi, v)); }
+function smooth(v, from, to)  { return clamp((v - from) / (to - from), 0, 1); }
 
 function onScroll() {
-  const sceneTop = scene.getBoundingClientRect().top + window.scrollY;
+  // Progress 0→1 as user scrolls through 700vh scene
+  const sceneTop  = scene.getBoundingClientRect().top;
   const maxScroll = scene.offsetHeight - window.innerHeight;
-  const progress  = clamp((window.scrollY - sceneTop) / maxScroll, 0, 1);
-  const phase = progress * 7; // 0–7
+  const progress  = clamp(-sceneTop / maxScroll, 0, 1);
+  const phase     = progress * 7; // 0–7
 
-  // Hide scroll hint
-  if (!hintHidden && window.scrollY > 30) {
+  // Hide scroll hint on first movement
+  if (!hintHidden && window.scrollY > 20) {
     hintHidden = true;
     hint.style.opacity = '0';
   }
 
-  // Leg draw: leg i extends during phase i+1 → i+2
+  // Legs: leg i extends during phase i+1 → i+2
   legs.forEach((leg, i) => {
     const t = smooth(phase, i + 1, i + 2);
     leg.style.strokeDashoffset = legLengths[i] * (1 - t);
   });
 
-  // Cards: fade in after leg ~70% extended
+  // Cards: fade in after leg ~70% drawn
   cards.forEach((card, i) => {
     card.style.opacity = smooth(phase, i + 1.7, i + 2.2);
   });
 
-  // Text panel opacities
-  // Hero: fade out 0.8–1.3
-  panels[0].style.opacity = 1 - smooth(phase, 0.8, 1.3);
-
-  // Feature panels 0–4: fade in then out within each phase window
+  // Text panels
+  allPanels[0].style.opacity = 1 - smooth(phase, 0.8, 1.3); // hero out
   for (let i = 0; i < 5; i++) {
     const tin  = smooth(phase, i + 1,   i + 1.4);
     const tout = smooth(phase, i + 1.6, i + 2.1);
-    panels[i + 1].style.opacity = tin * (1 - tout);
+    allPanels[i + 1].style.opacity = tin * (1 - tout);
   }
+  allPanels[6].style.opacity = smooth(phase, 6, 6.5); // reveal in
 
-  // Reveal: fade in at phase 6
-  panels[6].style.opacity = smooth(phase, 6, 6.5);
-
-  // Pointer events: only active panel is interactive
-  panels.forEach(p => {
+  // Pointer events: only visible panel is interactive
+  allPanels.forEach(p => {
     const op = parseFloat(p.style.opacity) || 0;
     p.style.pointerEvents = op > 0.1 ? 'auto' : 'none';
   });
 
   // Phase dots
-  const activeDot = Math.min(Math.floor(phase), 6);
-  dots.forEach((d, i) => d.classList.toggle('act', i === activeDot));
+  const dot = Math.min(Math.floor(phase), 6);
+  dots.forEach((d, i) => d.classList.toggle('act', i === dot));
 }
 
 // Init
 initLegs();
+layoutPanels();
 positionCards();
-window.addEventListener('resize', positionCards, {passive:true});
-window.addEventListener('scroll', onScroll,      {passive:true});
-onScroll();
+onScroll(); // set initial state before first scroll
+
+window.addEventListener('scroll', onScroll, {passive:true});
+window.addEventListener('resize', () => { layoutPanels(); positionCards(); }, {passive:true});
 </script>
 </body>
 </html>
