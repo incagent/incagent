@@ -2,620 +2,447 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>IncAgent — Simulated Company Workflow</title>
+<title>IncAgent — Company Operating System</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#09090f;--surface:#111118;--card:#16161f;--border:#ffffff0e;--border2:#ffffff18;
-  --t1:#f0f0f5;--t2:#8888a0;--t3:#44445a;
-  --green:#22c55e;--green-d:#052e16;--green-m:#166534;
-  --blue:#4f8ef7;--blue-d:#0a1628;
-  --purple:#a855f7;--purple-d:#1a0a3a;
-  --amber:#f59e0b;--amber-d:#2a1800;
+  --base:#060816;
+  --panel:#0B1020;
+  --panel2:#10162B;
+  --cobalt:#4D7CFF;
+  --violet:#7A5CFF;
+  --green:#18C37E;
+  --green-d:#031a0f;
+  --green-m:#0d4228;
+  --amber:#F5B942;
+  --text:#F5F7FA;
+  --muted:#8D97B5;
+  --dim:#3D4A6A;
+  --border:rgba(77,124,255,0.1);
+  --border2:rgba(77,124,255,0.2);
 }
-body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;}
+html,body{height:100%;}
+body{
+  background:var(--base);color:var(--text);
+  font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;overflow:hidden;position:relative;
+}
+body::before{
+  content:'';position:fixed;top:-100px;left:-100px;width:700px;height:500px;
+  background:radial-gradient(ellipse,rgba(77,124,255,0.06) 0%,transparent 65%);
+  pointer-events:none;z-index:0;
+}
 
-/* HEADER */
-.hdr{display:flex;align-items:center;padding:0 32px;height:52px;border-bottom:1px solid var(--border);background:rgba(9,9,15,.95);backdrop-filter:blur(12px);flex-shrink:0;gap:16px;}
-.hdr-logo{font-size:15px;font-weight:900;color:var(--t1);text-decoration:none;letter-spacing:-.3px;display:flex;align-items:center;gap:6px;}
-.hdr-logo em{font-style:normal;color:var(--blue);}
-.hdr-sep{color:var(--t3);font-size:14px;}
-.hdr-title{font-size:13px;color:var(--t2);font-weight:500;}
-.hdr-note{margin-left:auto;font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace;letter-spacing:.04em;}
-.hdr-back{margin-left:12px;font-size:12px;color:var(--t3);text-decoration:none;transition:color .15s;}
-.hdr-back:hover{color:var(--t2);}
+/* NAV */
+.nav{
+  display:flex;align-items:center;padding:0 24px;height:44px;
+  border-bottom:1px solid var(--border);
+  background:rgba(6,8,22,.95);backdrop-filter:blur(20px);
+  flex-shrink:0;z-index:10;position:relative;gap:8px;
+}
+.nav-logo{font-size:14px;font-weight:900;color:var(--text);text-decoration:none;letter-spacing:-.3px;}
+.nav-logo em{font-style:normal;color:var(--cobalt);}
+.nav-sep{color:var(--dim);font-size:13px;}
+.nav-title{font-size:12px;color:var(--muted);font-weight:500;}
+.nav-env{
+  margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--violet);background:rgba(122,92,255,0.1);border:1px solid rgba(122,92,255,0.25);
+  padding:3px 10px;border-radius:20px;
+}
+.nav-back{margin-left:12px;font-size:11px;color:var(--dim);text-decoration:none;transition:color .15s;}
+.nav-back:hover{color:var(--muted);}
+
+/* STATUS BAR */
+.sbar{
+  display:flex;align-items:stretch;border-bottom:1px solid var(--border);
+  flex-shrink:0;background:rgba(11,16,32,0.7);z-index:9;position:relative;
+}
+.sbi{display:flex;flex-direction:column;justify-content:center;padding:5px 16px;border-right:1px solid var(--border);}
+.sbi:last-child{border-right:none;margin-left:auto;}
+.sbi-l{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:2px;}
+.sbi-v{font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+.sdot{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:4px;vertical-align:middle;}
 
 /* TABS */
-.tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg);}
-.tab{flex:1;padding:12px 16px;text-align:center;font-size:12px;font-weight:600;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;letter-spacing:.02em;}
-.tab:hover{color:var(--t2);}
-.tab.active{color:var(--t1);border-bottom-color:var(--blue);}
-.tab-num{display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--card);font-size:9px;font-weight:700;line-height:18px;margin-right:6px;transition:all .2s;}
-.tab.active .tab-num{background:var(--blue);color:#fff;}
-.tab.done .tab-num{background:var(--green-m);color:var(--green);}
-.tab.done{color:var(--t2);}
+.tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--base);z-index:8;}
+.tab{
+  flex:1;padding:9px 12px;text-align:center;font-size:10px;font-weight:700;
+  color:var(--dim);cursor:pointer;border-bottom:2px solid transparent;
+  transition:all .2s;letter-spacing:.06em;text-transform:uppercase;
+}
+.tab:hover{color:var(--muted);}
+.tab.active{color:var(--cobalt);border-bottom-color:var(--cobalt);}
+.tab.done{color:var(--green);}
 
 /* CONTENT */
-.content{flex:1;overflow-y:auto;}
-.screen{display:none;padding:28px 40px;max-width:1000px;margin:0 auto;}
-.screen.active{display:block;}
+.content{flex:1;overflow-y:auto;position:relative;z-index:1;}
+.screen{display:none;padding:16px 24px;height:100%;}
+.screen.active{display:flex;flex-direction:column;gap:12px;}
 
-/* SCREEN HEADER */
-.screen-hdr{margin-bottom:24px;}
-.screen-eyebrow{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;}
-.screen-title{font-size:20px;font-weight:800;color:var(--t1);letter-spacing:-.3px;margin-bottom:6px;}
-.screen-sub{font-size:13px;color:var(--t2);}
-
-/* SECTION LABEL */
-.slabel{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:10px;}
-
-/* CARDS */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;}
-.card-sm{background:var(--card);border:1px solid var(--border);border-radius:8px;}
-
-/* GRID 2 */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-@media(max-width:700px){.g2{grid-template-columns:1fr;}}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-@media(max-width:700px){.g4{grid-template-columns:repeat(2,1fr);}}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-
-/* STATUS ROW */
-.status-row{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:7px;transition:all .35s;font-size:12px;font-weight:500;border:1px solid transparent;}
-.status-row.done{background:var(--green-d);border-color:var(--green-m);color:var(--green);}
-.status-row.active{background:#0e0e24;border-color:#4f8ef740;color:var(--t1);}
-.status-row.waiting{color:var(--t3);}
-.status-dot{width:7px;height:7px;border-radius:50%;border:1.5px solid currentColor;flex-shrink:0;transition:all .35s;}
-.status-row.done .status-dot{background:var(--green);border-color:var(--green);}
-.status-row.active .status-dot{background:var(--blue);border-color:var(--blue);box-shadow:0 0 6px var(--blue);}
+.slabel{font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:6px;}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;}
+.card2{background:var(--panel2);border:1px solid var(--border2);border-radius:8px;}
+.ipad{padding:12px 14px;}
+.mono{font-family:'JetBrains Mono',monospace;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
 
 /* AGENT CHIP */
-.agent-chip{padding:12px 14px;border-radius:8px;background:var(--card);border:1px solid var(--border);}
-.agent-chip-dot{width:7px;height:7px;border-radius:50%;margin-bottom:8px;transition:all .3s;}
-.agent-chip-dot.active{background:var(--green);box-shadow:0 0 6px var(--green);}
-.agent-chip-dot.idle{background:var(--border2);}
-.agent-chip-name{font-size:12px;font-weight:700;color:var(--t1);margin-bottom:3px;}
-.agent-chip-status{font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 7px;border-radius:20px;}
-.agent-chip-status.active{background:var(--green-d);color:var(--green);border:1px solid var(--green-m);}
-.agent-chip-status.idle{background:#181820;color:var(--t3);border:1px solid var(--border);}
+.ach{padding:9px 11px;border-radius:8px;background:var(--panel2);border:1px solid var(--border);}
+.ach-dot{width:5px;height:5px;border-radius:50%;margin-bottom:5px;transition:all .3s;}
+.ach-dot.on{background:var(--green);box-shadow:0 0 7px var(--green);}
+.ach-dot.off{background:var(--dim);}
+.ach-name{font-size:10px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.ach-b{font-size:8px;font-weight:700;letter-spacing:.05em;padding:2px 5px;border-radius:20px;display:inline-block;}
+.ach-b.on{background:var(--green-d);color:var(--green);border:1px solid var(--green-m);}
+.ach-b.off{background:rgba(255,255,255,0.02);color:var(--dim);border:1px solid var(--border);}
 
-/* TRANSACTION CORPS */
-.tx-corps{display:grid;grid-template-columns:1fr 140px 1fr;gap:16px;align-items:center;padding:20px;margin-bottom:16px;}
-.corp-box{text-align:center;}
-.corp-logo{width:48px;height:48px;border-radius:10px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;}
-.corp-name{font-size:13px;font-weight:800;color:var(--t1);margin-bottom:2px;}
-.corp-role{font-size:10px;color:var(--t3);}
-.tx-channel{display:flex;flex-direction:column;align-items:center;gap:6px;}
-.tx-line{width:100%;height:2px;background:var(--border2);position:relative;overflow:visible;}
-.fly{position:absolute;top:50%;transform:translateY(-50%);opacity:0;pointer-events:none;background:var(--bg);border:1px solid var(--border2);border-radius:5px;padding:3px 9px;font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;white-space:nowrap;z-index:5;}
-.fly.go{animation:flyR 1.1s ease-in-out forwards;}
-.fly.back{animation:flyL 1.1s ease-in-out forwards;}
-@keyframes flyR{0%{left:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{left:calc(100% - 60px);opacity:0}}
-@keyframes flyL{0%{right:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{right:calc(100% - 60px);opacity:0}}
-.tx-proto{font-size:9px;color:var(--t3);letter-spacing:.06em;}
-
-/* REVENUE / NUMBER */
-.rev-num{font-size:28px;font-weight:900;font-family:'JetBrains Mono',monospace;letter-spacing:-.5px;}
-.rev-lbl{font-size:10px;color:var(--t2);margin-top:4px;font-weight:500;}
+/* STATUS ROW */
+.sr{display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:6px;font-size:11px;font-weight:500;border:1px solid transparent;transition:all .35s;}
+.sr.done{background:var(--green-d);border-color:var(--green-m);color:var(--green);}
+.sr.active{background:rgba(77,124,255,0.07);border-color:rgba(77,124,255,0.25);color:var(--text);}
+.sr.wait{color:var(--dim);}
+.sr-dot{width:6px;height:6px;border-radius:50%;border:1.5px solid currentColor;flex-shrink:0;transition:all .35s;}
+.sr.done .sr-dot{background:var(--green);border-color:var(--green);}
+.sr.active .sr-dot{background:var(--cobalt);border-color:var(--cobalt);box-shadow:0 0 5px var(--cobalt);}
 
 /* LOG */
-.log{background:#08080f;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
-.log-hdr{padding:7px 14px;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);display:flex;align-items:center;gap:6px;}
-.log-hdr::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.8s ease-in-out infinite;}
+.log{background:rgba(4,6,14,0.8);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.log-hdr{padding:5px 12px;border-bottom:1px solid var(--border);font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:5px;}
+.log-hdr::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-.log-body{padding:6px 0;min-height:70px;}
-.log-line{display:flex;gap:10px;padding:3px 14px;font-size:10px;font-family:'JetBrains Mono',monospace;}
-.log-ts{color:var(--t3);flex-shrink:0;font-size:9px;}
-.log-tag{font-weight:700;flex-shrink:0;min-width:90px;}
-.log-msg{color:var(--t2);}
+.log-body{padding:3px 0;min-height:48px;}
+.ll{display:flex;gap:8px;padding:2px 12px;font-size:9px;font-family:'JetBrains Mono',monospace;}
+.ll-ts{color:var(--dim);flex-shrink:0;}
+.ll-tag{font-weight:700;flex-shrink:0;min-width:72px;}
+.ll-msg{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
-/* NEXT BUTTON */
-.next-btn{margin-top:24px;display:flex;align-items:center;gap:12px;}
-.btn-next{background:var(--blue);color:#fff;font-weight:700;font-size:13px;padding:10px 22px;border-radius:8px;border:none;cursor:pointer;transition:filter .15s;}
-.btn-next:hover{filter:brightness(1.12);}
-.btn-next:disabled{background:var(--card);color:var(--t3);cursor:default;filter:none;}
-.next-note{font-size:11px;color:var(--t3);}
+/* NEXT */
+.nbar{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.btn-n{background:var(--cobalt);color:#fff;font-weight:700;font-size:11px;padding:8px 18px;border-radius:8px;border:none;cursor:pointer;transition:all .15s;box-shadow:0 0 18px rgba(77,124,255,0.3);}
+.btn-n:hover{filter:brightness(1.1);}
+.btn-n:disabled{background:var(--panel2);color:var(--dim);cursor:default;box-shadow:none;}
+.nnote{font-size:10px;color:var(--dim);}
 
-/* REQUEST ACCESS */
-.access-block{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:32px;text-align:center;margin-top:24px;}
-.access-block h4{font-size:17px;font-weight:800;color:var(--t1);margin-bottom:8px;}
-.access-block p{font-size:13px;color:var(--t2);line-height:1.65;margin-bottom:20px;}
-.btn-access{display:inline-flex;background:var(--blue);color:#fff;font-weight:700;font-size:14px;padding:12px 28px;border-radius:8px;text-decoration:none;transition:filter .15s;}
-.btn-access:hover{filter:brightness(1.12);}
+/* TRANSACT 3-col */
+.tx3{display:grid;grid-template-columns:1fr 90px 1fr;gap:0;flex:1;min-height:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.txc{display:flex;flex-direction:column;padding:12px 10px;gap:8px;overflow-y:auto;}
+.txc-l{border-right:1px solid var(--border);}
+.txc-r{border-left:1px solid var(--border);}
+.txc-hdr{padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:2px;}
+.txc-co{font-size:12px;font-weight:800;}
+.txc-role{font-size:9px;color:var(--dim);margin-top:1px;}
 
-/* INLINE ITEMS */
-.ipad{padding:16px 18px;}
-.mono{font-family:'JetBrains Mono',monospace;}
+/* Rail */
+.rail{display:flex;flex-direction:column;align-items:center;padding:12px 4px;background:rgba(77,124,255,0.02);border-right:1px solid var(--border);position:relative;}
+.rail::before{content:'';position:absolute;top:0;bottom:0;left:50%;width:1px;background:linear-gradient(transparent,rgba(77,124,255,0.18) 30%,rgba(77,124,255,0.18) 70%,transparent);}
+.rail-lbl{font-size:7px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(77,124,255,0.4);writing-mode:vertical-rl;position:absolute;top:50%;transform:translateY(-50%);}
+.txcard{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--panel2);border:1px solid var(--border2);border-radius:5px;padding:3px 7px;font-size:8px;font-weight:700;font-family:'JetBrains Mono',monospace;white-space:nowrap;opacity:0;z-index:5;}
+.txcard.fr{animation:fr 1.3s ease-in-out forwards;}
+.txcard.fl{animation:fl 1.3s ease-in-out forwards;}
+@keyframes fr{0%{left:-20px;opacity:0;transform:translateY(-50%) scale(.85)}18%{opacity:1;transform:translateY(-50%) scale(1)}82%{opacity:1}100%{left:110px;opacity:0;transform:translateY(-50%) scale(.85)}}
+@keyframes fl{0%{left:110px;opacity:0;transform:translateY(-50%) scale(.85)}18%{opacity:1;transform:translateY(-50%) scale(1)}82%{opacity:1}100%{left:-20px;opacity:0;transform:translateY(-50%) scale(.85)}}
+
+/* Revenue */
+.rnum{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+.rnum-l{font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:5px;}
+.rnum-v{font-size:22px;font-weight:900;font-family:'JetBrains Mono',monospace;letter-spacing:-.5px;}
+
+/* Sparkline */
+.spark{display:flex;align-items:flex-end;gap:2px;}
+.sb{flex:1;border-radius:2px 2px 0 0;opacity:.3;transition:all .4s;}
+.sb.lit{opacity:.8!important;}
+
+/* Access */
+.access{background:linear-gradient(135deg,var(--panel),rgba(16,22,43,.8));border:1px solid var(--border2);border-radius:12px;padding:24px;text-align:center;box-shadow:0 0 50px rgba(77,124,255,.06);}
+.access h4{font-size:15px;font-weight:800;color:var(--text);margin-bottom:8px;}
+.access p{font-size:12px;color:var(--muted);line-height:1.65;margin-bottom:18px;max-width:400px;margin-left:auto;margin-right:auto;}
+.btn-acc{display:inline-flex;background:var(--cobalt);color:#fff;font-weight:700;font-size:12px;padding:10px 24px;border-radius:8px;text-decoration:none;box-shadow:0 0 20px rgba(77,124,255,.3);transition:filter .15s;}
+.btn-acc:hover{filter:brightness(1.12);}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="hdr">
-  <a href="/" class="hdr-logo">Inc<em>Agent</em></a>
-  <span class="hdr-sep">/</span>
-  <span class="hdr-title">Simulated Company Workflow</span>
-  <span class="hdr-note">Prototype environment</span>
-  <a href="/" class="hdr-back">Back to site</a>
+<div class="nav">
+  <a href="/" class="nav-logo">Inc<em>Agent</em></a>
+  <span class="nav-sep">/</span>
+  <span class="nav-title">Company Operating System</span>
+  <div class="nav-env">Prototype Environment</div>
+  <a href="/" class="nav-back">Back to site</a>
 </div>
 
-<!-- TABS -->
+<div class="sbar">
+  <div class="sbi"><div class="sbi-l">Environment</div><div class="sbi-v" style="color:var(--violet)">Prototype</div></div>
+  <div class="sbi"><div class="sbi-l">Company State</div><div class="sbi-v"><span class="sdot" style="background:var(--green);box-shadow:0 0 5px var(--green)"></span><span id="sb-state" style="color:var(--green)">Initializing</span></div></div>
+  <div class="sbi"><div class="sbi-l">Counterparty Status</div><div class="sbi-v"><span class="sdot" style="background:var(--violet)"></span><span style="color:var(--violet)">Connected</span></div></div>
+  <div class="sbi"><div class="sbi-l">Active Agents</div><div class="sbi-v" id="sb-agents" style="color:var(--cobalt)">0</div></div>
+  <div class="sbi"><div class="sbi-l">Last Event</div><div class="sbi-v mono" id="sb-ev" style="color:var(--dim)">—</div></div>
+</div>
+
 <div class="tabs">
-  <div class="tab active" id="tab0" onclick="goTo(0)"><span class="tab-num">1</span>Build</div>
-  <div class="tab" id="tab1" onclick="goTo(1)"><span class="tab-num">2</span>Transact</div>
-  <div class="tab" id="tab2" onclick="goTo(2)"><span class="tab-num">3</span>Get paid</div>
-  <div class="tab" id="tab3" onclick="goTo(3)"><span class="tab-num">4</span>Operate</div>
+  <div class="tab active" id="tab0" onclick="goTo(0)">01 Build</div>
+  <div class="tab" id="tab1" onclick="goTo(1)">02 Transact</div>
+  <div class="tab" id="tab2" onclick="goTo(2)">03 Get paid</div>
+  <div class="tab" id="tab3" onclick="goTo(3)">04 Operate</div>
 </div>
 
 <div class="content">
 
   <!-- SCREEN 1: BUILD -->
-  <div class="screen active" id="screen0">
-    <div class="screen-hdr">
-      <div class="screen-eyebrow">Demo 1 of 4</div>
-      <div class="screen-title">Internal Build System</div>
-      <div class="screen-sub">An internal agent creates the commercial asset.</div>
-    </div>
-
-    <div class="slabel" style="margin-bottom:10px">Internal agents</div>
-    <div class="g4" style="margin-bottom:20px">
-      <div class="agent-chip">
-        <div class="agent-chip-dot active" id="b-dot-code"></div>
-        <div class="agent-chip-name">Code Agent</div>
-        <div class="agent-chip-status active" id="b-ag-code">ACTIVE</div>
-      </div>
-      <div class="agent-chip">
-        <div class="agent-chip-dot idle" id="b-dot-offer"></div>
-        <div class="agent-chip-name">Offer Builder</div>
-        <div class="agent-chip-status idle" id="b-ag-offer">IDLE</div>
-      </div>
-      <div class="agent-chip">
-        <div class="agent-chip-dot idle" id="b-dot-checkout"></div>
-        <div class="agent-chip-name">Checkout Setup</div>
-        <div class="agent-chip-status idle" id="b-ag-checkout">IDLE</div>
-      </div>
-      <div class="agent-chip">
-        <div class="agent-chip-dot idle" id="b-dot-deploy"></div>
-        <div class="agent-chip-name">Deployment</div>
-        <div class="agent-chip-status idle" id="b-ag-deploy">IDLE</div>
-      </div>
-    </div>
-
-    <div class="g2" style="margin-bottom:20px">
-      <div>
-        <div class="slabel">Workflow steps</div>
-        <div class="card ipad" style="display:flex;flex-direction:column;gap:6px;">
-          <div class="status-row waiting" id="b-s0"><div class="status-dot"></div>Service package generated</div>
-          <div class="status-row waiting" id="b-s1"><div class="status-dot"></div>Landing page published</div>
-          <div class="status-row waiting" id="b-s2"><div class="status-dot"></div>Offer activated</div>
-        </div>
-      </div>
-      <div>
-        <div class="slabel">Build output</div>
-        <div class="card ipad" style="display:flex;flex-direction:column;gap:10px;">
-          <div>
-            <div style="font-size:10px;color:var(--t3);margin-bottom:4px;">Package</div>
-            <div class="mono" style="font-size:12px;color:var(--t1)" id="b-pkg">—</div>
-          </div>
-          <div>
-            <div style="font-size:10px;color:var(--t3);margin-bottom:4px;">Price</div>
-            <div class="mono" style="font-size:12px;color:var(--green)" id="b-price">—</div>
-          </div>
-          <div>
-            <div style="font-size:10px;color:var(--t3);margin-bottom:4px;">Status</div>
-            <div class="mono" style="font-size:12px;color:var(--t3)" id="b-status">Building...</div>
+  <div class="screen active" id="sc0">
+    <div class="g2" style="flex:1;min-height:0;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div>
+          <div class="slabel">Internal agents</div>
+          <div class="g4">
+            <div class="ach"><div class="ach-dot on" id="b-d0"></div><div class="ach-name">Code</div><div class="ach-b on" id="b-b0">ACTIVE</div></div>
+            <div class="ach"><div class="ach-dot off" id="b-d1"></div><div class="ach-name">Offer</div><div class="ach-b off" id="b-b1">IDLE</div></div>
+            <div class="ach"><div class="ach-dot off" id="b-d2"></div><div class="ach-name">Checkout</div><div class="ach-b off" id="b-b2">IDLE</div></div>
+            <div class="ach"><div class="ach-dot off" id="b-d3"></div><div class="ach-name">Deploy</div><div class="ach-b off" id="b-b3">IDLE</div></div>
           </div>
         </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:5px;">
+          <div class="slabel">Workflow</div>
+          <div class="card ipad" style="display:flex;flex-direction:column;gap:4px;flex:1;">
+            <div class="sr wait" id="b-s0"><div class="sr-dot"></div>Service package generated</div>
+            <div class="sr wait" id="b-s1"><div class="sr-dot"></div>Landing page published</div>
+            <div class="sr wait" id="b-s2"><div class="sr-dot"></div>Offer activated</div>
+          </div>
+        </div>
+        <div class="log"><div class="log-hdr">Build log</div><div class="log-body" id="b-log"></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div>
+          <div class="slabel">Build output</div>
+          <div class="card ipad" style="display:flex;flex-direction:column;gap:10px;">
+            <div><div style="font-size:8px;color:var(--dim);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;">Package</div><div class="mono" style="font-size:11px;color:var(--text)" id="b-pkg">—</div></div>
+            <div><div style="font-size:8px;color:var(--dim);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;">Counterparty</div><div class="mono" style="font-size:11px;color:var(--violet)" id="b-cp">—</div></div>
+            <div><div style="font-size:8px;color:var(--dim);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;">Price</div><div class="mono" style="font-size:11px;color:var(--amber)" id="b-price">—</div></div>
+            <div><div style="font-size:8px;color:var(--dim);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;">Status</div><div class="mono" style="font-size:11px;color:var(--dim)" id="b-status">Initializing...</div></div>
+          </div>
+        </div>
+        <div><div class="slabel">Agent activity</div><div class="card ipad"><div class="spark" style="height:24px" id="b-spark"></div></div></div>
       </div>
     </div>
-
-    <div class="slabel">Activity</div>
-    <div class="log" style="margin-bottom:24px">
-      <div class="log-hdr">Log</div>
-      <div class="log-body" id="b-log"></div>
-    </div>
-
-    <div class="next-btn">
-      <button class="btn-next" id="b-next" disabled onclick="goTo(1)">Next: Transact</button>
-      <span class="next-note" id="b-next-note">Building...</span>
-    </div>
+    <div class="nbar"><button class="btn-n" id="b-next" disabled onclick="goTo(1)">Next: Transact</button><span class="nnote" id="b-note">Building...</span></div>
   </div>
 
   <!-- SCREEN 2: TRANSACT -->
-  <div class="screen" id="screen1">
-    <div class="screen-hdr">
-      <div class="screen-eyebrow">Demo 2 of 4</div>
-      <div class="screen-title">Counterparty Transaction</div>
-      <div class="screen-sub">A counterparty agent reviews and accepts the transaction.</div>
-    </div>
-
-    <div class="card" style="margin-bottom:16px">
-      <div class="tx-corps">
-        <div class="corp-box">
-          <div class="corp-logo" style="background:#1e1a3a">
-            <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
-              <path d="M14 3L4 9v10l10 6 10-6V9L14 3z" fill="#a855f7" opacity=".25" stroke="#a855f7" stroke-width="1.5"/>
-              <text x="14" y="17" text-anchor="middle" font-family="Inter" font-weight="900" font-size="7" fill="#a855f7">IA</text>
-            </svg>
+  <div class="screen" id="sc1">
+    <div class="tx3" style="flex:1;min-height:0;">
+      <!-- Internal -->
+      <div class="txc txc-l">
+        <div class="txc-hdr"><div class="txc-co" style="color:var(--cobalt)">IncAgent Vendor</div><div class="txc-role">Seller · Internal</div></div>
+        <div>
+          <div class="slabel">Agents</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <div class="ach"><div class="ach-dot off" id="t-d-s"></div><div class="ach-name">Sales Agent</div><div class="ach-b off" id="t-b-s">IDLE</div></div>
+            <div class="ach"><div class="ach-dot off" id="t-d-f"></div><div class="ach-name">Finance Agent</div><div class="ach-b off" id="t-b-f">IDLE</div></div>
           </div>
-          <div class="corp-name">IncAgent Vendor</div>
-          <div class="corp-role">Seller · AI Corp</div>
         </div>
-        <div class="tx-channel">
-          <div class="tx-line" id="tx-line">
-            <div class="fly" id="fly-proposal" style="color:var(--blue)">PROPOSAL</div>
-            <div class="fly" id="fly-terms" style="color:var(--t2)">TERMS</div>
-            <div class="fly" id="fly-contract" style="color:var(--green)">CONTRACT</div>
-            <div class="fly" id="fly-access" style="color:var(--purple)">ACCESS</div>
+        <div>
+          <div class="slabel">Sent</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <div class="sr wait" id="t-l0"><div class="sr-dot"></div>Proposal sent</div>
+            <div class="sr wait" id="t-l1"><div class="sr-dot"></div>Contract issued</div>
+            <div class="sr wait" id="t-l2"><div class="sr-dot"></div>Access granted</div>
           </div>
-          <div class="tx-proto">IncAgent Protocol</div>
         </div>
-        <div class="corp-box">
-          <div class="corp-logo" style="background:#0c1a3a">
-            <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
-              <circle cx="14" cy="14" r="11" fill="#3b82f6" opacity=".15" stroke="#3b82f6" stroke-width="1.5"/>
-              <circle cx="14" cy="11" r="3.5" fill="#3b82f6"/>
-              <path d="M7 21c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="corp-name">Northstar Buyer</div>
-          <div class="corp-role">Buyer · AI Corp</div>
-        </div>
+        <div class="log" style="flex:1;"><div class="log-hdr">Vendor log</div><div class="log-body" id="t-vlog"></div></div>
       </div>
 
-      <div style="padding:0 20px 20px;display:flex;flex-direction:column;gap:5px;">
-        <div class="status-row waiting" id="t-s0"><div class="status-dot"></div>Proposal sent</div>
-        <div class="status-row waiting" id="t-s1"><div class="status-dot"></div>Proposal received</div>
-        <div class="status-row waiting" id="t-s2"><div class="status-dot"></div>Terms reviewed</div>
-        <div class="status-row waiting" id="t-s3"><div class="status-dot"></div>Contract accepted</div>
-        <div class="status-row waiting" id="t-s4"><div class="status-dot"></div>Access activated</div>
+      <!-- Rail -->
+      <div class="rail">
+        <div class="txcard" id="tc0" style="color:var(--cobalt)">PROPOSAL</div>
+        <div class="txcard" id="tc1" style="color:var(--muted)">TERMS</div>
+        <div class="txcard" id="tc2" style="color:var(--green)">CONTRACT</div>
+        <div class="txcard" id="tc3" style="color:var(--violet)">ACCESS</div>
+        <div class="rail-lbl">PROTOCOL RAIL</div>
+      </div>
+
+      <!-- Counterparty -->
+      <div class="txc txc-r">
+        <div class="txc-hdr"><div class="txc-co" style="color:var(--violet)">Northstar Buyer</div><div class="txc-role">Buyer · Counterparty</div></div>
+        <div>
+          <div class="slabel">Counterparty agent</div>
+          <div class="ach"><div class="ach-dot off" id="t-d-b"></div><div class="ach-name">Procurement Agent</div><div class="ach-b off" id="t-b-b">IDLE</div></div>
+        </div>
+        <div>
+          <div class="slabel">Received</div>
+          <div style="display:flex;flex-direction:column;gap:4px;">
+            <div class="sr wait" id="t-r0"><div class="sr-dot"></div>Proposal received</div>
+            <div class="sr wait" id="t-r1"><div class="sr-dot"></div>Terms reviewed</div>
+            <div class="sr wait" id="t-r2"><div class="sr-dot"></div>Contract accepted</div>
+            <div class="sr wait" id="t-r3"><div class="sr-dot"></div>Access activated</div>
+          </div>
+        </div>
+        <div class="log" style="flex:1;"><div class="log-hdr">Buyer log</div><div class="log-body" id="t-blog"></div></div>
       </div>
     </div>
-
-    <div class="slabel">Activity</div>
-    <div class="log" style="margin-bottom:24px">
-      <div class="log-hdr">Log</div>
-      <div class="log-body" id="t-log"></div>
-    </div>
-
-    <div class="next-btn">
-      <button class="btn-next" id="t-next" disabled onclick="goTo(2)">Next: Get paid</button>
-      <span class="next-note" id="t-next-note">Waiting for contract...</span>
-    </div>
+    <div class="nbar" style="margin-top:10px;"><button class="btn-n" id="t-next" disabled onclick="goTo(2)">Next: Get paid</button><span class="nnote" id="t-note">Waiting for contract...</span></div>
   </div>
 
   <!-- SCREEN 3: GET PAID -->
-  <div class="screen" id="screen2">
-    <div class="screen-hdr">
-      <div class="screen-eyebrow">Demo 3 of 4</div>
-      <div class="screen-title">Revenue Event</div>
-      <div class="screen-sub">The transaction becomes billing, payment, and recorded revenue.</div>
+  <div class="screen" id="sc2">
+    <div class="g3">
+      <div class="rnum"><div class="rnum-l">Invoice amount</div><div class="rnum-v" style="color:var(--amber)" id="r-amt">—</div></div>
+      <div class="rnum"><div class="rnum-l">Payment status</div><div class="rnum-v" style="color:var(--dim);font-size:14px" id="r-stat">Pending</div></div>
+      <div class="rnum"><div class="rnum-l">MRR added</div><div class="rnum-v" style="color:var(--green)" id="r-mrr">—</div></div>
     </div>
-
-    <div class="g3" style="margin-bottom:20px">
-      <div class="card ipad" style="text-align:center">
-        <div class="rev-num" style="color:var(--green)" id="r-amount">$0</div>
-        <div class="rev-lbl">Invoice amount</div>
+    <div class="g2" style="flex:1;min-height:0;">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="slabel">Revenue event</div>
+        <div class="card ipad" style="display:flex;flex-direction:column;gap:4px;">
+          <div class="sr wait" id="r-s0"><div class="sr-dot"></div>Invoice issued</div>
+          <div class="sr wait" id="r-s1"><div class="sr-dot"></div>Payment received</div>
+          <div class="sr wait" id="r-s2"><div class="sr-dot"></div>Revenue recorded</div>
+          <div class="sr wait" id="r-s3"><div class="sr-dot"></div>1099-NEC queued</div>
+        </div>
+        <div class="log" style="flex:1;"><div class="log-hdr">Finance log</div><div class="log-body" id="r-log"></div></div>
       </div>
-      <div class="card ipad" style="text-align:center">
-        <div class="rev-num" style="color:var(--blue)" id="r-status">Pending</div>
-        <div class="rev-lbl">Payment status</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div>
+          <div class="slabel">Revenue timeline</div>
+          <div class="card ipad">
+            <div class="spark" style="height:40px" id="r-chart"></div>
+            <div style="font-size:8px;color:var(--dim);text-align:right;margin-top:6px;">Last 10 transactions</div>
+          </div>
+        </div>
+        <div class="card ipad">
+          <div style="font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px;">Invoice details</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:10px;"><span style="color:var(--dim)">Item</span><span class="mono" style="color:var(--text)" id="r-item">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;"><span style="color:var(--dim)">Payer</span><span class="mono" style="color:var(--violet)">Northstar Buyer</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;"><span style="color:var(--dim)">Tax record</span><span class="mono" style="color:var(--dim)" id="r-tax">Pending</span></div>
+          </div>
+        </div>
       </div>
-      <div class="card ipad" style="text-align:center">
-        <div class="rev-num" style="color:var(--t3)" id="r-mrr">—</div>
-        <div class="rev-lbl">MRR added</div>
-      </div>
     </div>
-
-    <div class="slabel">Steps</div>
-    <div class="card ipad" style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">
-      <div class="status-row waiting" id="r-s0"><div class="status-dot"></div>Invoice issued</div>
-      <div class="status-row waiting" id="r-s1"><div class="status-dot"></div>Payment received</div>
-      <div class="status-row waiting" id="r-s2"><div class="status-dot"></div>Revenue recorded</div>
-    </div>
-
-    <div class="slabel">Activity</div>
-    <div class="log" style="margin-bottom:24px">
-      <div class="log-hdr">Log</div>
-      <div class="log-body" id="r-log"></div>
-    </div>
-
-    <div class="next-btn">
-      <button class="btn-next" id="r-next" disabled onclick="goTo(3)">Next: Operate</button>
-      <span class="next-note" id="r-next-note">Processing...</span>
-    </div>
+    <div class="nbar"><button class="btn-n" id="r-next" disabled onclick="goTo(3)">Next: Operate</button><span class="nnote" id="r-note">Processing...</span></div>
   </div>
 
   <!-- SCREEN 4: OPERATE -->
-  <div class="screen" id="screen3">
-    <div class="screen-hdr">
-      <div class="screen-eyebrow">Demo 4 of 4</div>
-      <div class="screen-title">Company Operations</div>
-      <div class="screen-sub">Growth, finance, and compliance agents continue the company workflow.</div>
-    </div>
-
-    <div class="g3" style="margin-bottom:20px">
-      <div class="agent-chip">
-        <div class="agent-chip-dot idle" id="o-dot-growth"></div>
-        <div class="agent-chip-name">Growth Agent</div>
-        <div class="agent-chip-status idle" id="o-ag-growth">IDLE</div>
+  <div class="screen" id="sc3">
+    <div class="g2" style="flex:1;min-height:0;">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div>
+          <div class="slabel">Operating agents</div>
+          <div class="g3">
+            <div class="ach"><div class="ach-dot off" id="o-d0"></div><div class="ach-name">Growth</div><div class="ach-b off" id="o-b0">IDLE</div></div>
+            <div class="ach"><div class="ach-dot off" id="o-d1"></div><div class="ach-name">Finance</div><div class="ach-b off" id="o-b1">IDLE</div></div>
+            <div class="ach"><div class="ach-dot off" id="o-d2"></div><div class="ach-name">Compliance</div><div class="ach-b off" id="o-b2">IDLE</div></div>
+          </div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+          <div class="slabel">Operations</div>
+          <div class="card ipad" style="display:flex;flex-direction:column;gap:4px;flex:1;">
+            <div class="sr wait" id="o-s0"><div class="sr-dot"></div>Campaign launched</div>
+            <div class="sr wait" id="o-s1"><div class="sr-dot"></div>Distribution scheduled</div>
+            <div class="sr wait" id="o-s2"><div class="sr-dot"></div>Expense categorized</div>
+            <div class="sr wait" id="o-s3"><div class="sr-dot"></div>Records prepared</div>
+            <div class="sr wait" id="o-s4"><div class="sr-dot"></div>Compliance log saved</div>
+          </div>
+        </div>
+        <div class="log"><div class="log-hdr">Activity</div><div class="log-body" id="o-log"></div></div>
       </div>
-      <div class="agent-chip">
-        <div class="agent-chip-dot idle" id="o-dot-finance"></div>
-        <div class="agent-chip-name">Finance Agent</div>
-        <div class="agent-chip-status idle" id="o-ag-finance">IDLE</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div>
+          <div class="slabel">Company metrics</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div class="card ipad">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;"><div style="font-size:8px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.08em">Revenue events</div><div class="mono" style="font-size:10px;color:var(--amber)" id="o-rev">$0</div></div>
+              <div class="spark" style="height:18px" id="o-rs"></div>
+            </div>
+            <div class="card ipad">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;"><div style="font-size:8px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.08em">Agent activity</div><div class="mono" style="font-size:10px;color:var(--cobalt)" id="o-ac">0 / 3</div></div>
+              <div class="spark" style="height:18px" id="o-as"></div>
+            </div>
+            <div class="card ipad">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;"><div style="font-size:8px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.08em">Counterparties</div><div class="mono" style="font-size:10px;color:var(--violet)">1 connected</div></div>
+              <div class="spark" style="height:18px" id="o-cs"></div>
+            </div>
+          </div>
+        </div>
+        <div class="access" id="o-acc" style="display:none;">
+          <h4>The workflow is complete</h4>
+          <p>An agent-run company created a service, transacted with another company, got paid, and continued operations — with no human input.</p>
+          <a href="mailto:hello@incagent.ai" class="btn-acc">Request early access</a>
+        </div>
       </div>
-      <div class="agent-chip">
-        <div class="agent-chip-dot idle" id="o-dot-compliance"></div>
-        <div class="agent-chip-name">Compliance Agent</div>
-        <div class="agent-chip-status idle" id="o-ag-compliance">IDLE</div>
-      </div>
-    </div>
-
-    <div class="slabel">Operations log</div>
-    <div class="card ipad" style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">
-      <div class="status-row waiting" id="o-s0"><div class="status-dot"></div>Campaign launched</div>
-      <div class="status-row waiting" id="o-s1"><div class="status-dot"></div>Distribution scheduled</div>
-      <div class="status-row waiting" id="o-s2"><div class="status-dot"></div>Expense categorized</div>
-      <div class="status-row waiting" id="o-s3"><div class="status-dot"></div>Records prepared</div>
-      <div class="status-row waiting" id="o-s4"><div class="status-dot"></div>Compliance log saved</div>
-    </div>
-
-    <div class="slabel">Activity</div>
-    <div class="log" style="margin-bottom:24px">
-      <div class="log-hdr">Log</div>
-      <div class="log-body" id="o-log"></div>
-    </div>
-
-    <div class="access-block" id="access-block" style="display:none">
-      <h4>The workflow is complete</h4>
-      <p>An agent-run company created a service, transacted with another company, got paid, and continued operations — with no human input at any step.</p>
-      <a href="mailto:hello@incagent.ai" class="btn-access">Request early access</a>
     </div>
   </div>
 
 </div>
 
 <script>
-let currentScreen = 0;
-const screensDone = [false, false, false, false];
+let agentCount = 0;
+function ts(){const d=new Date();return[d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');}
+function lg(id,tag,msg,c){const el=document.getElementById(id);const div=document.createElement('div');div.className='ll';div.innerHTML=`<span class="ll-ts">${ts()}</span><span class="ll-tag" style="color:${c||'var(--muted)'}">${tag}</span><span class="ll-msg">${msg}</span>`;el.prepend(div);while(el.children.length>8)el.removeChild(el.lastChild);document.getElementById('sb-ev').textContent=ts();}
+function sr(id,s){document.getElementById(id).className=`sr ${s}`;}
+function ag(di,bi,on){document.getElementById(di).className=`ach-dot ${on?'on':'off'}`;const b=document.getElementById(bi);b.className=`ach-b ${on?'on':'off'}`;b.textContent=on?'ACTIVE':'IDLE';if(on){agentCount++;document.getElementById('sb-agents').textContent=agentCount;}}
+function sbState(t,c){const el=document.getElementById('sb-state');el.textContent=t;el.style.color=c;}
+function fly(id,dir){const el=document.getElementById(id);el.classList.remove('fr','fl');void el.offsetWidth;el.classList.add(dir);}
+function mkSpark(id,color,n,ht){const el=document.getElementById(id);el.innerHTML='';for(let i=0;i<(n||10);i++){const h=Math.floor(Math.random()*65+25);const d=document.createElement('div');d.className='sb';d.style.cssText=`height:${h}%;background:${color||'var(--cobalt)'};transition:all ${.3+i*.05}s;`;el.appendChild(d);}}
+function litSpark(id,c){const bars=document.getElementById(id).querySelectorAll('.sb');bars.forEach((b,i)=>setTimeout(()=>{b.classList.add('lit');b.style.background=c||'var(--green)';},i*60));}
 
-function ts() {
-  const d = new Date();
-  return [d.getHours(), d.getMinutes(), d.getSeconds()].map(n => String(n).padStart(2,'0')).join(':');
+const done=[false,false,false,false];
+function goTo(i){
+  document.querySelectorAll('.screen').forEach((s,idx)=>s.classList.toggle('active',idx===i));
+  document.querySelectorAll('.tab').forEach((t,idx)=>{t.classList.remove('active','done');if(idx===i)t.classList.add('active');else if(done[idx])t.classList.add('done');});
+  if(!done[i])startScreen(i);
+}
+function startScreen(i){if(i===0)runBuild();else if(i===1)runTransact();else if(i===2)runRevenue();else if(i===3)runOperate();}
+
+// BUILD
+function runBuild(){
+  sbState('Building','var(--cobalt)');mkSpark('b-spark','var(--cobalt)',8);
+  let t=400;
+  setTimeout(()=>{lg('b-log','Code Agent','Generating service package','var(--cobalt)');},t);t+=1400;
+  setTimeout(()=>{sr('b-s0','active');document.getElementById('b-pkg').textContent='Outbound Campaign System';document.getElementById('b-cp').textContent='Northstar Buyer';document.getElementById('b-price').textContent='$5,000 / contract';lg('b-log','Code Agent','Service package generated','var(--cobalt)');},t);t+=1400;
+  setTimeout(()=>{sr('b-s0','done');sr('b-s1','active');ag('b-d1','b-b1',true);lg('b-log','Offer Builder','Publishing landing page','var(--violet)');},t);t+=1400;
+  setTimeout(()=>{sr('b-s1','done');sr('b-s2','active');ag('b-d2','b-b2',true);ag('b-d3','b-b3',true);document.getElementById('b-status').textContent='Activating...';document.getElementById('b-status').style.color='var(--amber)';lg('b-log','Deploy Agent','Activating offer endpoint','var(--amber)');litSpark('b-spark','var(--green)');},t);t+=1400;
+  setTimeout(()=>{sr('b-s2','done');document.getElementById('b-status').textContent='Live';document.getElementById('b-status').style.color='var(--green)';sbState('Operating','var(--green)');lg('b-log','System','Offer activated and discoverable','var(--green)');document.getElementById('b-next').disabled=false;document.getElementById('b-note').textContent='Build complete';done[0]=true;document.getElementById('tab0').classList.add('done');},t);
 }
 
-function log(containerId, tag, msg, tagColor) {
-  const el = document.getElementById(containerId);
-  const div = document.createElement('div');
-  div.className = 'log-line';
-  div.innerHTML = `<span class="log-ts">${ts()}</span><span class="log-tag" style="color:${tagColor||'var(--t2)'}">${tag}</span><span class="log-msg">${msg}</span>`;
-  el.prepend(div);
-  while (el.children.length > 8) el.removeChild(el.lastChild);
+// TRANSACT
+function runTransact(){
+  sbState('Transacting','var(--cobalt)');
+  let t=300;
+  setTimeout(()=>{ag('t-d-s','t-b-s',true);lg('t-vlog','Sales Agent','Initiating contact with Northstar','var(--cobalt)');},t);t+=1300;
+  setTimeout(()=>{sr('t-l0','active');sr('t-r0','active');ag('t-d-b','t-b-b',true);fly('tc0','fr');lg('t-vlog','Sales Agent','Proposal sent via IncAgent Protocol','var(--cobalt)');lg('t-blog','Procurement','Proposal received','var(--violet)');},t);t+=1500;
+  setTimeout(()=>{sr('t-l0','done');sr('t-r0','done');sr('t-r1','active');fly('tc1','fl');lg('t-blog','Procurement','Reviewing terms...','var(--violet)');},t);t+=1400;
+  setTimeout(()=>{sr('t-r1','done');sr('t-l1','active');sr('t-r2','active');fly('tc2','fr');lg('t-vlog','Sales Agent','Contract sent for signature','var(--cobalt)');},t);t+=1400;
+  setTimeout(()=>{sr('t-l1','done');sr('t-r2','done');sr('t-r3','active');sr('t-l2','active');ag('t-d-f','t-b-f',true);fly('tc3','fl');lg('t-blog','Procurement','Contract accepted · requesting access','var(--violet)');},t);t+=1200;
+  setTimeout(()=>{sr('t-r3','done');sr('t-l2','done');sbState('Contract Signed','var(--green)');lg('t-vlog','System','Transaction agreed','var(--green)');lg('t-blog','System','Access activated','var(--green)');document.getElementById('t-next').disabled=false;document.getElementById('t-note').textContent='Contract signed';done[1]=true;document.getElementById('tab1').classList.add('done');},t);
 }
 
-function sr(id, state) {
-  const el = document.getElementById(id);
-  el.className = `status-row ${state}`;
+// REVENUE
+const invAmt=Math.floor(Math.random()*3000+4000);
+function runRevenue(){
+  sbState('Revenue Event','var(--amber)');mkSpark('r-chart','var(--cobalt)',10);
+  let t=300;
+  setTimeout(()=>{sr('r-s0','active');document.getElementById('r-amt').textContent='$'+invAmt.toLocaleString();document.getElementById('r-item').textContent='Outbound Campaign System';lg('r-log','Finance Agent','Invoice issued — $'+invAmt.toLocaleString(),'var(--amber)');},t);t+=1600;
+  setTimeout(()=>{sr('r-s0','done');sr('r-s1','active');document.getElementById('r-stat').textContent='Processing';document.getElementById('r-stat').style.color='var(--amber)';lg('r-log','Northstar Buyer','Payment initiated','var(--violet)');},t);t+=1600;
+  setTimeout(()=>{sr('r-s1','done');sr('r-s2','active');document.getElementById('r-stat').textContent='Received';document.getElementById('r-stat').style.color='var(--green)';document.getElementById('r-mrr').textContent='+$299';sbState('Revenue Logged','var(--green)');lg('r-log','Finance Agent','Payment confirmed · recording revenue','var(--green)');litSpark('r-chart','var(--amber)');},t);t+=1400;
+  setTimeout(()=>{sr('r-s2','done');sr('r-s3','active');document.getElementById('r-tax').textContent='Queued';document.getElementById('r-tax').style.color='var(--amber)';lg('r-log','Finance Agent','1099-NEC queued for filing','var(--amber)');},t);t+=1200;
+  setTimeout(()=>{sr('r-s3','done');lg('r-log','System','Revenue event complete','var(--green)');document.getElementById('r-next').disabled=false;document.getElementById('r-note').textContent='Revenue recorded';done[2]=true;document.getElementById('tab2').classList.add('done');},t);
 }
 
-function setAgent(dotId, badgeId, active) {
-  const dot = document.getElementById(dotId);
-  const badge = document.getElementById(badgeId);
-  if (active) {
-    dot.className = 'agent-chip-dot active';
-    badge.className = 'agent-chip-status active';
-    badge.textContent = 'ACTIVE';
-  } else {
-    dot.className = 'agent-chip-dot idle';
-    badge.className = 'agent-chip-status idle';
-    badge.textContent = 'IDLE';
-  }
+// OPERATE
+function runOperate(){
+  sbState('Operating','var(--green)');
+  mkSpark('o-rs','var(--amber)',12);mkSpark('o-as','var(--cobalt)',12);mkSpark('o-cs','var(--violet)',12);
+  let t=300;
+  setTimeout(()=>{ag('o-d0','o-b0',true);sr('o-s0','active');document.getElementById('o-ac').textContent='1 / 3';lg('o-log','Growth Agent','Launching outbound campaign','var(--green)');},t);t+=1400;
+  setTimeout(()=>{sr('o-s0','done');sr('o-s1','active');lg('o-log','Growth Agent','Distribution scheduled','var(--green)');},t);t+=1400;
+  setTimeout(()=>{sr('o-s1','done');sr('o-s2','active');ag('o-d1','o-b1',true);document.getElementById('o-ac').textContent='2 / 3';document.getElementById('o-rev').textContent='$'+invAmt.toLocaleString();lg('o-log','Finance Agent','Expense categorized','var(--amber)');litSpark('o-rs','var(--amber)');},t);t+=1400;
+  setTimeout(()=>{sr('o-s2','done');sr('o-s3','active');lg('o-log','Finance Agent','Records prepared','var(--amber)');litSpark('o-as','var(--cobalt)');},t);t+=1400;
+  setTimeout(()=>{sr('o-s3','done');sr('o-s4','active');ag('o-d2','o-b2',true);document.getElementById('o-ac').textContent='3 / 3';lg('o-log','Compliance Agent','Compliance log saved','var(--violet)');litSpark('o-cs','var(--violet)');},t);t+=1200;
+  setTimeout(()=>{sr('o-s4','done');sbState('All Systems Operating','var(--green)');lg('o-log','System','All agents complete · workflow finished','var(--green)');done[3]=true;document.getElementById('tab3').classList.add('done');document.getElementById('o-acc').style.display='block';},t);
 }
 
-function fly(id, dir) {
-  const el = document.getElementById(id);
-  el.classList.remove('go','back');
-  void el.offsetWidth;
-  el.classList.add(dir);
-}
-
-function goTo(i) {
-  document.querySelectorAll('.screen').forEach((s,idx) => {
-    s.classList.toggle('active', idx === i);
-  });
-  document.querySelectorAll('.tab').forEach((t,idx) => {
-    t.classList.remove('active','done');
-    if (idx === i) t.classList.add('active');
-    else if (screensDone[idx]) t.classList.add('done');
-  });
-  currentScreen = i;
-  if (!screensDone[i]) startScreen(i);
-}
-
-function startScreen(i) {
-  if (i === 0) runBuild();
-  else if (i === 1) runTransact();
-  else if (i === 2) runRevenue();
-  else if (i === 3) runOperate();
-}
-
-// ---- SCREEN 1: BUILD ----
-function runBuild() {
-  const pkg = 'IncAgent API · Pro';
-  const price = '$299 / month';
-  let t = 400;
-
-  setTimeout(() => {
-    setAgent('b-dot-code','b-ag-code',true);
-    log('b-log','Code Agent','Generating service package...','var(--blue)');
-  }, t); t += 1400;
-
-  setTimeout(() => {
-    sr('b-s0','active');
-    document.getElementById('b-pkg').textContent = pkg;
-    log('b-log','Code Agent','Service package generated','var(--blue)');
-  }, t); t += 1400;
-
-  setTimeout(() => {
-    sr('b-s0','done'); sr('b-s1','active');
-    setAgent('b-dot-offer','b-ag-offer',true);
-    document.getElementById('b-price').textContent = price;
-    log('b-log','Offer Builder','Publishing landing page...','var(--purple)');
-  }, t); t += 1400;
-
-  setTimeout(() => {
-    sr('b-s1','done'); sr('b-s2','active');
-    setAgent('b-dot-checkout','b-ag-checkout',true);
-    setAgent('b-dot-deploy','b-ag-deploy',true);
-    document.getElementById('b-status').textContent = 'Activating...';
-    document.getElementById('b-status').style.color = 'var(--amber)';
-    log('b-log','Checkout Setup','Stripe checkout configured','var(--amber)');
-  }, t); t += 1400;
-
-  setTimeout(() => {
-    sr('b-s2','done');
-    document.getElementById('b-status').textContent = 'Live';
-    document.getElementById('b-status').style.color = 'var(--green)';
-    log('b-log','Deployment','Offer activated and live','var(--green)');
-    document.getElementById('b-next').disabled = false;
-    document.getElementById('b-next-note').textContent = 'Build complete';
-    screensDone[0] = true;
-    document.getElementById('tab0').classList.add('done');
-    document.getElementById('tab0').classList.remove('active');
-  }, t);
-}
-
-// ---- SCREEN 2: TRANSACT ----
-function runTransact() {
-  let t = 400;
-  const vendor = 'IncAgent Vendor';
-  const buyer = 'Northstar Buyer';
-
-  setTimeout(() => {
-    sr('t-s0','active');
-    log('t-log',vendor,'Sending proposal to Northstar Buyer...','var(--purple)');
-    fly('fly-proposal','go');
-  }, t); t += 1400;
-
-  setTimeout(() => {
-    sr('t-s0','done'); sr('t-s1','active');
-    log('t-log',buyer,'Proposal received','var(--blue)');
-    fly('fly-proposal','back');
-  }, t); t += 1400;
-
-  setTimeout(() => {
-    sr('t-s1','done'); sr('t-s2','active');
-    log('t-log',buyer,'Reviewing terms...','var(--blue)');
-    fly('fly-terms','go');
-  }, t); t += 1500;
-
-  setTimeout(() => {
-    sr('t-s2','done'); sr('t-s3','active');
-    log('t-log',vendor,'Contract sent for signature','var(--purple)');
-    fly('fly-contract','go');
-  }, t); t += 1400;
-
-  setTimeout(() => {
-    sr('t-s3','done'); sr('t-s4','active');
-    log('t-log',buyer,'Contract accepted · activating access','var(--green)');
-    fly('fly-access','back');
-  }, t); t += 1200;
-
-  setTimeout(() => {
-    sr('t-s4','done');
-    log('t-log','System','Transaction agreed · proceeding to payment','var(--green)');
-    document.getElementById('t-next').disabled = false;
-    document.getElementById('t-next-note').textContent = 'Contract signed';
-    screensDone[1] = true;
-    document.getElementById('tab1').classList.add('done');
-    document.getElementById('tab1').classList.remove('active');
-  }, t);
-}
-
-// ---- SCREEN 3: REVENUE ----
-const invoiceAmount = Math.floor(Math.random() * 3000 + 5000);
-function runRevenue() {
-  let t = 400;
-
-  setTimeout(() => {
-    sr('r-s0','active');
-    log('r-log','Finance Agent',`Invoice #${Math.floor(Math.random()*1000+2000)} issued — $${invoiceAmount.toLocaleString()}','var(--amber)'`);
-    log('r-log','Finance Agent',`Invoice #${Math.floor(Math.random()*1000+2000)} issued — $${invoiceAmount.toLocaleString()}`,'var(--amber)');
-    document.getElementById('r-amount').textContent = '$' + invoiceAmount.toLocaleString();
-  }, t); t += 1600;
-
-  setTimeout(() => {
-    sr('r-s0','done'); sr('r-s1','active');
-    document.getElementById('r-status').textContent = 'Processing';
-    document.getElementById('r-status').style.color = 'var(--amber)';
-    log('r-log','Northstar Buyer','Payment initiated','var(--blue)');
-  }, t); t += 1600;
-
-  setTimeout(() => {
-    sr('r-s1','done'); sr('r-s2','active');
-    document.getElementById('r-status').textContent = 'Received';
-    document.getElementById('r-status').style.color = 'var(--green)';
-    log('r-log','Finance Agent','Payment confirmed · recording revenue','var(--green)');
-    document.getElementById('r-mrr').textContent = '+$299';
-    document.getElementById('r-mrr').style.color = 'var(--green)';
-  }, t); t += 1400;
-
-  setTimeout(() => {
-    sr('r-s2','done');
-    log('r-log','System','Revenue event logged · subscription active','var(--green)');
-    document.getElementById('r-next').disabled = false;
-    document.getElementById('r-next-note').textContent = 'Revenue recorded';
-    screensDone[2] = true;
-    document.getElementById('tab2').classList.add('done');
-    document.getElementById('tab2').classList.remove('active');
-  }, t);
-}
-
-// ---- SCREEN 4: OPERATE ----
-function runOperate() {
-  let t = 400;
-
-  setTimeout(() => {
-    sr('o-s0','active');
-    setAgent('o-dot-growth','o-ag-growth',true);
-    log('o-log','Growth Agent','Launching campaign for new customer','var(--blue)');
-  }, t); t += 1400;
-
-  setTimeout(() => {
-    sr('o-s0','done'); sr('o-s1','active');
-    log('o-log','Growth Agent','Distribution scheduled — X, email, referral','var(--blue)');
-  }, t); t += 1400;
-
-  setTimeout(() => {
-    sr('o-s1','done'); sr('o-s2','active');
-    setAgent('o-dot-finance','o-ag-finance',true);
-    log('o-log','Finance Agent','Expense categorized — SaaS / revenue','var(--amber)');
-  }, t); t += 1400;
-
-  setTimeout(() => {
-    sr('o-s2','done'); sr('o-s3','active');
-    log('o-log','Finance Agent','Tax records prepared — 1099-NEC queued','var(--amber)');
-  }, t); t += 1400;
-
-  setTimeout(() => {
-    sr('o-s3','done'); sr('o-s4','active');
-    setAgent('o-dot-compliance','o-ag-compliance',true);
-    log('o-log','Compliance Agent','Compliance log saved · audit trail complete','var(--green)');
-  }, t); t += 1200;
-
-  setTimeout(() => {
-    sr('o-s4','done');
-    log('o-log','System','Company operations complete · cycle finished','var(--green)');
-    screensDone[3] = true;
-    document.getElementById('tab3').classList.add('done');
-    document.getElementById('tab3').classList.remove('active');
-    document.getElementById('access-block').style.display = 'block';
-  }, t);
-}
-
-// Start screen 0
 runBuild();
 </script>
 </body>

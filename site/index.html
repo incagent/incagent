@@ -7,114 +7,290 @@
 <meta name="description" content="Open-source protocol for agent-run companies. Internal agents build offers, counterparty agents accept terms, revenue is logged automatically.">
 <link rel="icon" type="image/jpeg" href="favicon.jpeg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:#09090f;--surface:#111118;--card:#16161f;--border:#ffffff0e;--border2:#ffffff18;
-  --t1:#f0f0f5;--t2:#8888a0;--t3:#44445a;
-  --blue:#4f8ef7;--green:#22c55e;--green-d:#052e16;--green-m:#166534;
-  --purple:#a855f7;--amber:#f59e0b;
+  --base:#060816;
+  --panel:#0B1020;
+  --panel2:#10162B;
+  --cobalt:#4D7CFF;
+  --cyan:#33D1FF;
+  --violet:#7A5CFF;
+  --green:#18C37E;
+  --green-d:#03190f;
+  --green-m:#0e4a2a;
+  --amber:#F5B942;
+  --text:#F5F7FA;
+  --muted:#8D97B5;
+  --dim:#3D4A6A;
+  --border:rgba(77,124,255,0.12);
+  --border2:rgba(77,124,255,0.22);
+  --glow-cobalt:rgba(77,124,255,0.08);
+  --glow-violet:rgba(122,92,255,0.06);
 }
 html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--t2);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+body{
+  background:var(--base);
+  color:var(--muted);
+  font-family:'Inter',system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* AMBIENT GLOWS */
+body::before{
+  content:'';position:fixed;top:-200px;left:-200px;width:900px;height:700px;
+  background:radial-gradient(ellipse at 30% 30%,rgba(77,124,255,0.07) 0%,transparent 65%);
+  pointer-events:none;z-index:0;
+}
+body::after{
+  content:'';position:fixed;top:50px;right:-300px;width:800px;height:800px;
+  background:radial-gradient(ellipse at 70% 40%,rgba(122,92,255,0.05) 0%,transparent 65%);
+  pointer-events:none;z-index:0;
+}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:56px;padding:0 40px;display:flex;align-items:center;background:rgba(9,9,15,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
-.logo{font-size:16px;font-weight:900;color:var(--t1);text-decoration:none;letter-spacing:-.4px;}
-.logo em{font-style:normal;color:var(--blue);}
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;height:56px;padding:0 40px;
+  display:flex;align-items:center;
+  background:rgba(6,8,22,0.85);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.logo{font-size:16px;font-weight:900;color:var(--text);text-decoration:none;letter-spacing:-.4px;}
+.logo em{font-style:normal;color:var(--cobalt);}
 .nav-links{margin-left:auto;display:flex;gap:24px;align-items:center;}
-.nav-links a{color:var(--t2);text-decoration:none;font-size:13px;font-weight:500;transition:color .15s;}
-.nav-links a:hover{color:var(--t1);}
-.nav-cta{background:var(--blue);color:#fff!important;font-weight:700!important;padding:7px 16px;border-radius:7px;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;transition:color .15s;}
+.nav-links a:hover{color:var(--text);}
+.nav-cta{
+  background:var(--cobalt);color:#fff!important;font-weight:700!important;
+  padding:7px 18px;border-radius:7px;
+  box-shadow:0 0 20px rgba(77,124,255,0.3);
+}
 
 /* HERO */
-.hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;padding:80px 80px 60px;max-width:1300px;margin:0 auto;}
+.hero{
+  position:relative;min-height:100vh;
+  display:grid;grid-template-columns:1fr 460px;gap:56px;
+  align-items:center;padding:80px 80px 60px;
+  max-width:1300px;margin:0 auto;z-index:1;
+}
 @media(max-width:960px){.hero{grid-template-columns:1fr;padding:80px 24px 40px;}}
 
-.hero-left{display:flex;flex-direction:column;gap:20px;}
-.hero-tag{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);}
-h1{font-size:clamp(34px,3.8vw,52px);font-weight:900;color:var(--t1);line-height:1.08;letter-spacing:-.8px;}
-.hero-tagline{font-size:15px;font-weight:600;color:var(--t2);letter-spacing:-.1px;}
-.hero-sub{font-size:15px;color:var(--t2);line-height:1.72;max-width:440px;}
+/* Subtle grid in hero area */
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(77,124,255,0.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(77,124,255,0.035) 1px,transparent 1px);
+  background-size:52px 52px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 80%);
+  pointer-events:none;
+}
+
+.hero-left{display:flex;flex-direction:column;gap:22px;position:relative;}
+.hero-tag{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cobalt);}
+h1{font-size:clamp(32px,3.6vw,52px);font-weight:900;color:var(--text);line-height:1.07;letter-spacing:-.8px;}
+.hero-tagline{font-size:15px;font-weight:600;color:var(--muted);letter-spacing:-.1px;}
+.hero-sub{font-size:15px;color:var(--muted);line-height:1.72;max-width:440px;}
 .cta-row{display:flex;gap:12px;flex-wrap:wrap;padding-top:4px;}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer;border:none;transition:all .15s;}
-.btn-primary{background:var(--blue);color:#fff;}
+.btn-primary{
+  background:var(--cobalt);color:#fff;
+  box-shadow:0 0 24px rgba(77,124,255,0.35);
+}
 .btn-primary:hover{filter:brightness(1.12);}
-.btn-ghost{background:transparent;color:var(--t1);border:1px solid var(--border2);font-family:'JetBrains Mono',monospace;font-size:12px!important;}
-.btn-ghost:hover{border-color:#ffffff28;background:var(--card);}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid rgba(77,124,255,0.25);}
+.btn-ghost:hover{border-color:rgba(77,124,255,0.5);background:rgba(77,124,255,0.06);}
+.hero-gets{display:flex;flex-direction:column;gap:7px;padding-top:2px;}
+.hero-get{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--dim);}
+.hero-get::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--green);flex-shrink:0;}
 
-/* WHAT YOU GET LIST */
-.gets{display:flex;flex-direction:column;gap:6px;padding-top:4px;}
-.get-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t2);}
-.get-item::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--green);flex-shrink:0;}
+/* INSTRUMENT PANEL (right) */
+.instrument{
+  background:linear-gradient(150deg,rgba(16,22,43,0.9) 0%,rgba(8,12,24,0.95) 100%);
+  border:1px solid var(--border2);
+  border-radius:16px;
+  position:relative;overflow:hidden;
+  box-shadow:
+    0 0 80px rgba(77,124,255,0.08),
+    0 0 200px rgba(122,92,255,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+}
+/* Glass reflection */
+.instrument::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.1) 40%,rgba(77,124,255,0.15) 60%,transparent 100%);
+}
+/* Halo behind card */
+.instrument-halo{
+  position:absolute;top:-60px;right:-60px;width:280px;height:280px;
+  background:radial-gradient(circle,rgba(77,124,255,0.1) 0%,transparent 70%);
+  pointer-events:none;
+}
 
-/* CODE PANEL */
-.code-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
-.code-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);background:#0d0d18;}
-.code-dots{display:flex;gap:6px;}
-.code-dot{width:10px;height:10px;border-radius:50%;}
-.code-filename{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--t3);}
-.code-body{padding:20px 24px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.75;overflow-x:auto;}
-.ck{color:#c792ea;}   /* keyword */
-.cs{color:#a5d6a7;}   /* string */
-.cc{color:#546e7a;}   /* comment */
-.cf{color:#82aaff;}   /* function */
-.cn{color:#f0f0f5;}   /* normal */
-.cm{color:#ffcb6b;}   /* method */
-.cv{color:#f07178;}   /* value */
+.inst-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;
+  border-bottom:1px solid var(--border);
+  background:rgba(11,16,32,0.6);
+}
+.inst-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);}
+.inst-live{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--green);}
+.inst-live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:glow-pulse 2s ease-in-out infinite;}
+@keyframes glow-pulse{0%,100%{box-shadow:0 0 4px var(--green);opacity:1}50%{box-shadow:0 0 8px var(--green);opacity:.6}}
+
+/* Layer 1: Corps */
+.inst-corps{
+  display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;
+  padding:14px 16px;
+  background:rgba(16,22,43,0.5);
+  border-bottom:1px solid var(--border);
+}
+.inst-corp{}
+.inst-corp-name{font-size:11px;font-weight:700;color:var(--text);}
+.inst-corp-role{font-size:9px;color:var(--dim);margin-top:2px;}
+.inst-corp-right{text-align:right;}
+.inst-sep{
+  width:40px;height:1px;background:var(--border2);position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+.inst-sep-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--cobalt);
+  box-shadow:0 0 8px var(--cobalt);
+  position:absolute;
+  animation:rail-move 2.4s ease-in-out infinite;
+}
+@keyframes rail-move{0%{left:0;opacity:0}20%{opacity:1}80%{opacity:1}100%{left:32px;opacity:0}}
+
+/* Layer 2: Offer card */
+.inst-offer{
+  padding:10px 16px;
+  border-bottom:1px solid var(--border);
+  background:rgba(13,18,35,0.4);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.inst-offer-label{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);}
+.inst-offer-name{font-size:12px;font-weight:700;color:var(--text);}
+
+/* Layer 3: Steps */
+.inst-steps{padding:12px 16px;display:flex;flex-direction:column;gap:5px;border-bottom:1px solid var(--border);}
+.inst-step{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:500;padding:5px 8px;border-radius:6px;border:1px solid transparent;transition:all .35s;}
+.inst-step.done{background:var(--green-d);border-color:var(--green-m);color:var(--green);}
+.inst-step.active{background:rgba(77,124,255,0.08);border-color:rgba(77,124,255,0.3);color:var(--text);}
+.inst-step.waiting{color:var(--dim);}
+.inst-step-dot{width:7px;height:7px;border-radius:50%;border:1.5px solid currentColor;flex-shrink:0;transition:all .35s;}
+.inst-step.done .inst-step-dot{background:var(--green);border-color:var(--green);}
+.inst-step.active .inst-step-dot{background:var(--cobalt);border-color:var(--cobalt);box-shadow:0 0 6px var(--cobalt);}
+
+/* Status strip */
+.inst-status{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:0;
+  padding:10px 0;
+}
+.inst-status-item{padding:0 16px;text-align:center;border-right:1px solid var(--border);}
+.inst-status-item:last-child{border-right:none;}
+.inst-status-label{font-size:8px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;font-weight:600;}
+.inst-status-val{font-size:11px;font-weight:700;}
+
+.inst-foot{
+  padding:10px 16px;
+  background:rgba(11,16,32,0.5);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.inst-foot-link{font-size:11px;font-weight:700;color:var(--cobalt);text-decoration:none;transition:all .15s;}
+.inst-foot-link:hover{text-decoration:underline;}
+.inst-foot-note{font-size:9px;color:var(--dim);letter-spacing:.04em;}
 
 /* DIVIDER */
-hr.divider{border:none;border-top:1px solid var(--border);max-width:1300px;margin:0 auto;}
+hr.div{border:none;border-top:1px solid var(--border);max-width:1300px;margin:0 auto;}
 
 /* SECTIONS */
-.section{padding:72px 80px;max-width:1300px;margin:0 auto;}
-@media(max-width:900px){.section{padding:52px 24px;}}
+.sec{padding:72px 80px;max-width:1300px;margin:0 auto;position:relative;z-index:1;}
+@media(max-width:900px){.sec{padding:52px 24px;}}
+.sec-label{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cobalt);margin-bottom:28px;}
 
-.sec-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:28px;}
-.sec-h2{font-size:clamp(22px,2.4vw,32px);font-weight:900;color:var(--t1);line-height:1.12;letter-spacing:-.5px;margin-bottom:12px;}
-.sec-sub{font-size:15px;color:var(--t2);line-height:1.7;max-width:560px;margin-bottom:40px;}
+/* CODE SECTION */
+.code-wrap{background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.code-top{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 18px;border-bottom:1px solid var(--border);
+  background:rgba(6,8,22,0.6);
+}
+.code-dots{display:flex;gap:6px;}
+.code-dot{width:10px;height:10px;border-radius:50%;}
+.code-file{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--dim);}
+.code-body{
+  padding:22px 26px;font-family:'JetBrains Mono',monospace;
+  font-size:12.5px;line-height:1.8;overflow-x:auto;color:var(--muted);
+}
+.ck{color:#c792ea;}
+.cs{color:#a8d8a8;}
+.cc{color:var(--dim);}
+.cf{color:#82aaff;}
+.cn{color:var(--text);}
+.cm{color:var(--cyan);}
+.cv{color:#f07178;}
 
-/* HOW — 4 items */
-.how-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+/* HOW */
+.how-row{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;
+}
 @media(max-width:900px){.how-row{grid-template-columns:1fr 1fr;}}
 .how-item{padding:24px;border-right:1px solid var(--border);}
 .how-item:last-child{border-right:none;}
 @media(max-width:900px){.how-item:nth-child(2){border-right:none;} .how-item:nth-child(3){border-top:1px solid var(--border);} .how-item:nth-child(4){border-right:none;border-top:1px solid var(--border);}}
-.how-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--t3);margin-bottom:10px;letter-spacing:.06em;}
-.how-title{font-size:14px;font-weight:800;color:var(--t1);margin-bottom:6px;}
-.how-body{font-size:12px;color:var(--t2);line-height:1.6;}
+.how-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--dim);margin-bottom:10px;letter-spacing:.06em;}
+.how-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:6px;}
+.how-body{font-size:12px;color:var(--muted);line-height:1.62;}
 
 /* WHAT */
-.what-2col{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.what-2col{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;}
 @media(max-width:900px){.what-2col{grid-template-columns:1fr;}}
-.what-statement{font-size:18px;font-weight:800;color:var(--t1);line-height:1.4;margin-bottom:16px;letter-spacing:-.3px;}
-.what-statement em{font-style:normal;color:var(--blue);}
-.what-body{font-size:14px;color:var(--t2);line-height:1.72;}
-.what-list{display:flex;flex-direction:column;gap:14px;}
-.what-list-item{border-left:2px solid var(--border2);padding-left:16px;}
-.what-list-item-title{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px;}
-.what-list-item-body{font-size:12px;color:var(--t2);line-height:1.6;}
+.what-statement{font-size:20px;font-weight:800;color:var(--text);line-height:1.4;margin-bottom:16px;letter-spacing:-.4px;}
+.what-statement em{font-style:normal;color:var(--cobalt);}
+.what-body{font-size:14px;color:var(--muted);line-height:1.72;}
+.what-list{display:flex;flex-direction:column;gap:16px;}
+.what-li{border-left:2px solid rgba(77,124,255,0.2);padding-left:16px;}
+.what-li-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.what-li-body{font-size:12px;color:var(--muted);line-height:1.62;}
 
 /* WHY */
-.why-text p{font-size:15px;color:var(--t2);line-height:1.75;max-width:640px;margin-bottom:16px;}
-.why-text p strong{color:var(--t1);}
+.why-text p{font-size:15px;color:var(--muted);line-height:1.75;max-width:600px;margin-bottom:16px;}
+.why-text strong{color:var(--text);}
 
-/* CTA */
-.cta-block{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:52px;text-align:center;max-width:640px;margin:0 auto;}
-.cta-block h3{font-size:clamp(20px,2.2vw,28px);font-weight:900;color:var(--t1);margin-bottom:12px;letter-spacing:-.4px;line-height:1.2;}
-.cta-block p{font-size:14px;color:var(--t2);line-height:1.72;margin-bottom:28px;}
-.cta-row-c{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-.cta-note{font-size:10px;color:var(--t3);margin-top:14px;letter-spacing:.02em;}
+/* CTA BLOCK */
+.cta-block{
+  background:linear-gradient(135deg,var(--panel) 0%,rgba(16,22,43,0.8) 100%);
+  border:1px solid var(--border2);
+  border-radius:16px;padding:52px;text-align:center;max-width:620px;margin:0 auto;
+  box-shadow:0 0 80px rgba(77,124,255,0.06);
+  position:relative;overflow:hidden;
+}
+.cta-block::before{
+  content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);
+  width:400px;height:200px;
+  background:radial-gradient(ellipse,rgba(77,124,255,0.08) 0%,transparent 70%);
+}
+.cta-block h3{font-size:clamp(20px,2.2vw,28px);font-weight:900;color:var(--text);margin-bottom:12px;letter-spacing:-.4px;line-height:1.2;position:relative;}
+.cta-block p{font-size:14px;color:var(--muted);line-height:1.72;margin-bottom:28px;position:relative;}
+.cta-center{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;position:relative;}
+.cta-note{font-size:10px;color:var(--dim);margin-top:14px;letter-spacing:.03em;}
 
 /* FOOTER */
-footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-items:center;justify-content:space-between;max-width:1300px;margin:0 auto;width:100%;}
+footer{
+  border-top:1px solid var(--border);padding:28px 80px;
+  display:flex;align-items:center;justify-content:space-between;
+  max-width:1300px;margin:0 auto;width:100%;position:relative;z-index:1;
+}
 @media(max-width:900px){footer{padding:24px;flex-direction:column;gap:12px;}}
-.footer-logo{font-size:14px;font-weight:900;color:var(--t1);text-decoration:none;}
-.footer-logo em{font-style:normal;color:var(--blue);}
+.footer-logo{font-size:14px;font-weight:900;color:var(--text);text-decoration:none;}
+.footer-logo em{font-style:normal;color:var(--cobalt);}
 .footer-links{display:flex;gap:24px;}
-.footer-links a{color:var(--t3);text-decoration:none;font-size:12px;transition:color .15s;}
-.footer-links a:hover{color:var(--t2);}
+.footer-links a{color:var(--dim);text-decoration:none;font-size:12px;transition:color .15s;}
+.footer-links a:hover{color:var(--muted);}
 </style>
 </head>
 <body>
@@ -138,25 +314,91 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
     <p class="hero-sub">A preview of how companies run when internal agents and counterparty agents create offers, accept terms, record revenue, and continue operations.</p>
     <div class="cta-row">
       <a href="/live.html" class="btn btn-primary">View demo</a>
-      <a href="https://github.com/incagent/incagent" class="btn btn-ghost">pip install incagent</a>
+      <a href="mailto:hello@incagent.ai" class="btn btn-ghost">Request access</a>
     </div>
-    <div class="gets">
-      <div class="get-item">Internal agents build and price the offer</div>
-      <div class="get-item">Counterparty agent negotiates and accepts terms</div>
-      <div class="get-item">Invoice, payment, and 1099-NEC run automatically</div>
-      <div class="get-item">Every action logged to an auditable ledger</div>
+    <div class="hero-gets">
+      <div class="hero-get">Internal agents build and price the offer</div>
+      <div class="hero-get">Counterparty agent negotiates and accepts terms</div>
+      <div class="hero-get">Invoice, payment, and 1099-NEC run automatically</div>
+      <div class="hero-get">Every action logged to an auditable ledger</div>
     </div>
   </div>
 
-  <!-- CODE PANEL -->
-  <div class="code-panel">
-    <div class="code-hdr">
+  <!-- INSTRUMENT PANEL -->
+  <div class="instrument">
+    <div class="instrument-halo"></div>
+
+    <div class="inst-header">
+      <div class="inst-label">Workflow preview</div>
+      <div class="inst-live"><div class="inst-live-dot"></div>Running</div>
+    </div>
+
+    <!-- Layer 1: Corps -->
+    <div class="inst-corps">
+      <div class="inst-corp">
+        <div class="inst-corp-name">IncAgent Vendor</div>
+        <div class="inst-corp-role">Seller · Agent</div>
+      </div>
+      <div class="inst-sep"><div class="inst-sep-dot"></div></div>
+      <div class="inst-corp inst-corp-right">
+        <div class="inst-corp-name">Northstar Buyer</div>
+        <div class="inst-corp-role">Buyer · Agent</div>
+      </div>
+    </div>
+
+    <!-- Layer 2: Offer -->
+    <div class="inst-offer">
+      <div>
+        <div class="inst-offer-label">Offer</div>
+        <div class="inst-offer-name">Outbound Campaign System</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:var(--amber);font-family:'JetBrains Mono',monospace;">$5,000</div>
+    </div>
+
+    <!-- Layer 3: Steps -->
+    <div class="inst-steps">
+      <div class="inst-step waiting" id="is0"><div class="inst-step-dot"></div>Proposal sent</div>
+      <div class="inst-step waiting" id="is1"><div class="inst-step-dot"></div>Terms accepted</div>
+      <div class="inst-step waiting" id="is2"><div class="inst-step-dot"></div>Invoice issued</div>
+      <div class="inst-step waiting" id="is3"><div class="inst-step-dot"></div>Payment received</div>
+    </div>
+
+    <!-- Status strip -->
+    <div class="inst-status">
+      <div class="inst-status-item">
+        <div class="inst-status-label">Revenue event</div>
+        <div class="inst-status-val" id="is-rev" style="color:var(--dim)">—</div>
+      </div>
+      <div class="inst-status-item">
+        <div class="inst-status-label">Status</div>
+        <div class="inst-status-val" id="is-status" style="color:var(--cobalt)">Active</div>
+      </div>
+      <div class="inst-status-item">
+        <div class="inst-status-label">Counterparty</div>
+        <div class="inst-status-val" style="color:var(--violet)">Connected</div>
+      </div>
+    </div>
+
+    <div class="inst-foot">
+      <a href="/live.html" class="inst-foot-link">See the full demo</a>
+      <div class="inst-foot-note">Prototype environment</div>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- QUICK START -->
+<div class="sec">
+  <div class="sec-label">Quick start</div>
+  <div class="code-wrap">
+    <div class="code-top">
       <div class="code-dots">
         <div class="code-dot" style="background:#ff5f57"></div>
         <div class="code-dot" style="background:#febc2e"></div>
         <div class="code-dot" style="background:#28c840"></div>
       </div>
-      <div class="code-filename">example.py</div>
+      <div class="code-file">example.py</div>
       <div></div>
     </div>
     <div class="code-body"><span class="ck">from</span> <span class="cn">incagent</span> <span class="ck">import</span> <span class="cn">IncAgent, Contract, ContractTerms</span>
@@ -168,18 +410,11 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
 <span class="cc"># Define the offer</span>
 <span class="cn">contract</span> <span class="ck">=</span> <span class="cf">Contract</span><span class="cn">(</span>
     <span class="cn">title=</span><span class="cs">"Outbound Campaign System"</span><span class="cn">,</span>
-    <span class="cn">terms=</span><span class="cf">ContractTerms</span><span class="cn">(</span>
-        <span class="cn">price=</span><span class="cv">5_000</span><span class="cn">,</span>
-        <span class="cn">currency=</span><span class="cs">"USD"</span><span class="cn">,</span>
-        <span class="cn">duration_days=</span><span class="cv">30</span><span class="cn">,</span>
-    <span class="cn">),</span>
+    <span class="cn">terms=</span><span class="cf">ContractTerms</span><span class="cn">(price=</span><span class="cv">5_000</span><span class="cn">, currency=</span><span class="cs">"USD"</span><span class="cn">),</span>
 <span class="cn">)</span>
 
 <span class="cc"># Negotiate, sign, pay — no humans required</span>
-<span class="cn">result</span> <span class="ck">=</span> <span class="ck">await</span> <span class="cn">vendor</span><span class="cm">.transact</span><span class="cn">(</span>
-    <span class="cn">counterparty=buyer,</span>
-    <span class="cn">contract=contract,</span>
-<span class="cn">)</span>
+<span class="cn">result</span> <span class="ck">=</span> <span class="ck">await</span> <span class="cn">vendor</span><span class="cm">.transact</span><span class="cn">(counterparty=buyer, contract=contract)</span>
 
 <span class="cf">print</span><span class="cn">(result.status)</span>    <span class="cc"># "completed"</span>
 <span class="cf">print</span><span class="cn">(result.revenue)</span>   <span class="cc"># 5000.0</span>
@@ -187,10 +422,10 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
   </div>
 </div>
 
-<hr class="divider">
+<hr class="div">
 
 <!-- HOW IT WORKS -->
-<div class="section">
+<div class="sec">
   <div class="sec-label">How it works</div>
   <div class="how-row">
     <div class="how-item">
@@ -211,15 +446,15 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
     <div class="how-item">
       <div class="how-num">04 — Operate</div>
       <div class="how-title">Company continues</div>
-      <div class="how-body">Growth, finance, and compliance agents continue the workflow. The company runs without operators.</div>
+      <div class="how-body">Growth, finance, and compliance agents continue the workflow without operators.</div>
     </div>
   </div>
 </div>
 
-<hr class="divider">
+<hr class="div">
 
 <!-- WHAT IS THIS -->
-<div class="section">
+<div class="sec">
   <div class="sec-label">What this is</div>
   <div class="what-2col">
     <div>
@@ -227,26 +462,26 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
       <p class="what-body">It helps internal agents and counterparty agents create, approve, execute, and record business activity — from the first offer to the final tax record.</p>
     </div>
     <div class="what-list">
-      <div class="what-list-item">
-        <div class="what-list-item-title">Corporate identity per agent</div>
-        <div class="what-list-item-body">Each agent holds a verifiable identity — name, ID, cryptographic key — enabling trusted counterparty relationships.</div>
+      <div class="what-li">
+        <div class="what-li-title">Corporate identity per agent</div>
+        <div class="what-li-body">Each agent holds a verifiable identity — name, ID, cryptographic key — enabling trusted counterparty relationships.</div>
       </div>
-      <div class="what-list-item">
-        <div class="what-list-item-title">Autonomous negotiation</div>
-        <div class="what-list-item-body">Agents propose, counter, and agree without human input. Rounds are bounded, logged, and auditable.</div>
+      <div class="what-li">
+        <div class="what-li-title">Autonomous negotiation</div>
+        <div class="what-li-body">Agents propose, counter, and agree without human input. Rounds are bounded, logged, and auditable.</div>
       </div>
-      <div class="what-list-item">
-        <div class="what-list-item-title">End-to-end transaction record</div>
-        <div class="what-list-item-body">Every contract, invoice, payment, and tax filing is written to an immutable local ledger.</div>
+      <div class="what-li">
+        <div class="what-li-title">End-to-end transaction record</div>
+        <div class="what-li-body">Every contract, invoice, payment, and tax filing is written to an immutable local ledger.</div>
       </div>
     </div>
   </div>
 </div>
 
-<hr class="divider">
+<hr class="div">
 
 <!-- WHY NOW -->
-<div class="section">
+<div class="sec">
   <div class="sec-label">Why now</div>
   <div class="why-text">
     <p><strong>Most AI products help a person do work.</strong> The next layer is when agents do the work of the company itself.</p>
@@ -254,16 +489,16 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
   </div>
 </div>
 
-<hr class="divider">
+<hr class="div">
 
 <!-- CTA -->
-<div class="section">
+<div class="sec">
   <div class="cta-block">
     <h3>See the simulated<br>company workflow</h3>
     <p>The demo shows an agent-run company executing a full transaction cycle — offer, contract, payment, operations — with a live step-by-step view.</p>
-    <div class="cta-row-c">
+    <div class="cta-center">
       <a href="/live.html" class="btn btn-primary">View demo</a>
-      <a href="mailto:hello@incagent.ai" class="btn btn-ghost" style="font-family:Inter,sans-serif;font-size:14px!important;">Request early access</a>
+      <a href="mailto:hello@incagent.ai" class="btn btn-ghost">Request early access</a>
     </div>
     <p class="cta-note">Prototype environment · Simulated workflow preview</p>
   </div>
@@ -279,5 +514,38 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
   </div>
 </footer>
 
+<script>
+const STEP_MS = 1900;
+let cur = 0;
+
+function setIs(i, state) {
+  const el = document.getElementById(`is${i}`);
+  el.className = `inst-step ${state}`;
+}
+
+function tick() {
+  if (cur > 0) setIs(cur - 1, 'done');
+  if (cur < 4) {
+    setIs(cur, 'active');
+    cur++;
+    setTimeout(tick, STEP_MS);
+  } else {
+    document.getElementById('is-rev').textContent = '$5,000';
+    document.getElementById('is-rev').style.color = 'var(--amber)';
+    document.getElementById('is-status').textContent = 'Complete';
+    document.getElementById('is-status').style.color = 'var(--green)';
+    setTimeout(() => {
+      for (let i = 0; i < 4; i++) setIs(i, 'waiting');
+      document.getElementById('is-rev').textContent = '—';
+      document.getElementById('is-rev').style.color = 'var(--dim)';
+      document.getElementById('is-status').textContent = 'Active';
+      document.getElementById('is-status').style.color = 'var(--cobalt)';
+      cur = 0;
+      setTimeout(tick, 700);
+    }, 2600);
+  }
+}
+setTimeout(tick, 1400);
+</script>
 </body>
 </html>
