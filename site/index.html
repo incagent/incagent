@@ -42,12 +42,12 @@ body{
 /* AMBIENT GLOWS */
 body::before{
   content:'';position:fixed;top:-200px;left:-200px;width:900px;height:700px;
-  background:radial-gradient(ellipse at 30% 30%,rgba(77,124,255,0.07) 0%,transparent 65%);
+  background:radial-gradient(ellipse at 30% 30%,rgba(77,124,255,0.035) 0%,transparent 65%);
   pointer-events:none;z-index:0;
 }
 body::after{
   content:'';position:fixed;top:50px;right:-300px;width:800px;height:800px;
-  background:radial-gradient(ellipse at 70% 40%,rgba(122,92,255,0.05) 0%,transparent 65%);
+  background:radial-gradient(ellipse at 70% 40%,rgba(122,92,255,0.02) 0%,transparent 65%);
   pointer-events:none;z-index:0;
 }
 
@@ -112,25 +112,21 @@ h1{font-size:clamp(32px,3.6vw,52px);font-weight:900;color:var(--text);line-heigh
 
 /* INSTRUMENT PANEL (right) */
 .instrument{
-  background:linear-gradient(150deg,rgba(16,22,43,0.9) 0%,rgba(8,12,24,0.95) 100%);
-  border:1px solid var(--border2);
-  border-radius:16px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
   position:relative;overflow:hidden;
-  box-shadow:
-    0 0 60px rgba(77,124,255,0.18),
-    0 0 140px rgba(77,124,255,0.10),
-    0 0 280px rgba(122,92,255,0.09),
-    inset 0 1px 0 rgba(255,255,255,0.07);
+  box-shadow:0 2px 24px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.04);
 }
 /* Glass reflection */
 .instrument::after{
   content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.1) 40%,rgba(77,124,255,0.15) 60%,transparent 100%);
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.06) 50%,transparent 100%);
 }
 /* Halo behind card */
 .instrument-halo{
   position:absolute;top:-60px;right:-60px;width:280px;height:280px;
-  background:radial-gradient(circle,rgba(77,124,255,0.1) 0%,transparent 70%);
+  background:radial-gradient(circle,rgba(77,124,255,0.04) 0%,transparent 70%);
   pointer-events:none;
 }
 
@@ -316,8 +312,7 @@ footer{
 <div class="hero">
   <div class="hero-left">
     <div class="hero-tag">Open-source · Agent commerce protocol</div>
-    <h1>Agents run the company.<br>People execute the work.</h1>
-    <p class="hero-tagline">Agent-run companies start here.</p>
+    <h1>Agents close the deal.<br>People do the work.</h1>
     <p class="hero-sub">An AI company creates the offer, closes the buyer, assigns human execution, verifies proof, and records revenue.</p>
     <div class="cta-row">
       <a href="/live.html" class="btn btn-primary">View demo</a>
@@ -347,15 +342,6 @@ footer{
       </div>
     </div>
 
-    <!-- Layer 2: Offer -->
-    <div class="inst-offer">
-      <div>
-        <div class="inst-offer-label">Offer</div>
-        <div class="inst-offer-name">Outbound Campaign System</div>
-      </div>
-      <div style="font-size:11px;font-weight:700;color:var(--amber);font-family:'JetBrains Mono',monospace;">$5,000</div>
-    </div>
-
     <!-- Deal card -->
     <div class="inst-comobj">
       <div class="inst-comobj-row">
@@ -367,40 +353,20 @@ footer{
         <div class="inst-comobj-val" style="color:var(--violet)">Northstar Buyer</div>
       </div>
       <div class="inst-comobj-row">
-        <div class="inst-comobj-key" style="color:var(--cobalt)">Assigned Human</div>
+        <div class="inst-comobj-key">Assigned Human</div>
         <div class="inst-comobj-val" style="color:var(--text)">Mika Tanaka — Tokyo</div>
       </div>
-      <div class="inst-comobj-row" style="align-items:flex-start;">
-        <div class="inst-comobj-key">Task</div>
-        <div class="inst-comobj-val" style="color:var(--muted);white-space:normal;overflow:visible;font-size:10px;line-height:1.45;max-width:210px;">Review store materials and capture upload-ready assets</div>
+      <div class="inst-comobj-row">
+        <div class="inst-comobj-key">Proof Submitted</div>
+        <div class="inst-comobj-val" style="color:var(--green);font-size:9.5px;white-space:normal;">3 photos · 1 checklist · 1 location stamp</div>
       </div>
       <div class="inst-comobj-row">
-        <div class="inst-comobj-key">Proof submitted</div>
-        <div class="inst-comobj-val" style="color:var(--green);font-size:9.5px;white-space:normal;">3 photos · 1 checklist · 1 stamp</div>
+        <div class="inst-comobj-key">Invoice</div>
+        <div class="inst-comobj-val" style="color:var(--amber)">#2048</div>
       </div>
       <div class="inst-comobj-row">
-        <div class="inst-comobj-key">Billing</div>
-        <div class="inst-comobj-val" style="color:var(--amber)">Invoice #2048</div>
-      </div>
-      <div class="inst-comobj-row">
-        <div class="inst-comobj-key">Status</div>
-        <div class="inst-comobj-val" id="io-state" style="color:var(--cobalt)">Offer created</div>
-      </div>
-    </div>
-
-    <!-- Status strip -->
-    <div class="inst-status">
-      <div class="inst-status-item">
-        <div class="inst-status-label">Revenue event</div>
-        <div class="inst-status-val" id="is-rev" style="color:var(--dim)">—</div>
-      </div>
-      <div class="inst-status-item">
-        <div class="inst-status-label">Status</div>
-        <div class="inst-status-val" id="is-status" style="color:var(--cobalt)">Active</div>
-      </div>
-      <div class="inst-status-item">
-        <div class="inst-status-label">Counterparty</div>
-        <div class="inst-status-val" style="color:var(--violet)">Connected</div>
+        <div class="inst-comobj-key">Settlement</div>
+        <div class="inst-comobj-val" id="io-state" style="color:var(--cobalt)">Negotiating</div>
       </div>
     </div>
 
@@ -523,36 +489,23 @@ footer{
 </footer>
 
 <script>
-const STEP_MS = 1700;
-const states = ['Offer created','Buyer accepted','Human assigned','Proof submitted','Invoice issued','Payment received'];
-const stateColors = ['var(--cobalt)','var(--cobalt)','var(--violet)','var(--green)','var(--amber)','var(--green)'];
+const STEP_MS = 1800;
+const states = ['Negotiating','Contract signed','Human assigned','Proof verified','Payment received'];
+const stateColors = ['var(--cobalt)','var(--cobalt)','var(--violet)','var(--green)','var(--green)'];
 let cur = 0;
 
 function tick() {
   const el = document.getElementById('io-state');
+  el.textContent = states[cur];
+  el.style.color = stateColors[cur];
+  cur++;
   if (cur < states.length) {
-    el.textContent = states[cur];
-    el.style.color = stateColors[cur];
-    cur++;
     setTimeout(tick, STEP_MS);
   } else {
-    document.getElementById('is-rev').textContent = '$5,000';
-    document.getElementById('is-rev').style.color = 'var(--amber)';
-    document.getElementById('is-status').textContent = 'Complete';
-    document.getElementById('is-status').style.color = 'var(--green)';
-    setTimeout(() => {
-      el.textContent = states[0];
-      el.style.color = stateColors[0];
-      document.getElementById('is-rev').textContent = '—';
-      document.getElementById('is-rev').style.color = 'var(--dim)';
-      document.getElementById('is-status').textContent = 'Active';
-      document.getElementById('is-status').style.color = 'var(--cobalt)';
-      cur = 0;
-      setTimeout(tick, 700);
-    }, 2800);
+    setTimeout(() => { cur = 0; setTimeout(tick, 700); }, 3200);
   }
 }
-setTimeout(tick, 1400);
+setTimeout(tick, 1200);
 </script>
 </body>
 </html>
