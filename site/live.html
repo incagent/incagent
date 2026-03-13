@@ -189,9 +189,9 @@ body::before{
 
 <div class="tabs">
   <div class="tab active" id="tab0" onclick="goTo(0)">01 Build</div>
-  <div class="tab" id="tab1" onclick="goTo(1)">02 Transact</div>
-  <div class="tab" id="tab2" onclick="goTo(2)">03 Get paid</div>
-  <div class="tab" id="tab3" onclick="goTo(3)">04 Operate</div>
+  <div class="tab" id="tab1" onclick="goTo(1)">02 Sell</div>
+  <div class="tab" id="tab2" onclick="goTo(2)">03 Assign Human</div>
+  <div class="tab" id="tab3" onclick="goTo(3)">04 Verify &amp; Pay</div>
 </div>
 
 <div class="content">
@@ -224,11 +224,19 @@ body::before{
         <div class="card ipad" style="flex:1;display:flex;flex-direction:column;justify-content:space-between;">
           <div class="cobj-row">
             <div class="cobj-key">Package</div>
-            <div class="cobj-val" style="color:var(--text)" id="b-pkg">—</div>
+            <div class="cobj-val" style="color:var(--text);font-size:14px" id="b-pkg">—</div>
           </div>
           <div class="cobj-row">
-            <div class="cobj-key">Counterparty</div>
+            <div class="cobj-key">Buyer Agent</div>
             <div class="cobj-val" style="color:var(--violet)" id="b-cp">—</div>
+          </div>
+          <div class="cobj-row">
+            <div class="cobj-key" style="color:var(--cobalt)">Assigned Human</div>
+            <div class="cobj-val" style="color:var(--text)" id="b-human">—</div>
+          </div>
+          <div class="cobj-row">
+            <div class="cobj-key">Work Order</div>
+            <div class="cobj-val" style="color:var(--muted);font-size:13px;white-space:normal;text-align:right;line-height:1.4;" id="b-task">—</div>
           </div>
           <div class="cobj-row">
             <div class="cobj-key">Contract value</div>
@@ -242,7 +250,7 @@ body::before{
         <div style="display:none"><div id="b-spark"></div></div>
       </div>
     </div>
-    <div class="nbar"><button class="btn-n" id="b-next" disabled onclick="goTo(1)">Next: Transact</button><span class="nnote" id="b-note">Building...</span></div>
+    <div class="nbar"><button class="btn-n" id="b-next" disabled onclick="goTo(1)">Next: Sell</button><span class="nnote" id="b-note">Building...</span></div>
   </div>
 
   <!-- SCREEN 2: TRANSACT -->
@@ -297,93 +305,93 @@ body::before{
         <div class="log" style="flex:1;"><div class="log-hdr">Buyer log</div><div class="log-body" id="t-blog"></div></div>
       </div>
     </div>
-    <div class="nbar" style="margin-top:10px;"><button class="btn-n" id="t-next" disabled onclick="goTo(2)">Next: Get paid</button><span class="nnote" id="t-note">Waiting for contract...</span></div>
+    <div class="nbar" style="margin-top:10px;"><button class="btn-n" id="t-next" disabled onclick="goTo(2)">Next: Assign Human</button><span class="nnote" id="t-note">Waiting for contract...</span></div>
   </div>
 
-  <!-- SCREEN 3: GET PAID -->
+  <!-- SCREEN 3: ASSIGN HUMAN -->
   <div class="screen" id="sc2">
     <div class="g3">
-      <div class="rnum"><div class="rnum-l">Invoice amount</div><div class="rnum-v" style="color:var(--amber)" id="r-amt">—</div></div>
-      <div class="rnum"><div class="rnum-l">Payment status</div><div class="rnum-v" style="color:var(--dim);font-size:14px" id="r-stat">Pending</div></div>
-      <div class="rnum"><div class="rnum-l">MRR added</div><div class="rnum-v" style="color:var(--green)" id="r-mrr">—</div></div>
+      <div class="rnum"><div class="rnum-l">Assigned Operator</div><div class="rnum-v" style="color:var(--text);font-size:24px" id="a-op">—</div></div>
+      <div class="rnum"><div class="rnum-l">Location</div><div class="rnum-v" style="color:var(--violet)" id="a-loc">—</div></div>
+      <div class="rnum"><div class="rnum-l">Work Status</div><div class="rnum-v" style="color:var(--dim)" id="a-stat">Pending</div></div>
     </div>
     <div class="g2" style="flex:1;min-height:0;">
       <div style="display:flex;flex-direction:column;gap:8px;">
-        <div class="slabel">Revenue event</div>
+        <div class="slabel">Assignment chain</div>
         <div class="card ipad" style="display:flex;flex-direction:column;gap:4px;">
-          <div class="sr wait" id="r-s0"><div class="sr-dot"></div>Invoice issued</div>
-          <div class="sr wait" id="r-s1"><div class="sr-dot"></div>Payment received</div>
-          <div class="sr wait" id="r-s2"><div class="sr-dot"></div>Revenue recorded</div>
-          <div class="sr wait" id="r-s3"><div class="sr-dot"></div>1099-NEC queued</div>
+          <div class="sr wait" id="a-s0"><div class="sr-dot"></div>Ops Agent assigned operator</div>
+          <div class="sr wait" id="a-s1"><div class="sr-dot"></div>Human accepted work order</div>
+          <div class="sr wait" id="a-s2"><div class="sr-dot"></div>On-site execution active</div>
+          <div class="sr wait" id="a-s3"><div class="sr-dot"></div>Proof uploaded</div>
+          <div class="sr wait" id="a-s4"><div class="sr-dot"></div>Completion verified by agent</div>
         </div>
-        <div class="log" style="flex:1;"><div class="log-hdr">Finance log</div><div class="log-body" id="r-log"></div></div>
+        <div class="log" style="flex:1;"><div class="log-hdr">Field log</div><div class="log-body" id="a-log"></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="slabel">Proof of Completion</div>
+        <div class="card ipad" style="flex:1;display:flex;flex-direction:column;justify-content:space-between;">
+          <div class="cobj-row">
+            <div class="cobj-key">Photos</div>
+            <div class="cobj-val" style="color:var(--dim)" id="a-p1">—</div>
+          </div>
+          <div class="cobj-row">
+            <div class="cobj-key">Signed checklist</div>
+            <div class="cobj-val" style="color:var(--dim)" id="a-p2">—</div>
+          </div>
+          <div class="cobj-row">
+            <div class="cobj-key">Completion note</div>
+            <div class="cobj-val" style="color:var(--dim)" id="a-p3">—</div>
+          </div>
+          <div class="cobj-row">
+            <div class="cobj-key">Location stamp</div>
+            <div class="cobj-val" style="color:var(--dim)" id="a-p4">—</div>
+          </div>
+          <div class="cobj-row">
+            <div class="cobj-key">Agent verdict</div>
+            <div class="cobj-val" style="color:var(--dim)" id="a-verdict">Awaiting</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="nbar"><button class="btn-n" id="a-next" disabled onclick="goTo(3)">Next: Verify &amp; Pay</button><span class="nnote" id="a-note">Assigning operator...</span></div>
+  </div>
+
+  <!-- SCREEN 4: VERIFY & PAY -->
+  <div class="screen" id="sc3">
+    <div class="g3">
+      <div class="rnum"><div class="rnum-l">Invoice amount</div><div class="rnum-v" style="color:var(--amber)" id="v-amt">—</div></div>
+      <div class="rnum"><div class="rnum-l">Payment status</div><div class="rnum-v" style="color:var(--dim);font-size:20px" id="v-stat">Pending</div></div>
+      <div class="rnum"><div class="rnum-l">MRR added</div><div class="rnum-v" style="color:var(--green)" id="v-mrr">—</div></div>
+    </div>
+    <div class="g2" style="flex:1;min-height:0;">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="slabel">Billing &amp; Settlement</div>
+        <div class="card ipad" style="display:flex;flex-direction:column;gap:4px;">
+          <div class="sr wait" id="v-s0"><div class="sr-dot"></div>Proof verified by Ops Agent</div>
+          <div class="sr wait" id="v-s1"><div class="sr-dot"></div>Invoice #2048 issued</div>
+          <div class="sr wait" id="v-s2"><div class="sr-dot"></div>Payment received</div>
+          <div class="sr wait" id="v-s3"><div class="sr-dot"></div>Revenue recorded</div>
+          <div class="sr wait" id="v-s4"><div class="sr-dot"></div>1099-NEC queued</div>
+        </div>
+        <div class="log" style="flex:1;"><div class="log-hdr">Finance log</div><div class="log-body" id="v-log"></div></div>
       </div>
       <div style="display:flex;flex-direction:column;gap:8px;">
         <div>
-          <div class="slabel">Revenue timeline</div>
-          <div class="card ipad">
-            <div class="spark" style="height:40px" id="r-chart"></div>
-            <div style="font-size:11px;color:var(--dim);text-align:right;margin-top:6px;">Last 10 transactions</div>
-          </div>
+          <div class="slabel">Revenue event</div>
+          <div class="card ipad"><div class="spark" style="height:40px" id="v-chart"></div><div style="font-size:11px;color:var(--dim);text-align:right;margin-top:6px;">Last 10 transactions</div></div>
         </div>
         <div class="card ipad">
           <div style="font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:8px;">Invoice details</div>
           <div style="display:flex;flex-direction:column;gap:5px;">
-            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--dim)">Item</span><span class="mono" style="color:var(--text)" id="r-item">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--dim)">Item</span><span class="mono" style="color:var(--text)">Outbound Campaign System</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--dim)">Operator</span><span class="mono" style="color:var(--text)">Mika Tanaka</span></div>
             <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--dim)">Payer</span><span class="mono" style="color:var(--violet)">Northstar Buyer</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--dim)">Tax record</span><span class="mono" style="color:var(--dim)" id="r-tax">Pending</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:var(--dim)">Tax record</span><span class="mono" style="color:var(--dim)" id="v-tax">Pending</span></div>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="nbar"><button class="btn-n" id="r-next" disabled onclick="goTo(3)">Next: Operate</button><span class="nnote" id="r-note">Processing...</span></div>
-  </div>
-
-  <!-- SCREEN 4: OPERATE -->
-  <div class="screen" id="sc3">
-    <div class="g2" style="flex:1;min-height:0;">
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <div>
-          <div class="slabel">Operating agents</div>
-          <div class="g3">
-            <div class="ach"><div class="ach-dot off" id="o-d0"></div><div class="ach-name">Growth</div><div class="ach-b off" id="o-b0">IDLE</div></div>
-            <div class="ach"><div class="ach-dot off" id="o-d1"></div><div class="ach-name">Finance</div><div class="ach-b off" id="o-b1">IDLE</div></div>
-            <div class="ach"><div class="ach-dot off" id="o-d2"></div><div class="ach-name">Compliance</div><div class="ach-b off" id="o-b2">IDLE</div></div>
-          </div>
-        </div>
-        <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
-          <div class="slabel">Operations</div>
-          <div class="card ipad" style="display:flex;flex-direction:column;gap:4px;flex:1;">
-            <div class="sr wait" id="o-s0"><div class="sr-dot"></div>Campaign launched</div>
-            <div class="sr wait" id="o-s1"><div class="sr-dot"></div>Distribution scheduled</div>
-            <div class="sr wait" id="o-s2"><div class="sr-dot"></div>Expense categorized</div>
-            <div class="sr wait" id="o-s3"><div class="sr-dot"></div>Records prepared</div>
-            <div class="sr wait" id="o-s4"><div class="sr-dot"></div>Compliance log saved</div>
-          </div>
-        </div>
-        <div class="log"><div class="log-hdr">Activity</div><div class="log-body" id="o-log"></div></div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <div>
-          <div class="slabel">Company metrics</div>
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <div class="card ipad">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;"><div style="font-size:11px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.08em">Revenue events</div><div class="mono" style="font-size:16px;color:var(--amber)" id="o-rev">$0</div></div>
-              <div class="spark" style="height:18px" id="o-rs"></div>
-            </div>
-            <div class="card ipad">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;"><div style="font-size:11px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.08em">Agent activity</div><div class="mono" style="font-size:16px;color:var(--cobalt)" id="o-ac">0 / 3</div></div>
-              <div class="spark" style="height:18px" id="o-as"></div>
-            </div>
-            <div class="card ipad">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;"><div style="font-size:11px;color:var(--dim);font-weight:700;text-transform:uppercase;letter-spacing:.08em">Counterparties</div><div class="mono" style="font-size:16px;color:var(--violet)">1 connected</div></div>
-              <div class="spark" style="height:18px" id="o-cs"></div>
-            </div>
-          </div>
-        </div>
-        <div class="access" id="o-acc" style="display:none;">
-          <h4>The workflow is complete</h4>
-          <p>An agent-run company created a service, transacted with another company, got paid, and continued operations — with no human input.</p>
+        <div class="access" id="v-acc" style="display:none;">
+          <h4>The deal is closed</h4>
+          <p>AI agents created the offer, closed the buyer, assigned Mika Tanaka to execute in the field, verified proof of completion, and settled the invoice — with no human executives required.</p>
           <a href="mailto:hello@incagent.ai" class="btn-acc">Request early access</a>
         </div>
       </div>
@@ -409,17 +417,17 @@ function goTo(i){
   document.querySelectorAll('.tab').forEach((t,idx)=>{t.classList.remove('active','done');if(idx===i)t.classList.add('active');else if(done[idx])t.classList.add('done');});
   if(!done[i])startScreen(i);
 }
-function startScreen(i){if(i===0)runBuild();else if(i===1)runTransact();else if(i===2)runRevenue();else if(i===3)runOperate();}
+function startScreen(i){if(i===0)runBuild();else if(i===1)runTransact();else if(i===2)runAssign();else if(i===3)runVerifyPay();}
 
 // BUILD
 function runBuild(){
   sbState('Building','var(--cobalt)');
   let t=400;
-  setTimeout(()=>{lg('b-log','Code Agent','Generating service package','var(--cobalt)');},t);t+=1400;
-  setTimeout(()=>{sr('b-s0','active');document.getElementById('b-pkg').textContent='Outbound Campaign System';document.getElementById('b-cp').textContent='Northstar Buyer';document.getElementById('b-price').textContent='$5,000 / contract';document.getElementById('b-status').textContent='Building';document.getElementById('b-status').style.color='var(--cobalt)';lg('b-log','Code Agent','Package generated','var(--cobalt)');},t);t+=1400;
-  setTimeout(()=>{sr('b-s0','done');sr('b-s1','active');ag('b-d1','b-b1',true);lg('b-log','Offer Builder','Offer activated','var(--violet)');},t);t+=1400;
-  setTimeout(()=>{sr('b-s1','done');sr('b-s2','active');ag('b-d2','b-b2',true);ag('b-d3','b-b3',true);document.getElementById('b-status').textContent='Deploying';document.getElementById('b-status').style.color='var(--amber)';lg('b-log','Deploy Agent','Proposal sent to counterparty','var(--amber)');},t);t+=1400;
-  setTimeout(()=>{sr('b-s2','done');document.getElementById('b-status').textContent='Live';document.getElementById('b-status').style.color='var(--green)';sbState('Operating','var(--green)');lg('b-log','System','Commercial object live · discoverable','var(--green)');document.getElementById('b-next').disabled=false;document.getElementById('b-note').textContent='Build complete';done[0]=true;document.getElementById('tab0').classList.add('done');},t);
+  setTimeout(()=>{lg('b-log','Code Agent','Generating service package · Outbound Campaign System','var(--cobalt)');},t);t+=1400;
+  setTimeout(()=>{sr('b-s0','active');document.getElementById('b-pkg').textContent='Outbound Campaign System';document.getElementById('b-cp').textContent='Northstar Buyer';document.getElementById('b-human').textContent='Mika Tanaka — Tokyo';document.getElementById('b-task').textContent='Capture on-site store assets';document.getElementById('b-price').textContent='$5,000 / contract';document.getElementById('b-status').textContent='Building';document.getElementById('b-status').style.color='var(--cobalt)';lg('b-log','Code Agent','Package generated · deal object ready','var(--cobalt)');},t);t+=1400;
+  setTimeout(()=>{sr('b-s0','done');sr('b-s1','active');ag('b-d1','b-b1',true);lg('b-log','Offer Agent','Offer activated · discoverable by buyers','var(--violet)');},t);t+=1400;
+  setTimeout(()=>{sr('b-s1','done');sr('b-s2','active');ag('b-d2','b-b2',true);ag('b-d3','b-b3',true);document.getElementById('b-status').textContent='Deploying';document.getElementById('b-status').style.color='var(--amber)';lg('b-log','Deploy Agent','Proposal sent · awaiting buyer confirmation','var(--amber)');},t);t+=1400;
+  setTimeout(()=>{sr('b-s2','done');document.getElementById('b-status').textContent='Live';document.getElementById('b-status').style.color='var(--green)';sbState('Operating','var(--green)');lg('b-log','System','Commercial object live · Mika Tanaka on standby','var(--green)');document.getElementById('b-next').disabled=false;document.getElementById('b-note').textContent='Build complete';done[0]=true;document.getElementById('tab0').classList.add('done');},t);
 }
 
 // TRANSACT
@@ -434,29 +442,31 @@ function runTransact(){
   setTimeout(()=>{sr('t-r3','done');sr('t-l2','done');sbState('Contract Signed','var(--green)');lg('t-vlog','System','Transaction agreed','var(--green)');lg('t-blog','System','Access activated','var(--green)');document.getElementById('t-next').disabled=false;document.getElementById('t-note').textContent='Contract signed';done[1]=true;document.getElementById('tab1').classList.add('done');},t);
 }
 
-// REVENUE
 const invAmt=Math.floor(Math.random()*3000+4000);
-function runRevenue(){
-  sbState('Revenue Event','var(--amber)');mkSpark('r-chart','var(--cobalt)',10);
+
+// ASSIGN HUMAN
+function runAssign(){
+  sbState('Assigning Operator','var(--violet)');
   let t=300;
-  setTimeout(()=>{sr('r-s0','active');document.getElementById('r-amt').textContent='$'+invAmt.toLocaleString();document.getElementById('r-item').textContent='Outbound Campaign System';lg('r-log','Finance Agent','Invoice issued — $'+invAmt.toLocaleString(),'var(--amber)');},t);t+=1600;
-  setTimeout(()=>{sr('r-s0','done');sr('r-s1','active');document.getElementById('r-stat').textContent='Processing';document.getElementById('r-stat').style.color='var(--amber)';lg('r-log','Northstar Buyer','Payment initiated','var(--violet)');},t);t+=1600;
-  setTimeout(()=>{sr('r-s1','done');sr('r-s2','active');document.getElementById('r-stat').textContent='Received';document.getElementById('r-stat').style.color='var(--green)';document.getElementById('r-mrr').textContent='+$299';sbState('Revenue Logged','var(--green)');lg('r-log','Finance Agent','Payment confirmed · recording revenue','var(--green)');litSpark('r-chart','var(--amber)');},t);t+=1400;
-  setTimeout(()=>{sr('r-s2','done');sr('r-s3','active');document.getElementById('r-tax').textContent='Queued';document.getElementById('r-tax').style.color='var(--amber)';lg('r-log','Finance Agent','1099-NEC queued for filing','var(--amber)');},t);t+=1200;
-  setTimeout(()=>{sr('r-s3','done');lg('r-log','System','Revenue event complete','var(--green)');document.getElementById('r-next').disabled=false;document.getElementById('r-note').textContent='Revenue recorded';done[2]=true;document.getElementById('tab2').classList.add('done');},t);
+  setTimeout(()=>{lg('a-log','Ops Agent','Matching field operator for Tokyo task','var(--violet)');},t);t+=1300;
+  setTimeout(()=>{sr('a-s0','active');document.getElementById('a-op').textContent='Mika Tanaka';document.getElementById('a-loc').textContent='Tokyo, JP';document.getElementById('a-stat').textContent='Assigned';document.getElementById('a-stat').style.color='var(--cobalt)';lg('a-log','Ops Agent','Assigned: Mika Tanaka · Tokyo, JP','var(--violet)');},t);t+=1400;
+  setTimeout(()=>{sr('a-s0','done');sr('a-s1','active');lg('a-log','Mika Tanaka','Work order accepted · en route to site','var(--muted)');},t);t+=1400;
+  setTimeout(()=>{sr('a-s1','done');sr('a-s2','active');document.getElementById('a-stat').textContent='On site';document.getElementById('a-stat').style.color='var(--cobalt)';lg('a-log','Mika Tanaka','On site · executing field capture','var(--muted)');},t);t+=2000;
+  setTimeout(()=>{sr('a-s2','done');sr('a-s3','active');['a-p1','a-p2','a-p3','a-p4'].forEach((id,i)=>{const vals=['3 uploaded','Signed','Submitted','Verified'];document.getElementById(id).textContent=vals[i];document.getElementById(id).style.color='var(--green)';});lg('a-log','Mika Tanaka','Proof uploaded — 3 photos · checklist · note','var(--muted)');},t);t+=1400;
+  setTimeout(()=>{sr('a-s3','done');sr('a-s4','active');document.getElementById('a-verdict').textContent='Verified';document.getElementById('a-verdict').style.color='var(--green)';document.getElementById('a-stat').textContent='Completed';document.getElementById('a-stat').style.color='var(--green)';lg('a-log','Ops Agent','Proof verified · proceeding to billing','var(--green)');},t);t+=1200;
+  setTimeout(()=>{sr('a-s4','done');sbState('Proof Verified','var(--green)');lg('a-log','System','Assignment closed · invoice initiating','var(--green)');document.getElementById('a-next').disabled=false;document.getElementById('a-note').textContent='Assignment complete';done[2]=true;document.getElementById('tab2').classList.add('done');},t);
 }
 
-// OPERATE
-function runOperate(){
-  sbState('Operating','var(--green)');
-  mkSpark('o-rs','var(--amber)',12);mkSpark('o-as','var(--cobalt)',12);mkSpark('o-cs','var(--violet)',12);
+// VERIFY & PAY
+function runVerifyPay(){
+  sbState('Billing','var(--amber)');mkSpark('v-chart','var(--cobalt)',10);
   let t=300;
-  setTimeout(()=>{ag('o-d0','o-b0',true);sr('o-s0','active');document.getElementById('o-ac').textContent='1 / 3';lg('o-log','Growth Agent','Launching outbound campaign','var(--green)');},t);t+=1400;
-  setTimeout(()=>{sr('o-s0','done');sr('o-s1','active');lg('o-log','Growth Agent','Distribution scheduled','var(--green)');},t);t+=1400;
-  setTimeout(()=>{sr('o-s1','done');sr('o-s2','active');ag('o-d1','o-b1',true);document.getElementById('o-ac').textContent='2 / 3';document.getElementById('o-rev').textContent='$'+invAmt.toLocaleString();lg('o-log','Finance Agent','Expense categorized','var(--amber)');litSpark('o-rs','var(--amber)');},t);t+=1400;
-  setTimeout(()=>{sr('o-s2','done');sr('o-s3','active');lg('o-log','Finance Agent','Records prepared','var(--amber)');litSpark('o-as','var(--cobalt)');},t);t+=1400;
-  setTimeout(()=>{sr('o-s3','done');sr('o-s4','active');ag('o-d2','o-b2',true);document.getElementById('o-ac').textContent='3 / 3';lg('o-log','Compliance Agent','Compliance log saved','var(--violet)');litSpark('o-cs','var(--violet)');},t);t+=1200;
-  setTimeout(()=>{sr('o-s4','done');sbState('All Systems Operating','var(--green)');lg('o-log','System','All agents complete · workflow finished','var(--green)');done[3]=true;document.getElementById('tab3').classList.add('done');document.getElementById('o-acc').style.display='block';},t);
+  setTimeout(()=>{sr('v-s0','active');lg('v-log','Ops Agent','Proof verified · initiating billing','var(--green)');},t);t+=1400;
+  setTimeout(()=>{sr('v-s0','done');sr('v-s1','active');document.getElementById('v-amt').textContent='$'+invAmt.toLocaleString();lg('v-log','Finance Agent','Invoice #2048 issued — $'+invAmt.toLocaleString(),'var(--amber)');},t);t+=1600;
+  setTimeout(()=>{sr('v-s1','done');sr('v-s2','active');document.getElementById('v-stat').textContent='Processing';document.getElementById('v-stat').style.color='var(--amber)';lg('v-log','Northstar Buyer','Payment initiated','var(--violet)');},t);t+=1600;
+  setTimeout(()=>{sr('v-s2','done');sr('v-s3','active');document.getElementById('v-stat').textContent='Received';document.getElementById('v-stat').style.color='var(--green)';document.getElementById('v-mrr').textContent='+$299';sbState('Revenue Logged','var(--green)');lg('v-log','Finance Agent','Payment confirmed — recording revenue','var(--green)');litSpark('v-chart','var(--amber)');},t);t+=1400;
+  setTimeout(()=>{sr('v-s3','done');sr('v-s4','active');document.getElementById('v-tax').textContent='Queued';document.getElementById('v-tax').style.color='var(--amber)';lg('v-log','Finance Agent','1099-NEC queued for filing','var(--amber)');},t);t+=1200;
+  setTimeout(()=>{sr('v-s4','done');sbState('Deal Closed','var(--green)');lg('v-log','System','Deal closed — all records filed','var(--green)');document.getElementById('v-acc').style.display='block';done[3]=true;document.getElementById('tab3').classList.add('done');},t);
 }
 
 runBuild();
