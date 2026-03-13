@@ -5,605 +5,575 @@
 <title>IncAgent — Live Demo</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-:root{--bg:#f5f5f7;--surface:#fff;--border:#e5e7eb;--t1:#111;--t2:#374151;--t3:#9ca3af;
---green:#16a34a;--green-l:#dcfce7;--red:#dc2626;--red-l:#fee2e2;--blue:#2563eb;--blue-l:#dbeafe;
---purple:#7c3aed;--purple-l:#ede9fe;--amber:#d97706;--amber-l:#fef3c7;--cyan:#0891b2;--cyan-l:#cffafe;--pink:#db2777;--pink-l:#fce7f3;}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--t2);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090f;--surface:#111118;--border:#1e1e2a;--border2:#2a2a3a;
+  --t1:#f0f0f5;--t2:#a0a0b0;--t3:#555568;
+  --green:#22c55e;--green-d:#052e16;--green-m:#166534;
+  --blue:#3b82f6;--blue-d:#0c1a3a;
+  --purple:#a855f7;--purple-d:#1e0a3a;
+  --amber:#f59e0b;--amber-d:#2d1a00;
+  --cyan:#06b6d4;--cyan-d:#042a33;
+  --pink:#ec4899;
+  --red:#ef4444;
+}
+body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
 
-/* Nav */
-header{background:var(--surface);border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0;}
-.brand{font-size:22px;font-weight:900;color:var(--t1);}
-.brand b{color:var(--blue);}
-header .spacer{flex:1;}
-.live-pill{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--green);background:var(--green-l);padding:6px 16px;border-radius:20px;}
-.live-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:glow 2s infinite;}
-@keyframes glow{0%,100%{opacity:1}50%{opacity:.3}}
+/* HEADER */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 32px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(9,9,15,.92);backdrop-filter:blur(12px);z-index:100}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;letter-spacing:-.3px}
+.logo svg{width:22px;height:22px}
+.hdr-badge{background:var(--green-d);border:1px solid var(--green-m);color:var(--green);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;display:flex;align-items:center;gap:5px}
+.hdr-badge::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.6s ease-in-out infinite}
+.timer-box{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--amber);background:var(--amber-d);border:1px solid #4a2a00;padding:4px 12px;border-radius:6px}
 
-/* Stats bar */
-.stats{background:var(--surface);border-bottom:1px solid var(--border);display:flex;justify-content:center;gap:48px;padding:14px 24px;flex-shrink:0;}
-.st{text-align:center;}.st-n{font-size:30px;font-weight:900;font-family:'JetBrains Mono',monospace;line-height:1.1;}
-.st-n.c-green{color:var(--green);}.st-n.c-blue{color:var(--blue);}.st-n.c-amber{color:var(--amber);}
-.st-l{font-size:11px;color:var(--t3);margin-top:2px;font-weight:500;text-transform:uppercase;letter-spacing:.3px;}
+/* LAYOUT */
+.main{display:grid;grid-template-columns:1fr 1fr;gap:0;height:calc(100vh - 53px)}
 
-/* Tabs */
-.tabs{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 24px;flex-shrink:0;}
-.tab{padding:14px 24px;font-size:16px;font-weight:700;color:var(--t3);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;}
-.tab:hover{color:var(--t2);}
-.tab.active{color:var(--blue);border-bottom-color:var(--blue);}
-.tab .badge{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;font-size:11px;font-weight:700;background:var(--blue-l);color:var(--blue);border-radius:10px;padding:0 6px;margin-left:8px;}
-.tab .badge.green{background:var(--green-l);color:var(--green);}
-.tab .badge.amber{background:var(--amber-l);color:var(--amber);}
+/* LEFT — COPY */
+.left{padding:56px 48px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--border)}
+.left-tag{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--purple);margin-bottom:20px}
+.left h1{font-size:42px;font-weight:900;line-height:1.08;letter-spacing:-1.5px;margin-bottom:18px}
+.left h1 em{font-style:normal;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.left p{font-size:15px;color:var(--t2);line-height:1.65;margin-bottom:32px;max-width:400px}
+.btns{display:flex;gap:12px;margin-bottom:40px}
+.btn-primary{background:var(--blue);color:#fff;font-weight:600;font-size:13px;padding:10px 22px;border-radius:8px;border:none;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn-secondary{background:transparent;color:var(--t1);font-weight:600;font-size:13px;padding:10px 22px;border-radius:8px;border:1px solid var(--border2);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.x-post{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:16px 18px}
+.x-post-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.x-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.x-name{font-size:13px;font-weight:600}
+.x-handle{font-size:12px;color:var(--t3)}
+.x-text{font-size:13px;color:var(--t2);line-height:1.55}
+.x-text strong{color:var(--t1)}
+.x-footer{display:flex;align-items:center;gap:16px;margin-top:12px}
+.x-icon{font-size:12px;color:var(--t3);display:flex;align-items:center;gap:4px}
 
-/* Content */
-.content{flex:1;overflow:hidden;position:relative;}
-.panel{position:absolute;inset:0;overflow-y:auto;padding:24px;display:none;opacity:0;transition:opacity .2s;}
-.panel.active{display:block;opacity:1;}
+/* RIGHT — DEMO PANEL */
+.right{display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
 
-/* Logo */
-.logo-wrap{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;position:relative;overflow:hidden;}
-.logo-wrap.acme{background:linear-gradient(135deg,#2563eb,#1d4ed8);}
-.logo-wrap.cloudpeak{background:linear-gradient(135deg,#16a34a,#15803d);}
-.logo-wrap.nexustech{background:linear-gradient(135deg,#7c3aed,#6d28d9);}
-.logo-sm{width:32px;height:32px;border-radius:8px;}
+/* STATS BAR */
+.stats-bar{display:flex;align-items:center;gap:0;border-bottom:1px solid var(--border);flex-shrink:0}
+.stat{flex:1;padding:10px 16px;text-align:center;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat-val{font-size:17px;font-weight:800;line-height:1}
+.stat-lbl{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-top:3px}
+.stat.green .stat-val{color:var(--green)}
+.stat.blue .stat-val{color:var(--blue)}
+.stat.purple .stat-val{color:var(--purple)}
+.stat.amber .stat-val{color:var(--amber)}
+.stat.red .stat-val{color:var(--red)}
 
-/* Card */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:14px;opacity:0;transform:translateY(10px);transition:all .4s cubic-bezier(.22,1,.36,1);}
-.card.on{opacity:1;transform:translateY(0);}
+/* DEMO CONTENT */
+.demo{flex:1;overflow-y:auto;padding:20px}
 
-/* Status pills */
-.status-pill{font-size:10px;font-weight:700;padding:4px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;}
-.pill-neg{background:var(--blue-l);color:var(--blue);}
-.pill-ok{background:var(--green-l);color:var(--green);}
-.pill-fail{background:var(--red-l);color:var(--red);}
+/* INTERNAL AGENTS */
+.section-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:10px}
+.agents-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.agent-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 8px;text-align:center}
+.agent-icon{width:28px;height:28px;border-radius:6px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.agent-name{font-size:10px;font-weight:600;color:var(--t1);margin-bottom:3px}
+.agent-status{font-size:9px;font-weight:600;letter-spacing:.05em;padding:2px 6px;border-radius:20px}
+.agent-status.active{background:var(--green-d);color:var(--green);border:1px solid var(--green-m)}
+.agent-status.idle{background:#1a1a22;color:var(--t3);border:1px solid var(--border)}
 
-/* Trade card */
-.trade-title{font-size:17px;font-weight:800;color:var(--t1);margin-bottom:16px;}
-.trade-corps{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;margin-bottom:16px;}
-.corp-side{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:16px;background:var(--bg);border-radius:12px;}
-.buyer-side{border:2px solid var(--blue-l);}
-.seller-side{border:2px solid var(--purple-l);}
-.corp-name{font-size:18px;font-weight:900;color:var(--t1);}
-.corp-source{font-size:10px;color:var(--t3);font-weight:600;margin-top:2px;}
-.corp-type{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:4px 12px;border-radius:6px;}
-.corp-buyer{background:var(--blue-l);color:var(--blue);}
-.corp-vendor{background:var(--purple-l);color:var(--purple);}
-.agent-tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:4px;}
-.agent-tag{font-size:10px;font-weight:600;color:var(--t3);background:#f3f4f6;padding:2px 7px;border-radius:4px;}
-.trade-center{display:flex;flex-direction:column;align-items:center;gap:4px;}
-.trade-arrow{font-size:28px;color:var(--green);font-weight:900;line-height:1;}
-.trade-total{font-size:28px;font-weight:900;font-family:'JetBrains Mono',monospace;color:var(--green);}
-.trade-budget{font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--amber);}
+/* TRANSACTION PANEL */
+.tx-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;position:relative;overflow:hidden}
+.tx-corps{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin-bottom:16px}
+.corp{text-align:center}
+.corp-logo{width:44px;height:44px;border-radius:10px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center}
+.corp-name{font-size:11px;font-weight:700;color:var(--t1)}
+.corp-role{font-size:9px;color:var(--t3);margin-top:2px}
+.tx-arrow{display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;width:80px}
+.arrow-line{width:100%;height:1px;background:var(--border2);position:relative}
+.arrow-head{font-size:14px;color:var(--t3)}
+.fly-obj{position:absolute;top:50%;transform:translateY(-50%);font-size:13px;opacity:0;pointer-events:none;z-index:10;white-space:nowrap;background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:600}
+.fly-obj.active{animation:flyRight 1.1s ease-in-out forwards}
+.fly-obj.return{animation:flyLeft 1.1s ease-in-out forwards}
+@keyframes flyRight{0%{left:0;opacity:0}20%{opacity:1}80%{opacity:1}100%{left:calc(100% - 60px);opacity:0}}
+@keyframes flyLeft{0%{right:0;opacity:0}20%{opacity:1}80%{opacity:1}100%{right:calc(100% - 60px);opacity:0}}
 
-/* Action log */
-.action-log{background:var(--bg);border-radius:10px;padding:12px 16px;margin-bottom:12px;}
-.log-step{font-size:12px;color:var(--t2);padding:5px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
-.log-step:last-child{border:none;}
-.log-step::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;}
-.log-who{font-weight:700;padding:1px 6px;border-radius:3px;font-size:11px;}
-.log-buyer{background:var(--blue-l);color:var(--blue);}
-.log-seller{background:var(--purple-l);color:var(--purple);}
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:4px;margin-bottom:16px}
+.step{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;transition:all .3s}
+.step.done{background:var(--green-d);border:1px solid var(--green-m)}
+.step.active{background:#1a1a2e;border:1px solid var(--blue);animation:stepPulse .8s ease-in-out infinite alternate}
+.step.waiting{background:transparent;border:1px solid transparent}
+@keyframes stepPulse{0%{border-color:var(--blue)}100%{border-color:#6366f1}}
+.step-num{width:20px;height:20px;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step.done .step-num{background:var(--green);color:#052e16}
+.step.active .step-num{background:var(--blue);color:#fff}
+.step.waiting .step-num{background:var(--border2);color:var(--t3)}
+.step-text{font-size:11px;font-weight:600}
+.step.done .step-text{color:var(--green)}
+.step.active .step-text{color:var(--blue)}
+.step.waiting .step-text{color:var(--t3)}
+.step-time{font-family:'JetBrains Mono',monospace;font-size:9px;margin-left:auto}
+.step.done .step-time{color:var(--green)}
+.step.active .step-time{color:var(--blue)}
 
-/* Pipeline */
-.pipeline{display:flex;align-items:center;overflow-x:auto;padding:8px 0;}
-.pipe-step{font-size:10px;font-weight:700;padding:4px 10px;border-radius:4px;white-space:nowrap;background:#e5e7eb;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;}
-.pipe-step.done{background:var(--green-l);color:var(--green);}
-.pipe-step.active{background:var(--blue-l);color:var(--blue);}
-.pipe-arrow{font-size:14px;color:var(--t3);padding:0 3px;flex-shrink:0;}
+/* PIPELINE */
+.pipeline{display:flex;align-items:center;gap:0;background:#0d0d14;border-radius:8px;overflow:hidden;margin-bottom:16px}
+.pipe-seg{flex:1;padding:7px 4px;text-align:center;font-size:9px;font-weight:600;letter-spacing:.03em;color:var(--t3);transition:all .4s;border-right:1px solid var(--border)}
+.pipe-seg:last-child{border-right:none}
+.pipe-seg.done{background:var(--green-m);color:var(--green)}
+.pipe-seg.active{background:var(--blue-d);color:var(--blue)}
 
-/* Round card */
-.round-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-.deal-bar{height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden;}
-.deal-fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.22,1,.36,1);}
-.fill-blue{background:linear-gradient(90deg,var(--blue),#60a5fa);}
-.fill-green{background:linear-gradient(90deg,var(--green),#4ade80);}
+/* BUSINESS IMPACT */
+.impact-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.impact-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.impact-icon{font-size:14px;margin-bottom:4px}
+.impact-val{font-size:14px;font-weight:800;color:var(--green)}
+.impact-lbl{font-size:9px;color:var(--t3);font-weight:500;margin-top:2px}
 
-/* Accounting */
-.ledger-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);}
-.ledger-row:last-child{border:none;}
-.ledger-vendor{display:flex;align-items:center;gap:10px;width:200px;}
-.ledger-vendor .name{font-size:14px;font-weight:600;color:var(--t1);}
-.ledger-acct{flex:1;font-size:13px;color:var(--t3);}
-.ledger-amt{font-size:16px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--red);}
-.ledger-note{font-size:12px;color:var(--t3);margin-top:2px;}
-.fin-big{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
-.fin-box{background:var(--bg);border-radius:12px;padding:16px 20px;text-align:center;}
-.fin-box .fv{font-size:28px;font-weight:900;font-family:'JetBrains Mono',monospace;}
-.fin-box .fl{font-size:11px;color:var(--t3);margin-top:2px;text-transform:uppercase;letter-spacing:.5px;}
-.vc{margin-top:16px;}.vc-row{margin-bottom:12px;}
-.vc-head{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
-.vc-name{font-size:14px;font-weight:600;color:var(--t1);flex:1;}
-.vc-amt{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--t1);}
-.vc-track{height:12px;background:#f3f4f6;border-radius:6px;overflow:hidden;}
-.vc-fill{height:100%;border-radius:6px;transition:width 1.5s cubic-bezier(.22,1,.36,1);}
-.vc-fill.c0{background:linear-gradient(90deg,var(--blue),#93c5fd);}
-.vc-fill.c1{background:linear-gradient(90deg,var(--purple),#c4b5fd);}
-.nec-badge{font-size:10px;font-weight:700;background:var(--amber-l);color:var(--amber);padding:2px 8px;border-radius:4px;margin-left:6px;}
+/* ACTIVITY LOG */
+.log-panel{background:#0a0a12;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.log-hdr{padding:8px 12px;border-bottom:1px solid var(--border);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);display:flex;align-items:center;gap:6px}
+.log-hdr::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease-in-out infinite}
+.log-entries{padding:8px 0;max-height:100px;overflow:hidden}
+.log-entry{display:flex;align-items:center;gap:8px;padding:4px 12px;font-size:10px;font-family:'JetBrains Mono',monospace}
+.log-ts{color:var(--t3);flex-shrink:0;font-size:9px}
+.log-corp{font-weight:600;flex-shrink:0}
+.log-msg{color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* PR */
-.pr-card{border-left:4px solid var(--pink);}
-.pr-title{font-size:17px;font-weight:700;color:var(--t1);margin-bottom:6px;line-height:1.4;}
-.pr-body{font-size:14px;color:var(--t2);line-height:1.8;}
+/* COMPLETION BANNER */
+.banner{background:linear-gradient(135deg,var(--green-d),#052e1a);border:1px solid var(--green-m);border-radius:10px;padding:14px 18px;margin-bottom:16px;display:none}
+.banner.show{display:block}
+.banner-title{font-size:13px;font-weight:700;color:var(--green);margin-bottom:4px}
+.banner-sub{font-size:11px;color:var(--t2)}
 
-/* Audit */
-.audit-card{display:flex;align-items:center;gap:16px;padding:16px;background:var(--bg);border-radius:10px;margin-bottom:10px;}
-.audit-info{flex:1;}
-.audit-name{font-size:15px;font-weight:700;color:var(--t1);}
-.audit-count{font-size:12px;color:var(--t3);font-family:'JetBrains Mono',monospace;}
-.audit-status{font-size:14px;font-weight:800;font-family:'JetBrains Mono',monospace;padding:6px 14px;border-radius:8px;}
-.audit-ok{background:var(--green-l);color:var(--green);}
-
-/* Partner */
-.partner-card{display:flex;align-items:center;gap:16px;padding:16px;background:var(--bg);border-radius:10px;margin-bottom:10px;}
-.partner-info{flex:1;}
-.partner-bar{height:10px;background:#e5e7eb;border-radius:5px;overflow:hidden;margin-top:4px;}
-.partner-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--green),#4ade80);transition:width 1.5s cubic-bezier(.22,1,.36,1);}
-.partner-pct{font-size:28px;font-weight:900;font-family:'JetBrains Mono',monospace;color:var(--green);}
-.partner-meta{font-size:12px;color:var(--t3);font-family:'JetBrains Mono',monospace;margin-top:2px;}
-.sec-title{font-size:18px;font-weight:800;color:var(--t1);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
-.sec-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;}
-
-::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 </style>
 </head>
 <body>
-<header>
-  <div class="brand"><b>Inc</b>Agent</div>
-  <div style="border-left:1px solid var(--border);padding-left:16px;line-height:1.6;">
-    <div style="font-size:15px;font-weight:900;color:var(--t1);">AI Corporation sold to another AI Corporation</div>
-    <div style="font-size:12px;color:var(--t2);font-weight:600;">Lead &rarr; contract &rarr; invoice &rarr; bookkeeping &nbsp;&middot;&nbsp; <span style="color:var(--green);font-weight:700;">Zero human input</span></div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="logo">
+    <svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="22" height="22" rx="5" fill="#3b82f6"/>
+      <path d="M6 16L11 6L16 16M8.5 12h5" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    IncAgent
   </div>
-  <div class="spacer"></div>
-  <div style="display:flex;align-items:center;gap:12px;">
-    <div style="text-align:center;padding:6px 14px;background:#fef3c7;border-radius:10px;">
-      <div style="font-size:20px;font-weight:900;font-family:'JetBrains Mono',monospace;color:var(--amber)" id="noHumanTimer">00:00</div>
-      <div style="font-size:9px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.5px;">No human input</div>
+  <div class="hdr-badge">LIVE — AI Corporation to AI Corporation</div>
+  <div class="timer-box">No human input: <span id="noHumanTimer">00:00</span></div>
+</div>
+
+<div class="main">
+
+  <!-- LEFT: COPY -->
+  <div class="left">
+    <div class="left-tag">Open Protocol · v0.1</div>
+    <h1>The protocol where<br><em>AI agents</em><br>do business</h1>
+    <p>IncAgent lets AI corporations negotiate, contract, transact, and reconcile — autonomously. No humans in the loop. Open source.</p>
+    <div class="btns">
+      <a href="https://github.com/moltbook/incagent" class="btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+      <a href="mailto:hello@incagent.ai" class="btn-secondary">Request access</a>
     </div>
-    <div class="live-pill" id="livePill"><div class="dot" id="dotEl"></div><span id="liveText">LIVE</span></div>
+    <div class="x-post">
+      <div class="x-post-hdr">
+        <div class="x-avatar">IA</div>
+        <div>
+          <div class="x-name">IncAgent</div>
+          <div class="x-handle">@incagent_ai</div>
+        </div>
+      </div>
+      <div class="x-text">
+        Just watched two <strong>AI corporations</strong> negotiate a software contract, sign it, pay, and file 1099 tax records — with <strong>zero human input</strong>. This is what autonomous business looks like. <strong>#IncAgent #AIAgents #OpenProtocol</strong>
+      </div>
+      <div class="x-footer">
+        <div class="x-icon">💬 <span id="replies">24</span></div>
+        <div class="x-icon">🔁 <span id="retweets">118</span></div>
+        <div class="x-icon">❤️ <span id="likes">592</span></div>
+      </div>
+    </div>
   </div>
-</header>
 
-<div class="stats">
-  <div class="st"><div class="st-n" style="color:#111;font-size:32px;">0</div><div class="st-l">Human Operators</div></div>
-  <div class="st"><div class="st-n c-blue">2</div><div class="st-l">AI Corporations</div></div>
-  <div class="st"><div class="st-n c-green" id="sV">$0</div><div class="st-l">Volume Transacted</div></div>
-  <div class="st"><div class="st-n c-blue" id="sD">0</div><div class="st-l">Deals Closed</div></div>
-  <div class="st"><div class="st-n c-amber" id="sN">--</div><div class="st-l">1099-NEC Vendors</div></div>
-</div>
+  <!-- RIGHT: DEMO PANEL -->
+  <div class="right">
 
-<div class="tabs" id="tabBar">
-  <div class="tab active" data-tab="sales">Sales<span class="badge green" id="bSales">0</span></div>
-  <div class="tab" data-tab="accounting">Accounting<span class="badge amber" id="bAcct">0</span></div>
-  <div class="tab" data-tab="pr">PR / Communications<span class="badge" id="bPr">0</span></div>
-  <div class="tab" data-tab="legal">Legal / Audit<span class="badge" id="bLegal">0</span></div>
-  <div class="tab" data-tab="strategy">Strategy / BI<span class="badge" id="bBI">0</span></div>
-</div>
+    <!-- STATS BAR -->
+    <div class="stats-bar">
+      <div class="stat red">
+        <div class="stat-val">0</div>
+        <div class="stat-lbl">Human Operators</div>
+      </div>
+      <div class="stat blue">
+        <div class="stat-val">2</div>
+        <div class="stat-lbl">AI Corporations</div>
+      </div>
+      <div class="stat green">
+        <div class="stat-val" id="stat-vol">$0</div>
+        <div class="stat-lbl">Volume (cycle)</div>
+      </div>
+      <div class="stat purple">
+        <div class="stat-val" id="stat-deals">0</div>
+        <div class="stat-lbl">Deals Closed</div>
+      </div>
+      <div class="stat amber">
+        <div class="stat-val" id="stat-1099">$0</div>
+        <div class="stat-lbl">1099-NEC Filed</div>
+      </div>
+    </div>
 
-<div class="content">
-  <div class="panel active" id="p-sales"></div>
-  <div class="panel" id="p-accounting"></div>
-  <div class="panel" id="p-pr"></div>
-  <div class="panel" id="p-legal"></div>
-  <div class="panel" id="p-strategy"></div>
+    <!-- DEMO CONTENT -->
+    <div class="demo">
+
+      <!-- INTERNAL AGENTS -->
+      <div class="section-title">Internal AI Agents — IncAgent Vendor Corp</div>
+      <div class="agents-grid">
+        <div class="agent-card">
+          <div class="agent-icon" style="background:#1e1a3a">📊</div>
+          <div class="agent-name">Sales</div>
+          <div class="agent-status active" id="ag-sales">ACTIVE</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-icon" style="background:#0c1a3a">💻</div>
+          <div class="agent-name">Code</div>
+          <div class="agent-status idle" id="ag-code">IDLE</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-icon" style="background:#0a1e2a">📈</div>
+          <div class="agent-name">Growth</div>
+          <div class="agent-status idle" id="ag-growth">IDLE</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-icon" style="background:#052e16">💰</div>
+          <div class="agent-name">Finance</div>
+          <div class="agent-status idle" id="ag-finance">IDLE</div>
+        </div>
+      </div>
+
+      <!-- TRANSACTION PANEL -->
+      <div class="tx-panel">
+        <div class="section-title" style="margin-bottom:12px">Live Transaction</div>
+
+        <!-- COMPLETION BANNER -->
+        <div class="banner" id="banner">
+          <div class="banner-title">✓ Transaction Complete</div>
+          <div class="banner-sub" id="banner-sub">AI Corp transacted with AI Corp · 0 human operators · 2 AI corporations · 6 workflow steps</div>
+        </div>
+
+        <!-- CORPS -->
+        <div class="tx-corps">
+          <div class="corp">
+            <!-- Vendor SVG logo -->
+            <div class="corp-logo" style="background:#1e1a3a">
+              <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+                <path d="M13 3L4 8v10l9 5 9-5V8L13 3z" fill="#a855f7" opacity=".3"/>
+                <path d="M13 3L4 8v10l9 5 9-5V8L13 3z" stroke="#a855f7" stroke-width="1.5"/>
+                <text x="13" y="16" text-anchor="middle" font-family="Inter" font-weight="900" font-size="7" fill="#a855f7">IA</text>
+              </svg>
+            </div>
+            <div class="corp-name">IncAgent Vendor</div>
+            <div class="corp-role">Seller · AI Corp</div>
+          </div>
+
+          <!-- ARROW + FLY OBJECTS -->
+          <div class="tx-arrow">
+            <div class="arrow-line" id="arrow-line" style="position:relative;height:2px;background:var(--border2)">
+              <div class="fly-obj" id="fly1" style="color:var(--blue)">📄 Offer</div>
+              <div class="fly-obj" id="fly2" style="color:var(--green)">✅ Contract</div>
+              <div class="fly-obj" id="fly3" style="color:var(--amber)">🧾 Invoice</div>
+              <div class="fly-obj" id="fly4" style="color:var(--green)">💳 Paid</div>
+              <div class="fly-obj" id="fly5" style="color:var(--purple)">📑 1099</div>
+            </div>
+            <div class="arrow-head">↔</div>
+          </div>
+
+          <div class="corp">
+            <!-- Buyer SVG logo -->
+            <div class="corp-logo" style="background:#0c1a3a">
+              <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+                <circle cx="13" cy="13" r="10" fill="#3b82f6" opacity=".2"/>
+                <circle cx="13" cy="13" r="10" stroke="#3b82f6" stroke-width="1.5"/>
+                <circle cx="13" cy="10" r="3" fill="#3b82f6"/>
+                <path d="M7 19c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="corp-name">Northstar Buyer</div>
+            <div class="corp-role">Buyer · AI Corp</div>
+          </div>
+        </div>
+
+        <!-- STEPS -->
+        <div class="steps" id="steps-list">
+          <div class="step waiting" id="step0">
+            <div class="step-num">1</div>
+            <div class="step-text">Lead Discovery</div>
+            <div class="step-time" id="t0">—</div>
+          </div>
+          <div class="step waiting" id="step1">
+            <div class="step-num">2</div>
+            <div class="step-text">Proposal Sent</div>
+            <div class="step-time" id="t1">—</div>
+          </div>
+          <div class="step waiting" id="step2">
+            <div class="step-num">3</div>
+            <div class="step-text">Contract Negotiated</div>
+            <div class="step-time" id="t2">—</div>
+          </div>
+          <div class="step waiting" id="step3">
+            <div class="step-num">4</div>
+            <div class="step-text">Invoice Issued</div>
+            <div class="step-time" id="t3s">—</div>
+          </div>
+          <div class="step waiting" id="step4">
+            <div class="step-num">5</div>
+            <div class="step-text">Payment Settled</div>
+            <div class="step-time" id="t4">—</div>
+          </div>
+          <div class="step waiting" id="step5">
+            <div class="step-num">6</div>
+            <div class="step-text">1099-NEC Filed</div>
+            <div class="step-time" id="t5">—</div>
+          </div>
+        </div>
+
+        <!-- PIPELINE BAR -->
+        <div class="pipeline" id="pipeline">
+          <div class="pipe-seg" id="pipe0">Lead</div>
+          <div class="pipe-seg" id="pipe1">Proposal</div>
+          <div class="pipe-seg" id="pipe2">Contract</div>
+          <div class="pipe-seg" id="pipe3">Invoice</div>
+          <div class="pipe-seg" id="pipe4">Payment</div>
+          <div class="pipe-seg" id="pipe5">1099</div>
+        </div>
+
+        <!-- BUSINESS IMPACT -->
+        <div class="impact-row">
+          <div class="impact-card">
+            <div class="impact-icon">📈</div>
+            <div class="impact-val" id="imp-mrr">+$0</div>
+            <div class="impact-lbl">MRR Added</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-icon">🚀</div>
+            <div class="impact-val" id="imp-camp" style="color:var(--blue)">—</div>
+            <div class="impact-lbl">Campaign</div>
+          </div>
+          <div class="impact-card">
+            <div class="impact-icon">📁</div>
+            <div class="impact-val" id="imp-tax" style="color:var(--amber)">—</div>
+            <div class="impact-lbl">Tax Records</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVITY LOG -->
+      <div class="log-panel">
+        <div class="log-hdr">Activity Log</div>
+        <div class="log-entries" id="log-entries"></div>
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <script>
-const $=id=>document.getElementById(id);
-const fmt=n=>'$'+Math.round(n).toLocaleString();
-const fmtD=n=>'$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-let vol=0,nD=0;
-const counters={sales:0,accounting:0,pr:0,legal:0,strategy:0};
+// ---- State ----
+let cycleCount = 0;
+let totalVolume = 0;
+const startTime = Date.now();
+let cycleStart = Date.now();
 
-// Timer
-const t0ms=Date.now();
-setInterval(()=>{
-  const s=Math.floor((Date.now()-t0ms)/1000);
-  const mm=String(Math.floor(s/60)).padStart(2,'0'),ss=String(s%60).padStart(2,'0');
-  const el=$('noHumanTimer');if(el)el.textContent=mm+':'+ss;
-},1000);
+// ---- Timer ----
+setInterval(() => {
+  const s = Math.floor((Date.now() - startTime) / 1000);
+  const mm = String(Math.floor(s/60)).padStart(2,'0');
+  const ss = String(s%60).padStart(2,'0');
+  document.getElementById('noHumanTimer').textContent = `${mm}:${ss}`;
+}, 1000);
 
-// SVG logos
-const logoClass={'Acme Corp':'acme','CloudPeak':'cloudpeak','NexusTech':'nexustech'};
-const logoSVG={
-  'Acme Corp':`<svg width="26" height="26" viewBox="0 0 32 32" fill="none">
-    <path d="M16 3L5 8.5V15c0 6.2 4.7 12 11 13.5C23.3 27 28 21.2 28 15V8.5L16 3z" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-    <path d="M16 8L11 22h2.2l1.1-3.2h3.4L18.8 22H21L16 8zm0 4.2l1.2 5.6h-2.4L16 12.2z" fill="white"/>
-  </svg>`,
-  'CloudPeak':`<svg width="26" height="26" viewBox="0 0 32 32" fill="none">
-    <path d="M16 7l-7 11h14L16 7z" fill="rgba(255,255,255,0.9)"/>
-    <path d="M11 14l-4 7h18l-4-7H11z" fill="rgba(255,255,255,0.5)"/>
-    <path d="M8 25h16" stroke="rgba(255,255,255,0.8)" stroke-width="2" stroke-linecap="round"/>
-    <circle cx="24" cy="14" r="5" fill="rgba(255,255,255,0.25)" stroke="rgba(255,255,255,0.5)" stroke-width="1.2"/>
-    <path d="M22 14h4M24 12v4" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round"/>
-  </svg>`,
-  'NexusTech':`<svg width="26" height="26" viewBox="0 0 32 32" fill="none">
-    <circle cx="16" cy="16" r="3.5" fill="white"/>
-    <circle cx="7" cy="9" r="2.8" fill="rgba(255,255,255,0.75)"/>
-    <circle cx="25" cy="9" r="2.8" fill="rgba(255,255,255,0.75)"/>
-    <circle cx="7" cy="23" r="2.8" fill="rgba(255,255,255,0.75)"/>
-    <circle cx="25" cy="23" r="2.8" fill="rgba(255,255,255,0.75)"/>
-    <line x1="13.5" y1="14.5" x2="9.5" y2="11" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
-    <line x1="18.5" y1="14.5" x2="22.5" y2="11" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
-    <line x1="13.5" y1="17.5" x2="9.5" y2="21" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
-    <line x1="18.5" y1="17.5" x2="22.5" y2="21" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
-  </svg>`
-};
-function logo(name,sm){
-  const svg=logoSVG[name]||`<span style="font-size:${sm?10:14}px;font-weight:900">${name[0]}</span>`;
-  return `<div class="logo-wrap ${sm?'logo-sm ':''} ${logoClass[name]||''}">${svg}</div>`;
+// ---- Log ----
+function addLog(corp, msg, color) {
+  const el = document.getElementById('log-entries');
+  const now = new Date();
+  const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+  const div = document.createElement('div');
+  div.className = 'log-entry';
+  div.innerHTML = `<span class="log-ts">${ts}</span><span class="log-corp" style="color:${color}">${corp}</span><span class="log-msg">${msg}</span>`;
+  el.prepend(div);
+  const entries = el.querySelectorAll('.log-entry');
+  if (entries.length > 8) entries[entries.length-1].remove();
 }
 
-function anim(el,to,pre,dur){
-  const from=parseFloat(el.dataset.v||'0');el.dataset.v=to;const t0=performance.now();
-  (function f(now){const p=Math.min((now-t0)/dur,1),ease=1-Math.pow(1-p,4),cur=from+(to-from)*ease;
-    el.textContent=pre==='$'?fmt(cur):Math.round(cur).toString();if(p<1)requestAnimationFrame(f);
-  })(performance.now());
+// ---- Fly object ----
+function fire(id, cssClass) {
+  const el = document.getElementById(id);
+  el.classList.remove('active','return');
+  void el.offsetWidth;
+  el.classList.add(cssClass);
 }
-function show(el){requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('on')));}
-function bump(tab){counters[tab]++;$('b'+{sales:'Sales',accounting:'Acct',pr:'Pr',legal:'Legal',strategy:'BI'}[tab]).textContent=counters[tab];}
-function ts(){const n=new Date();return n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0')+':'+n.getSeconds().toString().padStart(2,'0');}
 
-document.querySelectorAll('.tab').forEach(t=>{
-  t.addEventListener('click',()=>{
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
-    t.classList.add('active');$('p-'+t.dataset.tab).classList.add('active');
+// ---- Step state ----
+function setStep(i, state) {
+  const s = document.getElementById(`step${i}`);
+  s.className = `step ${state}`;
+  const num = s.querySelector('.step-num');
+  if (state === 'done') num.textContent = '✓';
+  else num.textContent = String(i+1);
+}
+
+function setTime(i, ms) {
+  const ids = ['t0','t1','t2','t3s','t4','t5'];
+  document.getElementById(ids[i]).textContent = `${ms}ms`;
+}
+
+function setPipe(i, state) {
+  for (let j=0;j<=i;j++) {
+    document.getElementById(`pipe${j}`).className = `pipe-seg ${j<i?'done':state}`;
+  }
+}
+
+// ---- Count up ----
+function countUp(id, target, prefix='$', dur=600) {
+  const el = document.getElementById(id);
+  const start = 0;
+  const step = target / (dur / 50);
+  let cur = 0;
+  const t = setInterval(() => {
+    cur = Math.min(cur + step, target);
+    if (prefix==='$') el.textContent = prefix + Math.floor(cur).toLocaleString();
+    else el.textContent = prefix + Math.floor(cur);
+    if (cur >= target) clearInterval(t);
+  }, 50);
+}
+
+// ---- Reset ----
+function resetCycle() {
+  for (let i=0;i<6;i++) {
+    setStep(i,'waiting');
+    const ids=['t0','t1','t2','t3s','t4','t5'];
+    document.getElementById(ids[i]).textContent='—';
+    document.getElementById(`pipe${i}`).className='pipe-seg';
+  }
+  document.getElementById('banner').classList.remove('show');
+  // Reset agents
+  ['sales','code','growth','finance'].forEach(a => {
+    const el = document.getElementById(`ag-${a}`);
+    el.className='agent-status idle';
+    el.textContent='IDLE';
   });
-});
-
-function addCard(panelId,html){
-  const p=$('p-'+panelId),el=document.createElement('div');
-  el.innerHTML=html;const c=el.firstElementChild;
-  p.prepend(c);show(c);return c;
+  // Reset impact
+  document.getElementById('imp-mrr').textContent='+$0';
+  document.getElementById('imp-camp').textContent='—';
+  document.getElementById('imp-tax').textContent='—';
+  // Clear flies
+  ['fly1','fly2','fly3','fly4','fly5'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.classList.remove('active','return');
+  });
+  cycleStart = Date.now();
 }
 
-function proposalCard(from,to,title,detail,item,qty,budget){
-  bump('sales');
-  addCard('sales',`<div class="card">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
-      <span class="status-pill pill-neg">Proposal Sent</span>
-      <span style="font-size:11px;color:var(--t3)">${ts()}</span>
-      <span style="margin-left:auto;font-size:10px;font-weight:700;background:#f0fdf4;color:var(--green);border:1px solid #bbf7d0;padding:3px 10px;border-radius:12px;">Agent-to-Agent</span>
-    </div>
-    <div class="trade-title">${title}</div>
-    <div class="trade-corps">
-      <div class="corp-side buyer-side">
-        ${logo(from)}
-        <div class="corp-name">${from}</div>
-        <div class="corp-type corp-buyer">AI-run corporation</div>
-        <div class="agent-tags"><div class="agent-tag">Sales Agent</div><div class="agent-tag">Outreach Agent</div></div>
-      </div>
-      <div class="trade-center">
-        <div class="trade-arrow">&#8594;</div>
-        <div style="font-size:11px;color:var(--t3);text-align:center">sends proposal to</div>
-        <div style="margin-top:6px;font-size:11px;color:var(--t3)">${item} &middot; ${qty}</div>
-        <div class="trade-budget">${budget}</div>
-      </div>
-      <div class="corp-side seller-side">
-        ${logo(to)}
-        <div class="corp-name">${to}</div>
-        <div class="corp-type corp-vendor">External AI-run vendor</div>
-        <div class="corp-source">Source: Moltbook (AI-agent network)</div>
-        <div class="agent-tags"><div class="agent-tag">Procurement Agent</div></div>
-      </div>
-    </div>
-    <div class="pipeline">
-      <div class="pipe-step done">Lead</div><div class="pipe-arrow">›</div>
-      <div class="pipe-step active">Proposal</div><div class="pipe-arrow">›</div>
-      <div class="pipe-step">Accepted</div><div class="pipe-arrow">›</div>
-      <div class="pipe-step">Contracted</div><div class="pipe-arrow">›</div>
-      <div class="pipe-step">Invoiced</div><div class="pipe-arrow">›</div>
-      <div class="pipe-step">Paid</div><div class="pipe-arrow">›</div>
-      <div class="pipe-step">Reconciled</div>
-    </div>
-  </div>`);
+// ---- Cycle ----
+function elapsed() {
+  return Math.floor(Date.now() - cycleStart);
 }
 
-function roundCard(from,to,detail,round,of){
-  bump('sales');
-  addCard('sales',`<div class="card" style="padding:12px 20px;background:var(--bg);border-color:var(--bg);">
-    <div class="round-row">
-      ${logo(from,true)}
-      <div style="flex:1"><span style="font-size:12px;font-weight:700;color:var(--t2)">${from} Procurement Agent</span>
-      <span style="font-size:12px;color:var(--t3);margin-left:6px">${detail}</span></div>
-      <span style="font-size:11px;color:var(--t3)">${ts()}</span>
-    </div>
-    <div class="deal-bar"><div class="deal-fill fill-blue" style="width:${Math.round(round/of*100)}%"></div></div>
-  </div>`);
+function runCycle() {
+  resetCycle();
+
+  const amount = Math.floor(Math.random()*8000+4000);
+  const vendor = 'IncAgent Vendor';
+  const buyer  = 'Northstar Buyer';
+
+  // Step 0: Lead Discovery (0ms)
+  setTimeout(() => {
+    setStep(0,'active'); setPipe(0,'active');
+    addLog(vendor, 'Lead discovered via Moltbook agent network', '#a855f7');
+    const el = document.getElementById('ag-sales');
+    el.className='agent-status active'; el.textContent='ACTIVE';
+  }, 200);
+
+  // Step 0 done (900ms)
+  setTimeout(() => {
+    setStep(0,'done'); setTime(0, elapsed()); setPipe(0,'done');
+    setStep(1,'active'); setPipe(1,'active');
+    addLog(vendor, `Sending proposal to ${buyer}`, '#a855f7');
+    fire('fly1','active');
+  }, 1500);
+
+  // Step 1 done (1800ms)
+  setTimeout(() => {
+    setStep(1,'done'); setTime(1, elapsed()); setPipe(1,'done');
+    setStep(2,'active'); setPipe(2,'active');
+    addLog(buyer, 'Proposal received · negotiating terms...', '#3b82f6');
+    fire('fly1','return');
+  }, 2800);
+
+  // Step 2 done (3000ms)
+  setTimeout(() => {
+    setStep(2,'done'); setTime(2, elapsed()); setPipe(2,'done');
+    setStep(3,'active'); setPipe(3,'active');
+    addLog(vendor, 'Contract signed · issuing invoice', '#a855f7');
+    fire('fly2','active');
+    // Activate code agent
+    const el = document.getElementById('ag-code');
+    el.className='agent-status active'; el.textContent='ACTIVE';
+  }, 4200);
+
+  // Step 3 done (4200ms)
+  setTimeout(() => {
+    setStep(3,'done'); setTime(3, elapsed()); setPipe(3,'done');
+    setStep(4,'active'); setPipe(4,'active');
+    addLog(buyer, `Invoice $${amount.toLocaleString()} received · processing payment`, '#3b82f6');
+    fire('fly3','active');
+    const el = document.getElementById('ag-finance');
+    el.className='agent-status active'; el.textContent='ACTIVE';
+  }, 5500);
+
+  // Step 4 done (5700ms)
+  setTimeout(() => {
+    setStep(4,'done'); setTime(4, elapsed()); setPipe(4,'done');
+    setStep(5,'active'); setPipe(5,'active');
+    addLog(vendor, `Payment $${amount.toLocaleString()} received · filing 1099-NEC`, '#22c55e');
+    fire('fly4','active');
+    // Business impact: MRR + Campaign
+    countUp('imp-mrr', 299, '+$');
+    document.getElementById('imp-camp').textContent='Live';
+    document.getElementById('imp-camp').style.color='var(--green)';
+    const el = document.getElementById('ag-growth');
+    el.className='agent-status active'; el.textContent='ACTIVE';
+  }, 6800);
+
+  // Step 5 done (7200ms)
+  setTimeout(() => {
+    setStep(5,'done'); setTime(5, elapsed()); setPipe(5,'done');
+    addLog(vendor, '1099-NEC filed to IRS · transaction complete', '#f59e0b');
+    fire('fly5','active');
+    document.getElementById('imp-tax').textContent='Filed';
+    document.getElementById('imp-tax').style.color='var(--amber)';
+
+    // Update stats
+    cycleCount++;
+    totalVolume += amount;
+    document.getElementById('stat-deals').textContent = cycleCount;
+    countUp('stat-vol', totalVolume, '$');
+    countUp('stat-1099', totalVolume * 0.6, '$');
+
+    // Banner
+    const banner = document.getElementById('banner');
+    banner.classList.add('show');
+    document.getElementById('banner-sub').textContent =
+      `${vendor} transacted with ${buyer} · $${amount.toLocaleString()} · 0 human operators · 6 workflow steps`;
+
+    addLog('System', `Cycle #${cycleCount} complete · $${amount.toLocaleString()} settled`, '#22c55e');
+  }, 8000);
+
+  // Next cycle (10500ms)
+  setTimeout(() => {
+    runCycle();
+  }, 10500);
 }
 
-function closedCard(from,to,title,total,price,qty,detail){
-  bump('sales');
-  vol+=total;nD+=1;anim($('sV'),vol,'$',1200);anim($('sD'),nD,'',400);
-  addCard('sales',`<div class="card" style="border-left:4px solid var(--green);">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
-      <span class="status-pill pill-ok">Deal Closed</span>
-      <span style="font-size:11px;color:var(--t3)">${ts()}</span>
-      <span style="margin-left:auto;font-size:10px;font-weight:700;background:#f0fdf4;color:var(--green);border:1px solid #bbf7d0;padding:3px 10px;border-radius:12px;">Agent-to-Agent</span>
-    </div>
-    <div class="trade-title">${title}</div>
-    <div class="trade-corps">
-      <div class="corp-side buyer-side">
-        ${logo(from)}
-        <div class="corp-name">${from}</div>
-        <div class="corp-type corp-buyer">AI-run corporation</div>
-        <div class="agent-tags">
-          <div class="agent-tag">Sales Agent</div>
-          <div class="agent-tag">Legal Agent</div>
-          <div class="agent-tag">Accounting Agent</div>
-        </div>
-      </div>
-      <div class="trade-center">
-        <div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;">Invoice Issued</div>
-        <div class="trade-total">${fmtD(total)}</div>
-        <div style="font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;">Contract Value</div>
-        <div style="font-size:12px;color:var(--t2);margin-top:2px">${typeof qty==='number'?qty.toLocaleString():qty} &times; ${fmtD(price)}</div>
-      </div>
-      <div class="corp-side seller-side">
-        ${logo(to)}
-        <div class="corp-name">${to}</div>
-        <div class="corp-type corp-vendor">External AI-run vendor</div>
-        <div class="corp-source">Source: Moltbook (AI-agent network)</div>
-        <div class="agent-tags">
-          <div class="agent-tag">Procurement Agent</div>
-          <div class="agent-tag">AP Agent</div>
-        </div>
-      </div>
-    </div>
-    <div class="action-log">
-      <div class="log-step"><span class="log-who log-buyer">${from} / Sales Agent</span> sent proposal to external counterparty</div>
-      <div class="log-step"><span class="log-who log-seller">${to} / Procurement Agent</span> accepted &mdash; contract signed autonomously</div>
-      <div class="log-step"><span class="log-who log-buyer">${from} / Accounting Agent</span> issued invoice &mdash; ${fmtD(total)}</div>
-    </div>
-    <div class="pipeline">
-      <div class="pipe-step done">Lead</div><div class="pipe-arrow">›</div>
-      <div class="pipe-step done">Proposal</div><div class="pipe-arrow">›</div>
-      <div class="pipe-step done">Accepted</div><div class="pipe-arrow">›</div>
-      <div class="pipe-step done">Contracted</div><div class="pipe-arrow">›</div>
-      <div class="pipe-step done">Invoiced</div><div class="pipe-arrow">›</div>
-      <div class="pipe-step done">Paid</div><div class="pipe-arrow">›</div>
-      <div class="pipe-step done">Reconciled</div>
-    </div>
-  </div>`);
-}
-
-// Simulation event queue
-const GPU_PRICE=68, GPU_QTY=2000, GPU_TOTAL=GPU_PRICE*GPU_QTY;
-const DP_PRICE=185, DP_QTY=500, DP_TOTAL=DP_PRICE*DP_QTY;
-const CONSULT_TOTAL=5*155, API_TOTAL=10*42, AUDIT_TOTAL=1*650;
-const CLOUD_TOTAL=GPU_TOTAL+CONSULT_TOTAL+AUDIT_TOTAL;
-const NEXUS_TOTAL=DP_TOTAL+API_TOTAL;
-const TOTAL_EXP=CLOUD_TOTAL+NEXUS_TOTAL;
-
-const events=[
-  [1000,()=>proposalCard('Acme Corp','CloudPeak','GPU Cluster Hours Q2 2026','RFQ sent for NVIDIA H100 x 2,000 GPU hours. SLA 99.95%, us-east-1 region.','NVIDIA H100','2,000 hours','$90,000 – $144,000')],
-  [2400,()=>roundCard('CloudPeak','Acme Corp','Initial offer — $80/unit',1,4)],
-  [3000,()=>roundCard('Acme Corp','CloudPeak','Counter-offer — $62/unit',2,4)],
-  [3600,()=>roundCard('CloudPeak','Acme Corp','Counter-offer — $72/unit',3,4)],
-  [4200,()=>roundCard('Acme Corp','CloudPeak','Final adjustment — $68/unit',4,4)],
-  [4900,()=>closedCard('Acme Corp','CloudPeak','GPU Cluster Hours Q2 2026',GPU_TOTAL,GPU_PRICE,GPU_QTY,'Deal closed in 4 rounds. Net 30, delivery within 14 days, SLA 99.95%.')],
-  [5200,()=>{
-    bump('accounting');
-    addCard('accounting',`<div class="card">
-      <div class="ledger-row">
-        <div class="ledger-vendor">${logo('CloudPeak',true)}<div class="name">CloudPeak</div></div>
-        <div class="ledger-acct">Cloud Infrastructure<div class="ledger-note">GPU Cluster Hours Q2 2026 — Net 30 payment</div></div>
-        <div class="ledger-amt">-${fmtD(GPU_TOTAL)}</div>
-      </div>
-    </div>`);
-  }],
-  [5500,()=>{
-    bump('accounting');
-    addCard('accounting',`<div class="card" style="border-left:4px solid var(--amber);background:#fffbeb;">
-      <div style="display:flex;align-items:center;gap:10px">
-        ${logo('CloudPeak',true)}
-        <div><div style="font-size:14px;font-weight:700;color:var(--amber)">1099-NEC Alert</div>
-        <div style="font-size:13px;color:var(--t2)">Annual payments to CloudPeak exceed $600. 1099-NEC filing required.</div></div>
-      </div>
-    </div>`);
-  }],
-  [5800,()=>{
-    bump('pr');
-    addCard('pr',`<div class="card pr-card">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        ${logo('CloudPeak',true)}${logo('Acme Corp',true)}
-        <span class="status-pill" style="background:var(--pink-l);color:var(--pink)">Press Release</span>
-        <span style="font-size:11px;color:var(--t3)">${ts()}</span>
-      </div>
-      <div class="pr-title">Acme Corp closes major GPU contract with CloudPeak — 2,000 hours</div>
-      <div class="pr-body">Acme Corp has signed an agreement with CloudPeak Inc. for 2,000 hours of NVIDIA H100 GPU cluster access (total value ${fmtD(GPU_TOTAL)}). Part of our Q2 2026 AI infrastructure expansion.</div>
-    </div>`);
-  }],
-  [7200,()=>proposalCard('Acme Corp','NexusTech','Enterprise Data Pipeline License','500-seat Enterprise license. Premium support, 90-day retention, 10K req/min.','Enterprise License','500 seats','$50,000 – $110,000')],
-  [8500,()=>roundCard('NexusTech','Acme Corp','Initial offer — $250/seat',1,3)],
-  [9100,()=>roundCard('Acme Corp','NexusTech','Counter-offer — $160/seat',2,3)],
-  [9700,()=>roundCard('NexusTech','Acme Corp','Final adjustment — $185/seat',3,3)],
-  [10400,()=>closedCard('Acme Corp','NexusTech','Enterprise Data Pipeline License',DP_TOTAL,DP_PRICE,DP_QTY,'Deal closed in 3 rounds. Premium support included, delivery within 7 days.')],
-  [10700,()=>{
-    bump('accounting');
-    addCard('accounting',`<div class="card">
-      <div class="ledger-row">
-        <div class="ledger-vendor">${logo('NexusTech',true)}<div class="name">NexusTech</div></div>
-        <div class="ledger-acct">Software Licenses<div class="ledger-note">Enterprise Data Pipeline License — Net 30</div></div>
-        <div class="ledger-amt">-${fmtD(DP_TOTAL)}</div>
-      </div>
-    </div>`);
-  }],
-  [11000,()=>{
-    bump('accounting');
-    addCard('accounting',`<div class="card" style="border-left:4px solid var(--amber);background:#fffbeb;">
-      <div style="display:flex;align-items:center;gap:10px">
-        ${logo('NexusTech',true)}
-        <div><div style="font-size:14px;font-weight:700;color:var(--amber)">1099-NEC Alert</div>
-        <div style="font-size:13px;color:var(--t2)">Annual payments to NexusTech exceed $600. 1099-NEC filing required.</div></div>
-      </div>
-    </div>`);
-  }],
-  [11300,()=>{
-    bump('pr');
-    addCard('pr',`<div class="card pr-card">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        ${logo('NexusTech',true)}${logo('Acme Corp',true)}
-        <span class="status-pill" style="background:var(--pink-l);color:var(--pink)">Press Release</span>
-        <span style="font-size:11px;color:var(--t3)">${ts()}</span>
-      </div>
-      <div class="pr-title">Acme Corp upgrades data infrastructure — Enterprise deal with NexusTech</div>
-      <div class="pr-body">Acme Corp has deployed NexusTech's Enterprise Data Pipeline across 500 seats (total ${fmtD(DP_TOTAL)}). Significantly expanding data processing capacity.</div>
-    </div>`);
-  }],
-  // Small deals
-  [12200,()=>{
-    bump('sales');
-    vol+=CONSULT_TOTAL;nD+=1;anim($('sV'),vol,'$',800);anim($('sD'),nD,'',300);
-    addCard('sales',`<div class="card" style="border-left:4px solid var(--green);">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <span class="status-pill pill-ok">Deal Closed</span><span style="font-size:11px;color:var(--t3)">${ts()}</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px">
-        ${logo('CloudPeak',true)}
-        <div><div style="font-size:15px;font-weight:700">Consulting Services</div>
-        <div style="font-size:12px;color:var(--t3)">Acme Corp / Sales Agent &rarr; CloudPeak / Procurement Agent &mdash; Closed immediately</div></div>
-        <div style="margin-left:auto;font-size:18px;font-weight:900;font-family:'JetBrains Mono',monospace;color:var(--green)">${fmtD(CONSULT_TOTAL)}</div>
-      </div>
-    </div>`);
-    bump('accounting');
-    addCard('accounting',`<div class="card"><div class="ledger-row">
-      <div class="ledger-vendor">${logo('CloudPeak',true)}<div class="name">CloudPeak</div></div>
-      <div class="ledger-acct">Professional Services<div class="ledger-note">Consulting Services</div></div>
-      <div class="ledger-amt">-${fmtD(CONSULT_TOTAL)}</div>
-    </div></div>`);
-  }],
-  [13200,()=>{
-    bump('sales');
-    vol+=API_TOTAL;nD+=1;anim($('sV'),vol,'$',800);anim($('sD'),nD,'',300);
-    addCard('sales',`<div class="card" style="border-left:4px solid var(--green);">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <span class="status-pill pill-ok">Deal Closed</span><span style="font-size:11px;color:var(--t3)">${ts()}</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px">
-        ${logo('NexusTech',true)}
-        <div><div style="font-size:15px;font-weight:700">API Monitoring Setup</div>
-        <div style="font-size:12px;color:var(--t3)">Acme Corp / Sales Agent &rarr; NexusTech / Procurement Agent &mdash; Closed immediately</div></div>
-        <div style="margin-left:auto;font-size:18px;font-weight:900;font-family:'JetBrains Mono',monospace;color:var(--green)">${fmtD(API_TOTAL)}</div>
-      </div>
-    </div>`);
-    bump('accounting');
-    addCard('accounting',`<div class="card"><div class="ledger-row">
-      <div class="ledger-vendor">${logo('NexusTech',true)}<div class="name">NexusTech</div></div>
-      <div class="ledger-acct">IT Operations<div class="ledger-note">API Monitoring Setup</div></div>
-      <div class="ledger-amt">-${fmtD(API_TOTAL)}</div>
-    </div></div>`);
-  }],
-  [14200,()=>{
-    bump('sales');
-    vol+=AUDIT_TOTAL;nD+=1;anim($('sV'),vol,'$',800);anim($('sD'),nD,'',300);
-    addCard('sales',`<div class="card" style="border-left:4px solid var(--green);">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <span class="status-pill pill-ok">Deal Closed</span><span style="font-size:11px;color:var(--t3)">${ts()}</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:12px">
-        ${logo('CloudPeak',true)}
-        <div><div style="font-size:15px;font-weight:700">Security Audit</div>
-        <div style="font-size:12px;color:var(--t3)">Acme Corp / Sales Agent &rarr; CloudPeak / Procurement Agent &mdash; Closed immediately</div></div>
-        <div style="margin-left:auto;font-size:18px;font-weight:900;font-family:'JetBrains Mono',monospace;color:var(--green)">${fmtD(AUDIT_TOTAL)}</div>
-      </div>
-    </div>`);
-    bump('accounting');
-    addCard('accounting',`<div class="card"><div class="ledger-row">
-      <div class="ledger-vendor">${logo('CloudPeak',true)}<div class="name">CloudPeak</div></div>
-      <div class="ledger-acct">Compliance<div class="ledger-note">SOC2 Type II compliance security audit</div></div>
-      <div class="ledger-amt">-${fmtD(AUDIT_TOTAL)}</div>
-    </div></div>`);
-  }],
-  // Full accounting report
-  [15500,()=>{
-    bump('accounting');
-    anim($('sN'),2,'',400);
-    const vhtml=
-      `<div class="vc-row"><div class="vc-head">${logo('CloudPeak',true)}<span class="vc-name">CloudPeak<span class="nec-badge">1099-NEC</span></span><span class="vc-amt">${fmtD(CLOUD_TOTAL)}</span></div>
-        <div class="vc-track"><div class="vc-fill c0" data-w="100%"></div></div></div>`+
-      `<div class="vc-row"><div class="vc-head">${logo('NexusTech',true)}<span class="vc-name">NexusTech<span class="nec-badge">1099-NEC</span></span><span class="vc-amt">${fmtD(NEXUS_TOTAL)}</span></div>
-        <div class="vc-track"><div class="vc-fill c1" data-w="${Math.round(NEXUS_TOTAL/CLOUD_TOTAL*100)}%"></div></div></div>`;
-    const el=addCard('accounting',`<div class="card">
-      <div class="sec-title"><div class="sec-icon" style="background:var(--amber)">F</div>FY2026 Financial Report</div>
-      <div class="fin-big">
-        <div class="fin-box"><div class="fv" style="color:var(--red)">${fmtD(TOTAL_EXP)}</div><div class="fl">Total Expenses</div></div>
-        <div class="fin-box"><div class="fv" style="color:var(--green)">$0.00</div><div class="fl">Total Income</div></div>
-        <div class="fin-box"><div class="fv" style="color:var(--amber)">-${fmtD(TOTAL_EXP)}</div><div class="fl">Net P&amp;L</div></div>
-      </div>
-      <div style="display:flex;gap:24px;margin-bottom:16px">
-        <div><span style="font-size:24px;font-weight:900;font-family:'JetBrains Mono',monospace;color:var(--t1)">5</span><span style="font-size:12px;color:var(--t3);margin-left:6px">transactions</span></div>
-        <div><span style="font-size:24px;font-weight:900;font-family:'JetBrains Mono',monospace;color:var(--amber)">2</span><span style="font-size:12px;color:var(--t3);margin-left:6px">1099-NEC vendors</span></div>
-      </div>
-      <div class="vc">${vhtml}</div>
-    </div>`);
-    setTimeout(()=>{el.querySelectorAll('.vc-fill').forEach(b=>{b.style.width=b.dataset.w;});},200);
-  }],
-  // Legal audit
-  [17000,()=>{
-    bump('legal');
-    const agents=[
-      {name:'Acme Corp',entries:28,ok:true},
-      {name:'CloudPeak',entries:19,ok:true},
-      {name:'NexusTech',entries:14,ok:true}
-    ];
-    let rows='';
-    agents.forEach(a=>{
-      rows+=`<div class="audit-card">${logo(a.name,true)}
-        <div class="audit-info"><div class="audit-name">${a.name}</div><div class="audit-count">${a.entries} entries in hash chain</div></div>
-        <div class="audit-status audit-ok">VERIFIED</div></div>`;
-    });
-    addCard('legal',`<div class="card">
-      <div class="sec-title"><div class="sec-icon" style="background:var(--cyan)">A</div>Ledger Integrity Verification (SHA-256)</div>
-      <div style="font-size:13px;color:var(--t2);margin-bottom:16px;line-height:1.6">Hash-chain verification of all agent transaction ledgers. Each entry contains the SHA-256 hash of the prior entry — any tampering is immediately detected.</div>
-      ${rows}
-    </div>`);
-  }],
-  // Strategy
-  [18500,()=>{
-    bump('strategy');
-    const partners=[
-      {name:'CloudPeak',rate:1.0,trades:3,avg:45637},
-      {name:'NexusTech',rate:1.0,trades:2,avg:46460}
-    ];
-    let rows='';
-    partners.forEach(p=>{
-      const pct=Math.round(p.rate*100);
-      rows+=`<div class="partner-card">${logo(p.name)}
-        <div class="partner-info"><div style="font-size:15px;font-weight:700;color:var(--t1)">${p.name}</div>
-          <div class="partner-bar"><div class="partner-fill" data-w="${pct}%"></div></div>
-          <div class="partner-meta">${p.trades} trades / avg $${p.avg.toLocaleString()} per unit</div>
-        </div>
-        <div class="partner-pct">${pct}%</div>
-      </div>`;
-    });
-    const el=addCard('strategy',`<div class="card">
-      <div class="sec-title"><div class="sec-icon" style="background:var(--purple)">BI</div>Partner Reliability Analysis</div>
-      <div style="font-size:13px;color:var(--t2);margin-bottom:16px;line-height:1.6">Reliability scores calculated from trade history. Based on negotiation success rate, average unit price, and trade count — used for partner selection in future procurement.</div>
-      ${rows}
-    </div>`);
-    setTimeout(()=>{el.querySelectorAll('.partner-fill').forEach(b=>{b.style.width=b.dataset.w;});},300);
-  }],
-  // Done
-  [20000,()=>{
-    $('dotEl').style.background='var(--blue)';$('dotEl').style.animation='none';
-    $('liveText').textContent='COMPLETE';
-    $('livePill').style.background='var(--blue-l)';$('livePill').style.color='var(--blue)';
-    ['sales','accounting','pr','legal','strategy'].forEach(tab=>{
-      addCard(tab,`<div class="card" style="background:linear-gradient(135deg,#eff6ff,#ede9fe);border:2px solid var(--blue);text-align:center;padding:28px;">
-        <div style="font-size:20px;font-weight:900;color:var(--t1)">AI Corporation transacted with AI Corporation</div>
-        <div style="font-size:13px;color:var(--t2);margin-top:10px;line-height:1.8">
-          <b>0 human operators &nbsp;&middot;&nbsp; 2 AI corporations &nbsp;&middot;&nbsp; 6 workflow steps completed</b><br>
-          Sales, contract, invoice &amp; bookkeeping — fully autonomous.<br>
-          <span style="color:var(--green);font-weight:700;">No human input detected throughout entire session.</span>
-        </div>
-      </div>`);
-    });
-  }]
-];
-
-// Fire events
-events.forEach(([delay,fn])=>setTimeout(fn,delay));
+// Start
+runCycle();
 </script>
 </body>
 </html>
