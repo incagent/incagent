@@ -1,97 +1,121 @@
 # IncAgent
 
-**AI agents run the company. Humans execute.**
+**Agents run the company. People execute the work.**
 
-IncAgent is an open-source protocol where AI agents autonomously operate corporations. They discover trading partners, negotiate deals, sign contracts, settle payments on-chain, and learn from every interaction. Humans handle the physical world.
+IncAgent is an open-source protocol for AI-operated companies. An agent creates the offer, closes the buyer, assigns a human operator to do the physical work, verifies the proof, and settles the invoice — all without a human executive.
 
-## The Vision
+[**View live demo →**](https://incagent.ai/live.html)
 
-```
-AI Agent (CEO)
-  |-- Market analysis     --> "GPU demand will rise 20% next month"
-  |-- Auto-procurement    --> Negotiates with CloudPeak's agent, pays in USDC
-  |-- Auto-sales          --> Resells GPU hours to customer agents at 30% margin
-  |-- Staffing decisions  --> "Need 2 more engineers" -> posts job listing
-  |-- Task delegation     --> "Ship order #4521" -> human gets a ticket
-  `-- Strategy learning   --> Adjusts pricing based on 500 past trades
+---
+
+## Install
+
+```bash
+pip install incagent
 ```
 
-The agent handles all business decisions. Humans receive task assignments and execute in the physical world - manufacturing, delivery, customer visits, R&D.
-
-## Quick Start
-
-### SDK Mode (programmatic)
+## One deal, end to end
 
 ```python
 from incagent import IncAgent, Contract, ContractTerms
 
-buyer = IncAgent(name="Acme Corp", role="buyer")
-seller = IncAgent(name="Widget Inc", role="seller")
+# Two agent-run companies
+vendor = IncAgent(name="IncAgent Vendor", role="seller")
+buyer  = IncAgent(name="Northstar Buyer",  role="buyer")
 
+# Define the offer
 contract = Contract(
-    title="GPU Cluster Hours",
-    terms=ContractTerms(quantity=1000, unit_price_range=(50, 80)),
+    title="Outbound Campaign System",
+    terms=ContractTerms(price=5_000, currency="USD"),
 )
 
-result = await buyer.negotiate(contract, counterparty=seller)
-# NegotiationResult(status='agreed', final_price=65.00, rounds=3)
+# 01 Build → 02 Sell → 03 Assign Human → 04 Verify & Pay
+result = await vendor.transact(counterparty=buyer, contract=contract)
+
+print(result.status)              # "completed"
+print(result.human_task.assignee) # "Mika Tanaka"
+print(result.human_task.proof)    # "verified"
+print(result.revenue)             # 5000.0
+print(result.tax_filed)           # True
 ```
 
-### Gateway Mode (persistent daemon)
+---
+
+## The deal flow
+
+```
+01 Build          Agent creates the offer and commercial object
+02 Sell           Buyer agent reviews, accepts terms, signs contract
+03 Assign Human   Ops agent assigns a human operator to the field task
+                  Human executes, submits proof (photos, checklist, location)
+04 Verify & Pay   Agent verifies proof of completion
+                  Finance agent issues invoice, receives payment, files tax record
+```
+
+No human executive at any point. Humans are the execution layer — not the decision layer.
+
+---
+
+## Optional: persistent daemon mode
 
 ```bash
-# Initialize organization (generates API key + keypair)
-incagent init --name "Acme Corp" --role buyer --api-key
+# Initialize your company (generates identity + keypair)
+incagent init --name "My Company" --role seller --api-key
 
-# Start agent daemon
-incagent serve --name "Acme Corp"
+# Start the agent
+incagent serve --name "My Company"
 
-# Monitor
+# Health check
 curl http://localhost:8400/health
-curl http://localhost:8400/metrics  # Prometheus format
 ```
 
-### Two agents trading autonomously
+## Optional: two agents trading autonomously
 
 ```bash
-# Terminal 1: Buyer agent
-incagent init --name "Acme Corp" --role buyer --api-key
-incagent serve --name "Acme Corp" --port 8401
+# Terminal 1
+incagent init --name "IncAgent Vendor" --role seller --api-key
+incagent serve --name "IncAgent Vendor" --port 8401
 
-# Terminal 2: Seller agent
-incagent init --name "CloudPeak" --role seller --api-key
-incagent serve --name "CloudPeak" --port 8402
+# Terminal 2
+incagent init --name "Northstar Buyer" --role buyer --api-key
+incagent serve --name "Northstar Buyer" --port 8402
 
 # They discover each other and start trading automatically
 ```
 
+---
+
 ## Architecture
 
 ```
-              Agent A (Buyer)                    Agent B (Seller)
-      ┌──────────────────────┐           ┌──────────────────────┐
-      │  Gateway :8401       │◄─HTTPS──►│  Gateway :8402       │
-      ├──────────────────────┤           ├──────────────────────┤
-      │  Identity + Ed25519  │           │  Identity + Ed25519  │
-      │  Security (API/HMAC) │           │  Security (API/HMAC) │
-      │  Negotiation (LLM)   │           │  Negotiation (LLM)   │
-      │  Memory (SQLite)     │           │  Memory (SQLite)     │
-      │  Tax Tracker         │           │  Tax Tracker         │
-      │  Metrics (Prometheus)│           │  Metrics (Prometheus)│
-      │  Ledger (hash-chain) │           │  Ledger (hash-chain) │
-      │  Tools (extensible)  │           │  Tools (extensible)  │
-      └───┬──────┬───────────┘           └──────────┬───────────┘
-          │      │                                  │
-          ▼      ▼                                  ▼
-   ┌─────────┐ ┌────────────┐              ┌─────────────┐
-   │EVM Chain│ │ Slack/Email │              │  EVM Chain  │
-   │ (USDC)  │ │ Webhook/API │              │  (USDC)     │
-   └─────────┘ └────────────┘              └─────────────┘
+       IncAgent Vendor (Seller)               Northstar Buyer (Buyer)
+  ┌────────────────────────────┐         ┌────────────────────────────┐
+  │  Offer Agent               │         │  Procurement Agent         │
+  │  Ops Agent    ─────────── │◄─HTTPS─►│  Finance Agent             │
+  │  Finance Agent             │         │                            │
+  ├────────────────────────────┤         ├────────────────────────────┤
+  │  Identity + Ed25519        │         │  Identity + Ed25519        │
+  │  Negotiation (LLM/rules)   │         │  Negotiation (LLM/rules)   │
+  │  Ledger (hash-chain)       │         │  Ledger (hash-chain)       │
+  │  Tax tracker               │         │  Tax tracker               │
+  └──────────┬─────────────────┘         └────────────────────────────┘
+             │
+             ▼ assigns
+  ┌────────────────────┐
+  │  Human Operator    │  Mika Tanaka — Tokyo
+  │  Field execution   │  Submits: photos, checklist, location stamp
+  └────────────────────┘
+             │
+             ▼ verified by Ops Agent
+  ┌────────────────────┐
+  │  Invoice #2048     │  Finance Agent issues, buyer pays, revenue logged
+  │  Tax record        │  1099-NEC filed automatically
+  └────────────────────┘
 ```
 
-### Per-Organization Data Isolation
+### Per-organization data
 
-Each organization gets its own directory (deterministic ID from org name):
+Each organization gets its own isolated directory:
 
 ```
 ~/.incagent/
@@ -102,316 +126,137 @@ Each organization gets its own directory (deterministic ID from org name):
     memory.db          # Learning memory
     tax.db             # Tax records & 1099-NEC tracking
     audit.db           # Security audit log
-    tls/               # TLS certificates (auto-generated or user-provided)
+    tls/               # TLS certificates
     skills/            # Markdown skill files
     tools/             # Custom Python tools
-    reports/           # Generated reports
 ```
 
-## Core Components
+---
+
+## Core components
 
 | Component | Description |
 |-----------|-------------|
-| **Gateway** | Persistent HTTPS server with REST API, TLS 1.3, rate limiting, API key auth |
-| **Escrow** | Solidity smart contract — trustless USDC escrow with timelock + dispute resolution |
-| **Identity** | Ed25519 keypair. Deterministic org ID. Persistent across restarts |
-| **Security** | API key auth, HMAC signing, rate limiting, code sandbox, audit log |
+| **Gateway** | Persistent HTTPS server, TLS 1.3, rate limiting, API key auth |
 | **Negotiation** | LLM-powered autonomous negotiation with rule-based fallback |
-| **Settlement** | Payment + delivery + dispute resolution. USDC on-chain |
-| **Payment** | EIP-1559 gas, RPC failover, nonce management, RBF (Replace-By-Fee) |
-| **Tax** | USDC transaction tracking, 1099-NEC vendor detection, CSV/JSON export |
-| **Metrics** | Prometheus-compatible metrics exporter (no external deps) |
-| **Memory** | SQLite-backed learning. Partner reliability, pricing strategies |
-| **Ledger** | Tamper-evident, SHA-256 hash-chained transaction log |
-| **Tools** | Extensible. Agent can create new tools at runtime (sandboxed) |
-| **Skills** | Markdown plugins. Add trade types without code |
+| **Human Task** | Work order dispatch, proof collection, agent verification |
+| **Settlement** | Invoice + payment + dispute resolution. USDC on-chain optional |
+| **Escrow** | Solidity smart contract — trustless USDC escrow with timelock |
+| **Tax** | USDC transaction tracking, 1099-NEC threshold detection, CSV export |
+| **Identity** | Ed25519 keypair. Deterministic org ID. Persistent across restarts |
+| **Ledger** | SHA-256 hash-chained, tamper-evident transaction log |
+| **Memory** | SQLite-backed learning — partner reliability, pricing strategies |
+| **Metrics** | Prometheus-compatible exporter (no external deps) |
+
+---
 
 ## Security
 
-### v0.7.0 Security Features
-
 | Feature | Implementation |
 |---------|---------------|
-| **HTTPS/TLS 1.3** | Mandatory TLS, auto-generate self-signed certs, HTTP→HTTPS redirect |
-| **On-chain Escrow** | Solidity smart contract, timelock + dispute arbiter + auto-refund |
-| **API Key Auth** | HMAC-SHA256 hashed keys, Bearer token, env var fallback |
+| **HTTPS/TLS 1.3** | Mandatory TLS, auto-generate certs, HTTP→HTTPS redirect |
+| **On-chain Escrow** | Solidity contract, timelock + dispute arbiter + auto-refund |
+| **API Key Auth** | HMAC-SHA256 hashed keys, Bearer token |
 | **Rate Limiting** | Token bucket per-IP (60/min, burst 10) |
 | **HMAC Request Signing** | Timestamp + body signing, 300s replay window |
-| **Code Sandbox** | Static analysis blocks subprocess, eval, socket, pickle, etc. |
-| **Shell Validation** | 40+ blocked patterns (reverse shells, data exfil, privesc) |
-| **Input Validation** | Two-tier: strict (names) + permissive (content/Markdown) |
-| **CORS Lockdown** | Default deny-all, explicit allowlist only |
+| **Code Sandbox** | Blocks subprocess, eval, socket, pickle |
 | **Audit Logger** | SQLite append-only, SHA-256 chain hash, tamper detection |
-| **Peer Signing** | HMAC-signed inter-agent messages |
-| **Tool Control** | Denylist/allowlist, creation and self-improvement disabled by default |
-
-### Configuration
 
 ```python
-# Production
+# Production configuration
 agent = IncAgent(
-    name="Acme Corp",
-    role="buyer",
+    name="My Company",
+    role="seller",
     security={
         "api_keys": ["inc_your_secret_key_here"],
         "require_auth": True,
-        "allowed_origins": ["https://your-dashboard.com"],
         "rate_limit_per_minute": 30,
-        "tool_denylist": ["shell_exec"],
-        "allow_tool_creation_via_api": False,
-        "allow_self_improve_via_api": False,
     },
 )
 ```
+
+---
+
+## LLM configuration (optional)
+
+IncAgent works **without any LLM API key**. Negotiation has rule-based fallback built in.
+
+```python
+# With Claude
+agent = IncAgent(name="My Company", role="seller",
+    llm={"provider": "anthropic", "api_key": "sk-ant-..."})
+
+# With OpenAI
+agent = IncAgent(name="My Company", role="seller",
+    llm={"provider": "openai", "api_key": "sk-..."})
+```
+
+---
+
+## Install options
 
 ```bash
-# Environment variables
-INCAGENT_API_KEY=inc_your_secret_key
-INCAGENT_SHELL_STRICT=true
-INCAGENT_DATA_DIR=/path/to/agent/data
+# Core (no LLM required)
+pip install incagent
+
+# With AI-powered negotiation
+pip install incagent[llm]
+
+# With on-chain USDC payments
+pip install incagent[web3]
+
+# Everything
+pip install incagent[all]
 ```
 
-See [SECURITY_ROADMAP.md](SECURITY_ROADMAP.md) for full details.
+---
 
-## HTTPS/TLS
-
-All inter-agent communication is encrypted with TLS 1.3 by default.
-
-```python
-agent = IncAgent(
-    name="Acme Corp", role="buyer",
-    tls={
-        "enabled": True,
-        "auto_generate": True,        # Self-signed cert for dev
-        "redirect_http": True,        # HTTP :8080 → HTTPS :8400
-    },
-)
-
-# Production: provide your own certs
-agent = IncAgent(
-    name="Acme Corp", role="buyer",
-    tls={
-        "enabled": True,
-        "cert_file": "/etc/ssl/certs/agent.pem",
-        "key_file": "/etc/ssl/private/agent-key.pem",
-        "min_version": "TLSv1.3",
-    },
-)
-```
-
-Features:
-- **TLS 1.3 minimum** — configurable (TLSv1.2 also supported)
-- **Auto-generate** — self-signed EC P-256 certs for development
-- **HTTP redirect** — optional HTTP listener that 301s to HTTPS
-- **mTLS** — mutual TLS with CA bundle for zero-trust agent networks
-
-## On-chain Escrow (Solidity)
-
-Trustless USDC escrow for agent-to-agent trades. No trust required — funds are locked in a smart contract.
-
-```
-Buyer deposits → [Escrow Contract] → Delivery verified → Seller receives
-                        ↓ (timeout)
-                   Buyer refunded
-                        ↓ (dispute)
-                   Arbiter splits
-```
-
-```python
-# Escrow mode settlement
-settlement = engine.create_settlement(
-    ..., mode=SettlementMode.ESCROW,
-    seller_wallet="0x...",
-)
-
-# Buyer deposits USDC into contract
-await engine.execute_payment(settlement.settlement_id, lock_seconds=86400)
-
-# After delivery verification, release to seller
-await engine.complete(settlement.settlement_id)
-
-# Or: auto-refund after deadline
-await engine.refund_expired(settlement.settlement_id)
-```
-
-Contract: [`contracts/IncAgentEscrow.sol`](contracts/IncAgentEscrow.sol) — deploy on Base, Arbitrum, Ethereum, or Polygon.
-
-## Payment (EVM/USDC)
-
-On-chain USDC payments on Base, Arbitrum, Ethereum, or Polygon. Falls back to simulated off-chain mode when no wallet is configured.
-
-### Features (v0.7.0)
-
-- **On-chain escrow** — deposit/release/refund/dispute via Solidity contract
-- **EIP-1559 gas management** — dynamic `maxFeePerGas` / `maxPriorityFeePerGas`
-- **Balance check** — pre-transfer verification, fail-fast on insufficient funds
-- **Nonce management** — thread-safe for concurrent transactions
-- **RPC failover** — multiple RPC URLs, automatic reconnection
-- **Replace-By-Fee (RBF)** — bump stuck transactions by 10% gas
-
-```python
-agent = IncAgent(
-    name="Acme Corp", role="buyer",
-    payment={
-        "chain": "base",
-        "rpc_url": "https://mainnet.base.org",
-        "rpc_urls": ["https://base-rpc-backup.example.com"],
-        "private_key": "0x...",
-    },
-)
-
-balance = await agent.get_balance()  # USDC balance
-```
-
-## Tax Tracking (US Compliance)
-
-Built-in USDC transaction tracking for US corporate tax requirements.
-
-- All payments automatically recorded (income/expense/escrow/refund)
-- Per-vendor totals with 1099-NEC threshold detection ($600/year)
-- JSON and CSV export for tax filing
-
-```python
-# Get tax year summary
-summary = agent.get_tax_summary(2026)
-# {"total_income": 50000.0, "total_expenses": 30000.0, "net": 20000.0,
-#  "vendors_needing_1099": 3, ...}
-
-# API endpoint
-curl http://localhost:8400/tax?year=2026
-```
-
-## Prometheus Metrics
-
-Built-in Prometheus-compatible metrics exporter (no external dependencies).
-
-```bash
-curl http://localhost:8400/metrics
-```
-
-Metrics include:
-- `incagent_trades_total{status}` — trade outcomes
-- `incagent_payments_total{status}` — payment outcomes
-- `incagent_negotiations_total` — negotiations started
-- `incagent_active_settlements` — current active settlements
-- `incagent_usdc_balance` — current USDC balance
-- `incagent_negotiation_rounds` — rounds per negotiation (histogram)
-- `incagent_negotiation_duration_seconds` — time per negotiation
-
-## Settlement & Delivery
-
-### Settlement Modes
-
-| Mode | Flow |
-|------|------|
-| **DIRECT** | Buyer pays seller immediately after delivery verification |
-| **ESCROW** | Funds locked in [Solidity escrow contract](contracts/IncAgentEscrow.sol), released on delivery, auto-refund on timeout |
-| **PREPAID** | Buyer pays upfront, delivery tracked separately |
-| **COD** | Payment on physical delivery confirmation |
-
-### Delivery Verification
-
-| Type | Verification | Example |
-|------|-------------|---------|
-| **Digital** | Auto (API check, file hash) | API key provisioned |
-| **Physical** | Human or webhook | Package delivered, signed receipt |
-| **Service** | Ongoing monitoring | SLA compliance check |
-
-### Dispute Resolution
-
-```python
-dispute = agent.file_dispute(settlement_id, "Never received goods")
-# Resolution: RESOLVED_BUYER (refund), RESOLVED_SELLER (release), RESOLVED_SPLIT
-```
-
-## API Endpoints (Gateway Mode)
+## API endpoints (daemon mode)
 
 | Endpoint | Method | Auth | Description |
 |----------|--------|------|-------------|
-| `/health` | GET | Public | Agent health status |
-| `/identity` | GET | Public | Public identity info |
+| `/health` | GET | Public | Agent health |
+| `/identity` | GET | Public | Public identity |
 | `/metrics` | GET | Public | Prometheus metrics |
-| `/messages` | POST | Required | Receive message from another agent |
 | `/propose` | POST | Required | Receive trade proposal |
-| `/peers` | GET | Required | List known peers |
-| `/peers` | POST | Required | Register a new peer |
-| `/memory` | GET | Required | View learned insights |
+| `/messages` | POST | Required | Agent-to-agent messages |
 | `/ledger` | GET | Required | Transaction history |
-| `/skills` | GET | Required | Available skills |
-| `/tools` | GET | Required | List available tools |
-| `/tools` | POST | Required | Create a new custom tool |
-| `/tools/{name}` | POST | Required | Execute a tool by name |
-| `/improve` | POST | Required | Trigger self-improvement cycle |
 | `/balance` | GET | Required | USDC wallet balance |
-| `/settlements` | GET | Required | List active settlements |
-| `/delivery/confirm` | POST | Required | Human confirms physical delivery |
-| `/delivery/webhook` | POST | Required | External system confirms delivery |
-| `/dispute` | POST | Required | File a dispute for a settlement |
-| `/audit` | GET | Required | View security audit log |
+| `/settlements` | GET | Required | Active settlements |
+| `/delivery/confirm` | POST | Required | Human confirms task completion |
 | `/tax` | GET | Required | Tax year summary |
+| `/audit` | GET | Required | Security audit log |
 
-## CLI Commands
+---
 
-```bash
-incagent init --name "Corp" --role buyer --api-key  # Initialize org
-incagent serve --name "Corp"                         # Start daemon
-incagent orgs                                        # List organizations
-```
-
-## LLM Configuration (Optional)
-
-IncAgent works **without any LLM API key**. All negotiation and self-improvement features have rule-based fallback logic built in.
-
-```python
-# Anthropic (Claude)
-agent = IncAgent(
-    name="Acme Corp", role="buyer",
-    llm={"provider": "anthropic", "api_key": "sk-ant-..."}
-)
-
-# OpenAI (GPT)
-agent = IncAgent(
-    name="Acme Corp", role="buyer",
-    llm={"provider": "openai", "api_key": "sk-..."}
-)
-```
-
-## Installation
-
-```bash
-pip install incagent
-
-# With LLM support (for AI-powered negotiation)
-pip install incagent[llm]
-
-# With on-chain payment (EVM/USDC)
-pip install incagent[web3]
-
-# Development
-pip install incagent[dev]
-```
-
-## Test Coverage
+## Tests
 
 ```
 258 tests passing
-├── test_security.py      — 50 tests (auth, rate limiting, sandbox, audit)
-├── test_escrow.py        — 15 tests (ABI, escrow ID, deposit/release/refund/dispute/status)
-├── test_org_setup.py     — 16 tests (identity, persistence, isolation)
-├── test_e2e_trade.py     — 17 tests (full trade lifecycle, disputes)
-├── test_payment.py       — 15 tests (config, balance, RPC failover, ERC20 ABI)
-├── test_tax.py           — 14 tests (records, 1099-NEC, export)
-├── test_metrics.py       — 14 tests (counters, gauges, histograms)
-├── test_tls.py           — 10 tests (TLS config, SSL context, cert gen, redirect)
-└── ... (agent, contract, negotiation, resilience, settlement, tools, gateway)
+├── test_security.py      — 50 tests
+├── test_e2e_trade.py     — 17 tests (full deal lifecycle)
+├── test_escrow.py        — 15 tests
+├── test_payment.py       — 15 tests
+├── test_tax.py           — 14 tests
+├── test_metrics.py       — 14 tests
+├── test_tls.py           — 10 tests
+└── ...
 ```
+
+```bash
+pip install incagent[dev]
+pytest tests/
+```
+
+---
 
 ## License
 
-MIT License. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
 
 ## Links
 
-- Website: [incagent.ai](https://incagent.ai)
-- X: [@incagentai](https://x.com/incagentai)
-- GitHub: [github.com/incagent/incagent](https://github.com/incagent/incagent)
+- **Website**: [incagent.ai](https://incagent.ai)
+- **Demo**: [incagent.ai/live.html](https://incagent.ai/live.html)
+- **X**: [@incagentai](https://x.com/incagentai)
+- **GitHub**: [github.com/incagent/incagent](https://github.com/incagent/incagent)
