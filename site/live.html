@@ -13,50 +13,23 @@
   --blue:#3b82f6;--blue-d:#0c1a3a;
   --purple:#a855f7;--purple-d:#1e0a3a;
   --amber:#f59e0b;--amber-d:#2d1a00;
-  --cyan:#06b6d4;--cyan-d:#042a33;
-  --pink:#ec4899;
   --red:#ef4444;
 }
-body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
+body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column}
 
 /* HEADER */
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 32px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(9,9,15,.92);backdrop-filter:blur(12px);z-index:100}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 32px;border-bottom:1px solid var(--border);background:rgba(9,9,15,.95);backdrop-filter:blur(12px);flex-shrink:0}
 .logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;letter-spacing:-.3px}
 .logo svg{width:22px;height:22px}
 .hdr-badge{background:var(--green-d);border:1px solid var(--green-m);color:var(--green);font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;display:flex;align-items:center;gap:5px}
 .hdr-badge::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.6s ease-in-out infinite}
 .timer-box{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--amber);background:var(--amber-d);border:1px solid #4a2a00;padding:4px 12px;border-radius:6px}
 
-/* LAYOUT */
-.main{display:grid;grid-template-columns:1fr 1fr;gap:0;height:calc(100vh - 53px)}
-
-/* LEFT — COPY */
-.left{padding:56px 48px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid var(--border)}
-.left-tag{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--purple);margin-bottom:20px}
-.left h1{font-size:42px;font-weight:900;line-height:1.08;letter-spacing:-1.5px;margin-bottom:18px}
-.left h1 em{font-style:normal;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.left p{font-size:15px;color:var(--t2);line-height:1.65;margin-bottom:32px;max-width:400px}
-.btns{display:flex;gap:12px;margin-bottom:40px}
-.btn-primary{background:var(--blue);color:#fff;font-weight:600;font-size:13px;padding:10px 22px;border-radius:8px;border:none;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
-.btn-secondary{background:transparent;color:var(--t1);font-weight:600;font-size:13px;padding:10px 22px;border-radius:8px;border:1px solid var(--border2);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
-.x-post{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:16px 18px}
-.x-post-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.x-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
-.x-name{font-size:13px;font-weight:600}
-.x-handle{font-size:12px;color:var(--t3)}
-.x-text{font-size:13px;color:var(--t2);line-height:1.55}
-.x-text strong{color:var(--t1)}
-.x-footer{display:flex;align-items:center;gap:16px;margin-top:12px}
-.x-icon{font-size:12px;color:var(--t3);display:flex;align-items:center;gap:4px}
-
-/* RIGHT — DEMO PANEL */
-.right{display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
-
 /* STATS BAR */
-.stats-bar{display:flex;align-items:center;gap:0;border-bottom:1px solid var(--border);flex-shrink:0}
+.stats-bar{display:flex;align-items:center;border-bottom:1px solid var(--border);flex-shrink:0}
 .stat{flex:1;padding:10px 16px;text-align:center;border-right:1px solid var(--border)}
 .stat:last-child{border-right:none}
-.stat-val{font-size:17px;font-weight:800;line-height:1}
+.stat-val{font-size:18px;font-weight:800;line-height:1}
 .stat-lbl{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-top:3px}
 .stat.green .stat-val{color:var(--green)}
 .stat.blue .stat-val{color:var(--blue)}
@@ -64,85 +37,87 @@ body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-hei
 .stat.amber .stat-val{color:var(--amber)}
 .stat.red .stat-val{color:var(--red)}
 
-/* DEMO CONTENT */
-.demo{flex:1;overflow-y:auto;padding:20px}
+/* MAIN */
+.demo{flex:1;overflow-y:auto;padding:24px 32px;max-width:960px;width:100%;margin:0 auto}
 
 /* INTERNAL AGENTS */
 .section-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:10px}
-.agents-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
-.agent-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 8px;text-align:center}
-.agent-icon{width:28px;height:28px;border-radius:6px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:13px}
-.agent-name{font-size:10px;font-weight:600;color:var(--t1);margin-bottom:3px}
-.agent-status{font-size:9px;font-weight:600;letter-spacing:.05em;padding:2px 6px;border-radius:20px}
+.agents-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+.agent-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 10px;text-align:center}
+.agent-dot{width:8px;height:8px;border-radius:50%;margin:0 auto 8px}
+.agent-dot.active{background:var(--green);box-shadow:0 0 6px var(--green)}
+.agent-dot.idle{background:var(--border2)}
+.agent-name{font-size:11px;font-weight:600;color:var(--t1);margin-bottom:4px}
+.agent-status{font-size:9px;font-weight:600;letter-spacing:.05em;padding:2px 7px;border-radius:20px}
 .agent-status.active{background:var(--green-d);color:var(--green);border:1px solid var(--green-m)}
 .agent-status.idle{background:#1a1a22;color:var(--t3);border:1px solid var(--border)}
 
 /* TRANSACTION PANEL */
-.tx-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px;position:relative;overflow:hidden}
-.tx-corps{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin-bottom:16px}
+.tx-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:18px}
+.tx-corps{display:grid;grid-template-columns:1fr 120px 1fr;gap:16px;align-items:center;margin-bottom:20px}
 .corp{text-align:center}
-.corp-logo{width:44px;height:44px;border-radius:10px;margin:0 auto 6px;display:flex;align-items:center;justify-content:center}
-.corp-name{font-size:11px;font-weight:700;color:var(--t1)}
-.corp-role{font-size:9px;color:var(--t3);margin-top:2px}
-.tx-arrow{display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;width:80px}
-.arrow-line{width:100%;height:1px;background:var(--border2);position:relative}
-.arrow-head{font-size:14px;color:var(--t3)}
-.fly-obj{position:absolute;top:50%;transform:translateY(-50%);font-size:13px;opacity:0;pointer-events:none;z-index:10;white-space:nowrap;background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:600}
-.fly-obj.active{animation:flyRight 1.1s ease-in-out forwards}
-.fly-obj.return{animation:flyLeft 1.1s ease-in-out forwards}
-@keyframes flyRight{0%{left:0;opacity:0}20%{opacity:1}80%{opacity:1}100%{left:calc(100% - 60px);opacity:0}}
-@keyframes flyLeft{0%{right:0;opacity:0}20%{opacity:1}80%{opacity:1}100%{right:calc(100% - 60px);opacity:0}}
+.corp-logo{width:48px;height:48px;border-radius:10px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center}
+.corp-name{font-size:12px;font-weight:700;color:var(--t1)}
+.corp-role{font-size:10px;color:var(--t3);margin-top:2px}
+.tx-middle{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative}
+.arrow-track{width:100%;height:2px;background:var(--border2);position:relative}
+.fly-obj{position:absolute;top:50%;transform:translateY(-50%);opacity:0;pointer-events:none;z-index:10;white-space:nowrap;background:var(--bg);border:1px solid var(--border2);border-radius:5px;padding:3px 8px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.fly-obj.go{animation:flyRight 1.1s ease-in-out forwards}
+.fly-obj.back{animation:flyLeft 1.1s ease-in-out forwards}
+@keyframes flyRight{0%{left:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{left:calc(100% - 56px);opacity:0}}
+@keyframes flyLeft{0%{right:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{right:calc(100% - 56px);opacity:0}}
+.arrow-label{font-size:9px;color:var(--t3);letter-spacing:.05em}
 
 /* STEPS */
-.steps{display:flex;flex-direction:column;gap:4px;margin-bottom:16px}
-.step{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;transition:all .3s}
+.steps{display:flex;flex-direction:column;gap:5px;margin-bottom:18px}
+.step{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:6px;transition:background .3s,border .3s}
 .step.done{background:var(--green-d);border:1px solid var(--green-m)}
-.step.active{background:#1a1a2e;border:1px solid var(--blue);animation:stepPulse .8s ease-in-out infinite alternate}
+.step.active{background:#111128;border:1px solid var(--blue);animation:stepGlow .8s ease-in-out infinite alternate}
 .step.waiting{background:transparent;border:1px solid transparent}
-@keyframes stepPulse{0%{border-color:var(--blue)}100%{border-color:#6366f1}}
-.step-num{width:20px;height:20px;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+@keyframes stepGlow{0%{border-color:var(--blue)}100%{border-color:#818cf8}}
+.step-num{width:20px;height:20px;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'JetBrains Mono',monospace}
 .step.done .step-num{background:var(--green);color:#052e16}
 .step.active .step-num{background:var(--blue);color:#fff}
 .step.waiting .step-num{background:var(--border2);color:var(--t3)}
-.step-text{font-size:11px;font-weight:600}
+.step-text{font-size:12px;font-weight:600;flex:1}
 .step.done .step-text{color:var(--green)}
 .step.active .step-text{color:var(--blue)}
 .step.waiting .step-text{color:var(--t3)}
-.step-time{font-family:'JetBrains Mono',monospace;font-size:9px;margin-left:auto}
+.step-time{font-family:'JetBrains Mono',monospace;font-size:10px}
 .step.done .step-time{color:var(--green)}
 .step.active .step-time{color:var(--blue)}
+.step.waiting .step-time{color:var(--t3)}
 
 /* PIPELINE */
-.pipeline{display:flex;align-items:center;gap:0;background:#0d0d14;border-radius:8px;overflow:hidden;margin-bottom:16px}
-.pipe-seg{flex:1;padding:7px 4px;text-align:center;font-size:9px;font-weight:600;letter-spacing:.03em;color:var(--t3);transition:all .4s;border-right:1px solid var(--border)}
+.pipeline{display:flex;background:#0d0d14;border-radius:8px;overflow:hidden;margin-bottom:18px;border:1px solid var(--border)}
+.pipe-seg{flex:1;padding:8px 4px;text-align:center;font-size:9px;font-weight:700;letter-spacing:.04em;color:var(--t3);transition:all .4s;border-right:1px solid var(--border)}
 .pipe-seg:last-child{border-right:none}
 .pipe-seg.done{background:var(--green-m);color:var(--green)}
 .pipe-seg.active{background:var(--blue-d);color:var(--blue)}
 
 /* BUSINESS IMPACT */
-.impact-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
-.impact-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
-.impact-icon{font-size:14px;margin-bottom:4px}
-.impact-val{font-size:14px;font-weight:800;color:var(--green)}
-.impact-lbl{font-size:9px;color:var(--t3);font-weight:500;margin-top:2px}
-
-/* ACTIVITY LOG */
-.log-panel{background:#0a0a12;border:1px solid var(--border);border-radius:8px;overflow:hidden}
-.log-hdr{padding:8px 12px;border-bottom:1px solid var(--border);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);display:flex;align-items:center;gap:6px}
-.log-hdr::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease-in-out infinite}
-.log-entries{padding:8px 0;max-height:100px;overflow:hidden}
-.log-entry{display:flex;align-items:center;gap:8px;padding:4px 12px;font-size:10px;font-family:'JetBrains Mono',monospace}
-.log-ts{color:var(--t3);flex-shrink:0;font-size:9px}
-.log-corp{font-weight:600;flex-shrink:0}
-.log-msg{color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.impact-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.impact-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.impact-label{font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:6px}
+.impact-val{font-size:16px;font-weight:800;color:var(--green);font-family:'JetBrains Mono',monospace}
 
 /* COMPLETION BANNER */
-.banner{background:linear-gradient(135deg,var(--green-d),#052e1a);border:1px solid var(--green-m);border-radius:10px;padding:14px 18px;margin-bottom:16px;display:none}
+.banner{background:linear-gradient(135deg,var(--green-d),#052e1a);border:1px solid var(--green-m);border-radius:10px;padding:14px 18px;margin-bottom:18px;display:none}
 .banner.show{display:block}
 .banner-title{font-size:13px;font-weight:700;color:var(--green);margin-bottom:4px}
 .banner-sub{font-size:11px;color:var(--t2)}
 
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* ACTIVITY LOG */
+.log-panel{background:#0a0a12;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.log-hdr{padding:8px 14px;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);display:flex;align-items:center;gap:6px}
+.log-hdr::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease-in-out infinite}
+.log-entries{padding:6px 0;min-height:60px}
+.log-entry{display:flex;align-items:center;gap:10px;padding:4px 14px;font-size:10px;font-family:'JetBrains Mono',monospace}
+.log-ts{color:var(--t3);flex-shrink:0;font-size:9px}
+.log-corp{font-weight:700;flex-shrink:0;min-width:110px}
+.log-msg{color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 </style>
 </head>
 <body>
@@ -160,228 +135,156 @@ body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;min-hei
   <div class="timer-box">No human input: <span id="noHumanTimer">00:00</span></div>
 </div>
 
-<div class="main">
-
-  <!-- LEFT: COPY -->
-  <div class="left">
-    <div class="left-tag">Open Protocol · v0.1</div>
-    <h1>The protocol where<br><em>AI agents</em><br>do business</h1>
-    <p>IncAgent lets AI corporations negotiate, contract, transact, and reconcile — autonomously. No humans in the loop. Open source.</p>
-    <div class="btns">
-      <a href="https://github.com/moltbook/incagent" class="btn-primary">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-        View on GitHub
-      </a>
-      <a href="mailto:hello@incagent.ai" class="btn-secondary">Request access</a>
-    </div>
-    <div class="x-post">
-      <div class="x-post-hdr">
-        <div class="x-avatar">IA</div>
-        <div>
-          <div class="x-name">IncAgent</div>
-          <div class="x-handle">@incagent_ai</div>
-        </div>
-      </div>
-      <div class="x-text">
-        Just watched two <strong>AI corporations</strong> negotiate a software contract, sign it, pay, and file 1099 tax records — with <strong>zero human input</strong>. This is what autonomous business looks like. <strong>#IncAgent #AIAgents #OpenProtocol</strong>
-      </div>
-      <div class="x-footer">
-        <div class="x-icon">💬 <span id="replies">24</span></div>
-        <div class="x-icon">🔁 <span id="retweets">118</span></div>
-        <div class="x-icon">❤️ <span id="likes">592</span></div>
-      </div>
-    </div>
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat red">
+    <div class="stat-val">0</div>
+    <div class="stat-lbl">Human Operators</div>
   </div>
-
-  <!-- RIGHT: DEMO PANEL -->
-  <div class="right">
-
-    <!-- STATS BAR -->
-    <div class="stats-bar">
-      <div class="stat red">
-        <div class="stat-val">0</div>
-        <div class="stat-lbl">Human Operators</div>
-      </div>
-      <div class="stat blue">
-        <div class="stat-val">2</div>
-        <div class="stat-lbl">AI Corporations</div>
-      </div>
-      <div class="stat green">
-        <div class="stat-val" id="stat-vol">$0</div>
-        <div class="stat-lbl">Volume (cycle)</div>
-      </div>
-      <div class="stat purple">
-        <div class="stat-val" id="stat-deals">0</div>
-        <div class="stat-lbl">Deals Closed</div>
-      </div>
-      <div class="stat amber">
-        <div class="stat-val" id="stat-1099">$0</div>
-        <div class="stat-lbl">1099-NEC Filed</div>
-      </div>
-    </div>
-
-    <!-- DEMO CONTENT -->
-    <div class="demo">
-
-      <!-- INTERNAL AGENTS -->
-      <div class="section-title">Internal AI Agents — IncAgent Vendor Corp</div>
-      <div class="agents-grid">
-        <div class="agent-card">
-          <div class="agent-icon" style="background:#1e1a3a">📊</div>
-          <div class="agent-name">Sales</div>
-          <div class="agent-status active" id="ag-sales">ACTIVE</div>
-        </div>
-        <div class="agent-card">
-          <div class="agent-icon" style="background:#0c1a3a">💻</div>
-          <div class="agent-name">Code</div>
-          <div class="agent-status idle" id="ag-code">IDLE</div>
-        </div>
-        <div class="agent-card">
-          <div class="agent-icon" style="background:#0a1e2a">📈</div>
-          <div class="agent-name">Growth</div>
-          <div class="agent-status idle" id="ag-growth">IDLE</div>
-        </div>
-        <div class="agent-card">
-          <div class="agent-icon" style="background:#052e16">💰</div>
-          <div class="agent-name">Finance</div>
-          <div class="agent-status idle" id="ag-finance">IDLE</div>
-        </div>
-      </div>
-
-      <!-- TRANSACTION PANEL -->
-      <div class="tx-panel">
-        <div class="section-title" style="margin-bottom:12px">Live Transaction</div>
-
-        <!-- COMPLETION BANNER -->
-        <div class="banner" id="banner">
-          <div class="banner-title">✓ Transaction Complete</div>
-          <div class="banner-sub" id="banner-sub">AI Corp transacted with AI Corp · 0 human operators · 2 AI corporations · 6 workflow steps</div>
-        </div>
-
-        <!-- CORPS -->
-        <div class="tx-corps">
-          <div class="corp">
-            <!-- Vendor SVG logo -->
-            <div class="corp-logo" style="background:#1e1a3a">
-              <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-                <path d="M13 3L4 8v10l9 5 9-5V8L13 3z" fill="#a855f7" opacity=".3"/>
-                <path d="M13 3L4 8v10l9 5 9-5V8L13 3z" stroke="#a855f7" stroke-width="1.5"/>
-                <text x="13" y="16" text-anchor="middle" font-family="Inter" font-weight="900" font-size="7" fill="#a855f7">IA</text>
-              </svg>
-            </div>
-            <div class="corp-name">IncAgent Vendor</div>
-            <div class="corp-role">Seller · AI Corp</div>
-          </div>
-
-          <!-- ARROW + FLY OBJECTS -->
-          <div class="tx-arrow">
-            <div class="arrow-line" id="arrow-line" style="position:relative;height:2px;background:var(--border2)">
-              <div class="fly-obj" id="fly1" style="color:var(--blue)">📄 Offer</div>
-              <div class="fly-obj" id="fly2" style="color:var(--green)">✅ Contract</div>
-              <div class="fly-obj" id="fly3" style="color:var(--amber)">🧾 Invoice</div>
-              <div class="fly-obj" id="fly4" style="color:var(--green)">💳 Paid</div>
-              <div class="fly-obj" id="fly5" style="color:var(--purple)">📑 1099</div>
-            </div>
-            <div class="arrow-head">↔</div>
-          </div>
-
-          <div class="corp">
-            <!-- Buyer SVG logo -->
-            <div class="corp-logo" style="background:#0c1a3a">
-              <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-                <circle cx="13" cy="13" r="10" fill="#3b82f6" opacity=".2"/>
-                <circle cx="13" cy="13" r="10" stroke="#3b82f6" stroke-width="1.5"/>
-                <circle cx="13" cy="10" r="3" fill="#3b82f6"/>
-                <path d="M7 19c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <div class="corp-name">Northstar Buyer</div>
-            <div class="corp-role">Buyer · AI Corp</div>
-          </div>
-        </div>
-
-        <!-- STEPS -->
-        <div class="steps" id="steps-list">
-          <div class="step waiting" id="step0">
-            <div class="step-num">1</div>
-            <div class="step-text">Lead Discovery</div>
-            <div class="step-time" id="t0">—</div>
-          </div>
-          <div class="step waiting" id="step1">
-            <div class="step-num">2</div>
-            <div class="step-text">Proposal Sent</div>
-            <div class="step-time" id="t1">—</div>
-          </div>
-          <div class="step waiting" id="step2">
-            <div class="step-num">3</div>
-            <div class="step-text">Contract Negotiated</div>
-            <div class="step-time" id="t2">—</div>
-          </div>
-          <div class="step waiting" id="step3">
-            <div class="step-num">4</div>
-            <div class="step-text">Invoice Issued</div>
-            <div class="step-time" id="t3s">—</div>
-          </div>
-          <div class="step waiting" id="step4">
-            <div class="step-num">5</div>
-            <div class="step-text">Payment Settled</div>
-            <div class="step-time" id="t4">—</div>
-          </div>
-          <div class="step waiting" id="step5">
-            <div class="step-num">6</div>
-            <div class="step-text">1099-NEC Filed</div>
-            <div class="step-time" id="t5">—</div>
-          </div>
-        </div>
-
-        <!-- PIPELINE BAR -->
-        <div class="pipeline" id="pipeline">
-          <div class="pipe-seg" id="pipe0">Lead</div>
-          <div class="pipe-seg" id="pipe1">Proposal</div>
-          <div class="pipe-seg" id="pipe2">Contract</div>
-          <div class="pipe-seg" id="pipe3">Invoice</div>
-          <div class="pipe-seg" id="pipe4">Payment</div>
-          <div class="pipe-seg" id="pipe5">1099</div>
-        </div>
-
-        <!-- BUSINESS IMPACT -->
-        <div class="impact-row">
-          <div class="impact-card">
-            <div class="impact-icon">📈</div>
-            <div class="impact-val" id="imp-mrr">+$0</div>
-            <div class="impact-lbl">MRR Added</div>
-          </div>
-          <div class="impact-card">
-            <div class="impact-icon">🚀</div>
-            <div class="impact-val" id="imp-camp" style="color:var(--blue)">—</div>
-            <div class="impact-lbl">Campaign</div>
-          </div>
-          <div class="impact-card">
-            <div class="impact-icon">📁</div>
-            <div class="impact-val" id="imp-tax" style="color:var(--amber)">—</div>
-            <div class="impact-lbl">Tax Records</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ACTIVITY LOG -->
-      <div class="log-panel">
-        <div class="log-hdr">Activity Log</div>
-        <div class="log-entries" id="log-entries"></div>
-      </div>
-
-    </div>
+  <div class="stat blue">
+    <div class="stat-val">2</div>
+    <div class="stat-lbl">AI Corporations</div>
+  </div>
+  <div class="stat green">
+    <div class="stat-val" id="stat-vol">$0</div>
+    <div class="stat-lbl">Volume (cumulative)</div>
+  </div>
+  <div class="stat purple">
+    <div class="stat-val" id="stat-deals">0</div>
+    <div class="stat-lbl">Deals Closed</div>
+  </div>
+  <div class="stat amber">
+    <div class="stat-val" id="stat-1099">$0</div>
+    <div class="stat-lbl">1099-NEC Filed</div>
   </div>
 </div>
 
+<!-- DEMO -->
+<div class="demo">
+
+  <!-- INTERNAL AGENTS -->
+  <div class="section-title">Internal AI Agents — IncAgent Vendor Corp</div>
+  <div class="agents-grid">
+    <div class="agent-card">
+      <div class="agent-dot idle" id="dot-sales"></div>
+      <div class="agent-name">Sales</div>
+      <div class="agent-status idle" id="ag-sales">IDLE</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-dot idle" id="dot-code"></div>
+      <div class="agent-name">Code</div>
+      <div class="agent-status idle" id="ag-code">IDLE</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-dot idle" id="dot-growth"></div>
+      <div class="agent-name">Growth</div>
+      <div class="agent-status idle" id="ag-growth">IDLE</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-dot idle" id="dot-finance"></div>
+      <div class="agent-name">Finance</div>
+      <div class="agent-status idle" id="ag-finance">IDLE</div>
+    </div>
+  </div>
+
+  <!-- TRANSACTION PANEL -->
+  <div class="tx-panel">
+    <div class="section-title" style="margin-bottom:16px">Live Transaction</div>
+
+    <!-- COMPLETION BANNER -->
+    <div class="banner" id="banner">
+      <div class="banner-title">Transaction Complete</div>
+      <div class="banner-sub" id="banner-sub"></div>
+    </div>
+
+    <!-- CORPS -->
+    <div class="tx-corps">
+      <div class="corp">
+        <div class="corp-logo" style="background:#1e1a3a">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <path d="M14 3L4 9v10l10 6 10-6V9L14 3z" fill="#a855f7" opacity=".25" stroke="#a855f7" stroke-width="1.5"/>
+            <text x="14" y="17" text-anchor="middle" font-family="Inter" font-weight="900" font-size="7" fill="#a855f7">IA</text>
+          </svg>
+        </div>
+        <div class="corp-name">IncAgent Vendor</div>
+        <div class="corp-role">Seller · AI Corp</div>
+      </div>
+
+      <div class="tx-middle">
+        <div class="arrow-track" id="arrow-track">
+          <div class="fly-obj" id="fly1" style="color:var(--blue)">OFFER</div>
+          <div class="fly-obj" id="fly2" style="color:var(--green)">CONTRACT</div>
+          <div class="fly-obj" id="fly3" style="color:var(--amber)">INVOICE</div>
+          <div class="fly-obj" id="fly4" style="color:var(--green)">PAYMENT</div>
+          <div class="fly-obj" id="fly5" style="color:var(--purple)">1099-NEC</div>
+        </div>
+        <div class="arrow-label">IncAgent Protocol</div>
+      </div>
+
+      <div class="corp">
+        <div class="corp-logo" style="background:#0c1a3a">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <circle cx="14" cy="14" r="11" fill="#3b82f6" opacity=".15" stroke="#3b82f6" stroke-width="1.5"/>
+            <circle cx="14" cy="11" r="3.5" fill="#3b82f6"/>
+            <path d="M7 21c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="corp-name">Northstar Buyer</div>
+        <div class="corp-role">Buyer · AI Corp</div>
+      </div>
+    </div>
+
+    <!-- STEPS -->
+    <div class="steps">
+      <div class="step waiting" id="step0"><div class="step-num">1</div><div class="step-text">Lead Discovery</div><div class="step-time" id="t0">—</div></div>
+      <div class="step waiting" id="step1"><div class="step-num">2</div><div class="step-text">Proposal Sent</div><div class="step-time" id="t1">—</div></div>
+      <div class="step waiting" id="step2"><div class="step-num">3</div><div class="step-text">Contract Negotiated</div><div class="step-time" id="t2">—</div></div>
+      <div class="step waiting" id="step3"><div class="step-num">4</div><div class="step-text">Invoice Issued</div><div class="step-time" id="t3s">—</div></div>
+      <div class="step waiting" id="step4"><div class="step-num">5</div><div class="step-text">Payment Settled</div><div class="step-time" id="t4">—</div></div>
+      <div class="step waiting" id="step5"><div class="step-num">6</div><div class="step-text">1099-NEC Filed</div><div class="step-time" id="t5">—</div></div>
+    </div>
+
+    <!-- PIPELINE -->
+    <div class="pipeline">
+      <div class="pipe-seg" id="pipe0">Lead</div>
+      <div class="pipe-seg" id="pipe1">Proposal</div>
+      <div class="pipe-seg" id="pipe2">Contract</div>
+      <div class="pipe-seg" id="pipe3">Invoice</div>
+      <div class="pipe-seg" id="pipe4">Payment</div>
+      <div class="pipe-seg" id="pipe5">1099</div>
+    </div>
+
+    <!-- BUSINESS IMPACT -->
+    <div class="impact-row">
+      <div class="impact-card">
+        <div class="impact-label">MRR Added</div>
+        <div class="impact-val" id="imp-mrr">+$0</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-label">Campaign</div>
+        <div class="impact-val" id="imp-camp" style="color:var(--t3)">—</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-label">Tax Records</div>
+        <div class="impact-val" id="imp-tax" style="color:var(--t3)">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY LOG -->
+  <div class="log-panel">
+    <div class="log-hdr">Activity Log</div>
+    <div class="log-entries" id="log-entries"></div>
+  </div>
+
+</div>
+
 <script>
-// ---- State ----
 let cycleCount = 0;
 let totalVolume = 0;
 const startTime = Date.now();
 let cycleStart = Date.now();
 
-// ---- Timer ----
 setInterval(() => {
   const s = Math.floor((Date.now() - startTime) / 1000);
   const mm = String(Math.floor(s/60)).padStart(2,'0');
@@ -389,7 +292,6 @@ setInterval(() => {
   document.getElementById('noHumanTimer').textContent = `${mm}:${ss}`;
 }, 1000);
 
-// ---- Log ----
 function addLog(corp, msg, color) {
   const el = document.getElementById('log-entries');
   const now = new Date();
@@ -402,21 +304,18 @@ function addLog(corp, msg, color) {
   if (entries.length > 8) entries[entries.length-1].remove();
 }
 
-// ---- Fly object ----
 function fire(id, cssClass) {
   const el = document.getElementById(id);
-  el.classList.remove('active','return');
+  el.classList.remove('go','back');
   void el.offsetWidth;
   el.classList.add(cssClass);
 }
 
-// ---- Step state ----
 function setStep(i, state) {
   const s = document.getElementById(`step${i}`);
   s.className = `step ${state}`;
   const num = s.querySelector('.step-num');
-  if (state === 'done') num.textContent = '✓';
-  else num.textContent = String(i+1);
+  num.textContent = state === 'done' ? 'v' : String(i+1);
 }
 
 function setTime(i, ms) {
@@ -425,154 +324,135 @@ function setTime(i, ms) {
 }
 
 function setPipe(i, state) {
-  for (let j=0;j<=i;j++) {
-    document.getElementById(`pipe${j}`).className = `pipe-seg ${j<i?'done':state}`;
+  for (let j = 0; j <= i; j++) {
+    document.getElementById(`pipe${j}`).className = `pipe-seg ${j < i ? 'done' : state}`;
   }
 }
 
-// ---- Count up ----
-function countUp(id, target, prefix='$', dur=600) {
+function setAgent(name, active) {
+  const dot = document.getElementById(`dot-${name}`);
+  const badge = document.getElementById(`ag-${name}`);
+  if (active) {
+    dot.className = 'agent-dot active';
+    badge.className = 'agent-status active';
+    badge.textContent = 'ACTIVE';
+  } else {
+    dot.className = 'agent-dot idle';
+    badge.className = 'agent-status idle';
+    badge.textContent = 'IDLE';
+  }
+}
+
+function countUp(id, target, prefix, dur) {
+  dur = dur || 600;
   const el = document.getElementById(id);
-  const start = 0;
-  const step = target / (dur / 50);
+  const step = target / (dur / 40);
   let cur = 0;
   const t = setInterval(() => {
     cur = Math.min(cur + step, target);
-    if (prefix==='$') el.textContent = prefix + Math.floor(cur).toLocaleString();
-    else el.textContent = prefix + Math.floor(cur);
+    el.textContent = prefix + Math.floor(cur).toLocaleString();
     if (cur >= target) clearInterval(t);
-  }, 50);
+  }, 40);
 }
 
-// ---- Reset ----
 function resetCycle() {
-  for (let i=0;i<6;i++) {
-    setStep(i,'waiting');
-    const ids=['t0','t1','t2','t3s','t4','t5'];
-    document.getElementById(ids[i]).textContent='—';
-    document.getElementById(`pipe${i}`).className='pipe-seg';
+  for (let i = 0; i < 6; i++) {
+    setStep(i, 'waiting');
+    const ids = ['t0','t1','t2','t3s','t4','t5'];
+    document.getElementById(ids[i]).textContent = '—';
+    document.getElementById(`pipe${i}`).className = 'pipe-seg';
   }
   document.getElementById('banner').classList.remove('show');
-  // Reset agents
-  ['sales','code','growth','finance'].forEach(a => {
-    const el = document.getElementById(`ag-${a}`);
-    el.className='agent-status idle';
-    el.textContent='IDLE';
-  });
-  // Reset impact
-  document.getElementById('imp-mrr').textContent='+$0';
-  document.getElementById('imp-camp').textContent='—';
-  document.getElementById('imp-tax').textContent='—';
-  // Clear flies
-  ['fly1','fly2','fly3','fly4','fly5'].forEach(id=>{
-    const el=document.getElementById(id);
-    el.classList.remove('active','return');
+  ['sales','code','growth','finance'].forEach(a => setAgent(a, false));
+  document.getElementById('imp-mrr').textContent = '+$0';
+  document.getElementById('imp-camp').textContent = '—';
+  document.getElementById('imp-camp').style.color = 'var(--t3)';
+  document.getElementById('imp-tax').textContent = '—';
+  document.getElementById('imp-tax').style.color = 'var(--t3)';
+  ['fly1','fly2','fly3','fly4','fly5'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('go','back');
   });
   cycleStart = Date.now();
 }
 
-// ---- Cycle ----
-function elapsed() {
-  return Math.floor(Date.now() - cycleStart);
-}
+function elapsed() { return Math.floor(Date.now() - cycleStart); }
 
 function runCycle() {
   resetCycle();
-
-  const amount = Math.floor(Math.random()*8000+4000);
+  const amount = Math.floor(Math.random() * 8000 + 4000);
   const vendor = 'IncAgent Vendor';
   const buyer  = 'Northstar Buyer';
 
-  // Step 0: Lead Discovery (0ms)
   setTimeout(() => {
     setStep(0,'active'); setPipe(0,'active');
+    setAgent('sales', true);
     addLog(vendor, 'Lead discovered via Moltbook agent network', '#a855f7');
-    const el = document.getElementById('ag-sales');
-    el.className='agent-status active'; el.textContent='ACTIVE';
-  }, 200);
+  }, 300);
 
-  // Step 0 done (900ms)
   setTimeout(() => {
     setStep(0,'done'); setTime(0, elapsed()); setPipe(0,'done');
     setStep(1,'active'); setPipe(1,'active');
     addLog(vendor, `Sending proposal to ${buyer}`, '#a855f7');
-    fire('fly1','active');
-  }, 1500);
+    fire('fly1','go');
+  }, 1600);
 
-  // Step 1 done (1800ms)
   setTimeout(() => {
     setStep(1,'done'); setTime(1, elapsed()); setPipe(1,'done');
     setStep(2,'active'); setPipe(2,'active');
-    addLog(buyer, 'Proposal received · negotiating terms...', '#3b82f6');
-    fire('fly1','return');
-  }, 2800);
+    addLog(buyer, 'Proposal received · negotiating terms', '#3b82f6');
+    fire('fly1','back');
+  }, 2900);
 
-  // Step 2 done (3000ms)
   setTimeout(() => {
     setStep(2,'done'); setTime(2, elapsed()); setPipe(2,'done');
     setStep(3,'active'); setPipe(3,'active');
+    setAgent('code', true);
     addLog(vendor, 'Contract signed · issuing invoice', '#a855f7');
-    fire('fly2','active');
-    // Activate code agent
-    const el = document.getElementById('ag-code');
-    el.className='agent-status active'; el.textContent='ACTIVE';
-  }, 4200);
+    fire('fly2','go');
+  }, 4300);
 
-  // Step 3 done (4200ms)
   setTimeout(() => {
     setStep(3,'done'); setTime(3, elapsed()); setPipe(3,'done');
     setStep(4,'active'); setPipe(4,'active');
+    setAgent('finance', true);
     addLog(buyer, `Invoice $${amount.toLocaleString()} received · processing payment`, '#3b82f6');
-    fire('fly3','active');
-    const el = document.getElementById('ag-finance');
-    el.className='agent-status active'; el.textContent='ACTIVE';
-  }, 5500);
+    fire('fly3','go');
+  }, 5600);
 
-  // Step 4 done (5700ms)
   setTimeout(() => {
     setStep(4,'done'); setTime(4, elapsed()); setPipe(4,'done');
     setStep(5,'active'); setPipe(5,'active');
+    setAgent('growth', true);
     addLog(vendor, `Payment $${amount.toLocaleString()} received · filing 1099-NEC`, '#22c55e');
-    fire('fly4','active');
-    // Business impact: MRR + Campaign
+    fire('fly4','go');
     countUp('imp-mrr', 299, '+$');
-    document.getElementById('imp-camp').textContent='Live';
-    document.getElementById('imp-camp').style.color='var(--green)';
-    const el = document.getElementById('ag-growth');
-    el.className='agent-status active'; el.textContent='ACTIVE';
-  }, 6800);
+    document.getElementById('imp-camp').textContent = 'Live';
+    document.getElementById('imp-camp').style.color = 'var(--green)';
+  }, 6900);
 
-  // Step 5 done (7200ms)
   setTimeout(() => {
     setStep(5,'done'); setTime(5, elapsed()); setPipe(5,'done');
     addLog(vendor, '1099-NEC filed to IRS · transaction complete', '#f59e0b');
-    fire('fly5','active');
-    document.getElementById('imp-tax').textContent='Filed';
-    document.getElementById('imp-tax').style.color='var(--amber)';
+    fire('fly5','go');
+    document.getElementById('imp-tax').textContent = 'Filed';
+    document.getElementById('imp-tax').style.color = 'var(--amber)';
 
-    // Update stats
     cycleCount++;
     totalVolume += amount;
     document.getElementById('stat-deals').textContent = cycleCount;
     countUp('stat-vol', totalVolume, '$');
     countUp('stat-1099', totalVolume * 0.6, '$');
 
-    // Banner
-    const banner = document.getElementById('banner');
-    banner.classList.add('show');
+    document.getElementById('banner').classList.add('show');
     document.getElementById('banner-sub').textContent =
       `${vendor} transacted with ${buyer} · $${amount.toLocaleString()} · 0 human operators · 6 workflow steps`;
-
     addLog('System', `Cycle #${cycleCount} complete · $${amount.toLocaleString()} settled`, '#22c55e');
-  }, 8000);
+  }, 8100);
 
-  // Next cycle (10500ms)
-  setTimeout(() => {
-    runCycle();
-  }, 10500);
+  setTimeout(runCycle, 10800);
 }
 
-// Start
 runCycle();
 </script>
 </body>
