@@ -11,23 +11,23 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --base:#060816;
-  --panel:#0B1020;
-  --panel2:#10162B;
-  --cobalt:#4D7CFF;
+  --base:#070B17;
+  --panel:#0E1424;
+  --panel2:#131C31;
+  --cobalt:#5B8CFF;
   --cyan:#33D1FF;
-  --violet:#7A5CFF;
-  --green:#18C37E;
-  --green-d:#03190f;
+  --violet:#8B6CFF;
+  --green:#19C37D;
+  --green-d:#031a10;
   --green-m:#0e4a2a;
   --amber:#F5B942;
-  --text:#F5F7FA;
+  --text:#EFF2FA;
   --muted:#8D97B5;
-  --dim:#3D4A6A;
-  --border:rgba(77,124,255,0.12);
-  --border2:rgba(77,124,255,0.22);
-  --glow-cobalt:rgba(77,124,255,0.08);
-  --glow-violet:rgba(122,92,255,0.06);
+  --dim:#3A4A6E;
+  --border:#1C2A49;
+  --border2:rgba(91,140,255,0.28);
+  --glow-cobalt:rgba(91,140,255,0.10);
+  --glow-violet:rgba(139,108,255,0.07);
 }
 html{scroll-behavior:smooth;}
 body{
@@ -178,25 +178,17 @@ h1{font-size:clamp(32px,3.6vw,52px);font-weight:900;color:var(--text);line-heigh
 .inst-offer-label{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);}
 .inst-offer-name{font-size:12px;font-weight:700;color:var(--text);}
 
-/* Layer 3: Transaction object flow */
-.inst-flow{padding:14px 16px;border-bottom:1px solid var(--border);}
-.inst-flow-label{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:8px;}
-.inst-flow-track{display:flex;align-items:center;gap:0;}
-.inst-obj{flex:1;display:flex;justify-content:center;}
-.inst-obj-line{flex-shrink:0;width:12px;height:1px;background:var(--border2);}
-.inst-obj-chip{
-  padding:5px 0;border-radius:4px;width:100%;text-align:center;
-  font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:.04em;
-  background:rgba(255,255,255,0.02);border:1px solid var(--border);
-  color:var(--dim);transition:all .4s;white-space:nowrap;
+/* Layer 3: Commercial object panel */
+.inst-comobj{padding:12px 16px;border-bottom:1px solid var(--border);}
+.inst-comobj-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 0;border-bottom:1px solid var(--border);
 }
-.inst-obj-chip.active{
-  color:var(--cobalt);border-color:rgba(77,124,255,0.4);
-  background:rgba(77,124,255,0.1);box-shadow:0 0 14px rgba(77,124,255,0.22);
-}
-.inst-obj-chip.done{
-  color:var(--green);border-color:rgba(24,195,126,0.28);
-  background:rgba(24,195,126,0.06);
+.inst-comobj-row:last-child{border-bottom:none;}
+.inst-comobj-key{font-size:10px;color:var(--dim);font-weight:600;letter-spacing:.03em;}
+.inst-comobj-val{
+  font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;
+  text-align:right;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 
 /* Status strip */
@@ -364,17 +356,23 @@ footer{
       <div style="font-size:11px;font-weight:700;color:var(--amber);font-family:'JetBrains Mono',monospace;">$5,000</div>
     </div>
 
-    <!-- Layer 3: Transaction object flow -->
-    <div class="inst-flow">
-      <div class="inst-flow-label">Transaction objects</div>
-      <div class="inst-flow-track">
-        <div class="inst-obj"><div class="inst-obj-chip" id="io0">PROPOSAL</div></div>
-        <div class="inst-obj-line"></div>
-        <div class="inst-obj"><div class="inst-obj-chip" id="io1">CONTRACT</div></div>
-        <div class="inst-obj-line"></div>
-        <div class="inst-obj"><div class="inst-obj-chip" id="io2">INVOICE</div></div>
-        <div class="inst-obj-line"></div>
-        <div class="inst-obj"><div class="inst-obj-chip" id="io3">PAYMENT</div></div>
+    <!-- Layer 3: Commercial object -->
+    <div class="inst-comobj">
+      <div class="inst-comobj-row">
+        <div class="inst-comobj-key">Offer</div>
+        <div class="inst-comobj-val" style="color:var(--text)">Outbound Campaign System</div>
+      </div>
+      <div class="inst-comobj-row">
+        <div class="inst-comobj-key">Counterparty</div>
+        <div class="inst-comobj-val" style="color:var(--violet)">Northstar Buyer</div>
+      </div>
+      <div class="inst-comobj-row">
+        <div class="inst-comobj-key">Contract value</div>
+        <div class="inst-comobj-val" style="color:var(--amber)">$5,000</div>
+      </div>
+      <div class="inst-comobj-row">
+        <div class="inst-comobj-key">State</div>
+        <div class="inst-comobj-val" id="io-state" style="color:var(--cobalt)">Proposal sent</div>
       </div>
     </div>
 
@@ -531,17 +529,15 @@ footer{
 
 <script>
 const STEP_MS = 1900;
+const states = ['Proposal sent','Terms accepted','Invoice issued','Payment received'];
+const stateColors = ['var(--cobalt)','var(--cobalt)','var(--amber)','var(--green)'];
 let cur = 0;
 
-function setChip(i, cls) {
-  const el = document.getElementById('io' + i);
-  if (el) el.className = 'inst-obj-chip' + (cls ? ' ' + cls : '');
-}
-
 function tick() {
-  if (cur > 0) setChip(cur - 1, 'done');
-  if (cur < 4) {
-    setChip(cur, 'active');
+  const el = document.getElementById('io-state');
+  if (cur < states.length) {
+    el.textContent = states[cur];
+    el.style.color = stateColors[cur];
     cur++;
     setTimeout(tick, STEP_MS);
   } else {
@@ -550,7 +546,8 @@ function tick() {
     document.getElementById('is-status').textContent = 'Complete';
     document.getElementById('is-status').style.color = 'var(--green)';
     setTimeout(() => {
-      for (let i = 0; i < 4; i++) setChip(i, '');
+      el.textContent = states[0];
+      el.style.color = stateColors[0];
       document.getElementById('is-rev').textContent = '—';
       document.getElementById('is-rev').style.color = 'var(--dim)';
       document.getElementById('is-status').textContent = 'Active';
