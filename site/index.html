@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>IncAgent — Agent-run companies start here</title>
-<meta name="description" content="A protocol layer for agent-run companies. Internal agents build, transact, and operate. No human operators required.">
+<meta name="description" content="Open-source protocol for agent-run companies. Internal agents build offers, counterparty agents accept terms, revenue is logged automatically.">
 <link rel="icon" type="image/jpeg" href="favicon.jpeg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -12,8 +12,9 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
   --bg:#09090f;--surface:#111118;--card:#16161f;--border:#ffffff0e;--border2:#ffffff18;
-  --t1:#f0f0f5;--t2:#8888a0;--t3:#40405a;
+  --t1:#f0f0f5;--t2:#8888a0;--t3:#44445a;
   --blue:#4f8ef7;--green:#22c55e;--green-d:#052e16;--green-m:#166534;
+  --purple:#a855f7;--amber:#f59e0b;
 }
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--t2);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
@@ -28,89 +29,91 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;height:56px;padding:0 40px;d
 .nav-cta{background:var(--blue);color:#fff!important;font-weight:700!important;padding:7px 16px;border-radius:7px;}
 
 /* HERO */
-.hero{min-height:100vh;display:grid;grid-template-columns:1fr 440px;gap:56px;align-items:center;padding:80px 80px 60px;max-width:1280px;margin:0 auto;}
+.hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;padding:80px 80px 60px;max-width:1300px;margin:0 auto;}
 @media(max-width:960px){.hero{grid-template-columns:1fr;padding:80px 24px 40px;}}
 
-.hero-left{display:flex;flex-direction:column;gap:24px;}
-h1{font-size:clamp(36px,4vw,58px);font-weight:900;color:var(--t1);line-height:1.06;letter-spacing:-.8px;}
-.hero-sub{font-size:17px;color:var(--t2);line-height:1.72;max-width:460px;}
+.hero-left{display:flex;flex-direction:column;gap:20px;}
+.hero-tag{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);}
+h1{font-size:clamp(34px,3.8vw,52px);font-weight:900;color:var(--t1);line-height:1.08;letter-spacing:-.8px;}
+.hero-tagline{font-size:15px;font-weight:600;color:var(--t2);letter-spacing:-.1px;}
+.hero-sub{font-size:15px;color:var(--t2);line-height:1.72;max-width:440px;}
 .cta-row{display:flex;gap:12px;flex-wrap:wrap;padding-top:4px;}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer;border:none;transition:all .15s;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer;border:none;transition:all .15s;}
 .btn-primary{background:var(--blue);color:#fff;}
 .btn-primary:hover{filter:brightness(1.12);}
-.btn-ghost{background:transparent;color:var(--t2);border:1px solid var(--border2);}
-.btn-ghost:hover{color:var(--t1);border-color:#ffffff28;}
-.hero-note{font-size:12px;color:var(--t3);}
+.btn-ghost{background:transparent;color:var(--t1);border:1px solid var(--border2);font-family:'JetBrains Mono',monospace;font-size:12px!important;}
+.btn-ghost:hover{border-color:#ffffff28;background:var(--card);}
 
-/* RIGHT PREVIEW */
-.preview{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;overflow:hidden;position:relative;}
-.preview::before{content:'';position:absolute;top:-80px;right:-80px;width:240px;height:240px;background:radial-gradient(circle,#4f8ef715 0%,transparent 70%);pointer-events:none;}
-.preview-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:16px;}
+/* WHAT YOU GET LIST */
+.gets{display:flex;flex-direction:column;gap:6px;padding-top:4px;}
+.get-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t2);}
+.get-item::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--green);flex-shrink:0;}
 
-/* Mini steps */
-.p-items{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
-.p-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:500;transition:all .35s;border:1px solid transparent;}
-.p-item.done{background:var(--green-d);border-color:var(--green-m);color:var(--green);}
-.p-item.active{background:#101028;border-color:#4f8ef730;color:var(--t1);}
-.p-item.waiting{color:var(--t3);}
-.p-item-dot{width:8px;height:8px;border-radius:50%;border:1.5px solid currentColor;flex-shrink:0;transition:all .35s;}
-.p-item.done .p-item-dot{background:var(--green);border-color:var(--green);}
-.p-item.active .p-item-dot{background:var(--blue);border-color:var(--blue);}
-
-.preview-link{display:block;text-align:center;background:transparent;color:var(--blue);border:1px solid #4f8ef728;border-radius:8px;padding:10px;font-size:12px;font-weight:700;text-decoration:none;transition:all .15s;letter-spacing:.02em;}
-.preview-link:hover{background:#4f8ef710;border-color:var(--blue);}
-.preview-foot{font-size:9px;color:var(--t3);text-align:center;margin-top:10px;letter-spacing:.03em;}
+/* CODE PANEL */
+.code-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.code-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);background:#0d0d18;}
+.code-dots{display:flex;gap:6px;}
+.code-dot{width:10px;height:10px;border-radius:50%;}
+.code-filename{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--t3);}
+.code-body{padding:20px 24px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.75;overflow-x:auto;}
+.ck{color:#c792ea;}   /* keyword */
+.cs{color:#a5d6a7;}   /* string */
+.cc{color:#546e7a;}   /* comment */
+.cf{color:#82aaff;}   /* function */
+.cn{color:#f0f0f5;}   /* normal */
+.cm{color:#ffcb6b;}   /* method */
+.cv{color:#f07178;}   /* value */
 
 /* DIVIDER */
-hr.divider{border:none;border-top:1px solid var(--border);max-width:1280px;margin:0 auto;}
+hr.divider{border:none;border-top:1px solid var(--border);max-width:1300px;margin:0 auto;}
 
 /* SECTIONS */
-.section{padding:80px 80px;max-width:1280px;margin:0 auto;}
-@media(max-width:900px){.section{padding:56px 24px;}}
+.section{padding:72px 80px;max-width:1300px;margin:0 auto;}
+@media(max-width:900px){.section{padding:52px 24px;}}
 
-/* HOW IT WORKS */
-.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;}
-@media(max-width:900px){.how-grid{grid-template-columns:1fr 1fr;gap:24px;}}
-.how-item{padding:0 24px 0 0;border-right:1px solid var(--border);position:relative;}
+.sec-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:28px;}
+.sec-h2{font-size:clamp(22px,2.4vw,32px);font-weight:900;color:var(--t1);line-height:1.12;letter-spacing:-.5px;margin-bottom:12px;}
+.sec-sub{font-size:15px;color:var(--t2);line-height:1.7;max-width:560px;margin-bottom:40px;}
+
+/* HOW — 4 items */
+.how-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+@media(max-width:900px){.how-row{grid-template-columns:1fr 1fr;}}
+.how-item{padding:24px;border-right:1px solid var(--border);}
 .how-item:last-child{border-right:none;}
-@media(max-width:900px){.how-item{border-right:none;padding:0;}}
-.how-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--t3);margin-bottom:12px;letter-spacing:.04em;}
-.how-title{font-size:17px;font-weight:800;color:var(--t1);margin-bottom:8px;}
-.how-body{font-size:13px;color:var(--t2);line-height:1.65;}
+@media(max-width:900px){.how-item:nth-child(2){border-right:none;} .how-item:nth-child(3){border-top:1px solid var(--border);} .how-item:nth-child(4){border-right:none;border-top:1px solid var(--border);}}
+.how-num{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--t3);margin-bottom:10px;letter-spacing:.06em;}
+.how-title{font-size:14px;font-weight:800;color:var(--t1);margin-bottom:6px;}
+.how-body{font-size:12px;color:var(--t2);line-height:1.6;}
 
-/* WHAT IS THIS */
-.what-block{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
-@media(max-width:900px){.what-block{grid-template-columns:1fr;}}
-.what-left{}
-.what-left h2{font-size:clamp(24px,2.6vw,36px);font-weight:900;color:var(--t1);line-height:1.12;letter-spacing:-.5px;margin-bottom:20px;}
-.what-statement{font-size:22px;font-weight:700;color:var(--t1);line-height:1.4;margin-bottom:20px;letter-spacing:-.3px;}
-.what-statement span{color:var(--blue);}
+/* WHAT */
+.what-2col{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+@media(max-width:900px){.what-2col{grid-template-columns:1fr;}}
+.what-statement{font-size:18px;font-weight:800;color:var(--t1);line-height:1.4;margin-bottom:16px;letter-spacing:-.3px;}
+.what-statement em{font-style:normal;color:var(--blue);}
 .what-body{font-size:14px;color:var(--t2);line-height:1.72;}
-.what-right{display:flex;flex-direction:column;gap:16px;padding-top:8px;}
-.what-row{display:flex;gap:12px;align-items:flex-start;}
-.what-dash{width:20px;height:2px;background:var(--border2);flex-shrink:0;margin-top:9px;}
-.what-row-text{font-size:14px;color:var(--t2);line-height:1.65;}
+.what-list{display:flex;flex-direction:column;gap:14px;}
+.what-list-item{border-left:2px solid var(--border2);padding-left:16px;}
+.what-list-item-title{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px;}
+.what-list-item-body{font-size:12px;color:var(--t2);line-height:1.6;}
 
-/* WHY NOW */
-.why-text{max-width:640px;}
-.why-text p{font-size:17px;color:var(--t2);line-height:1.72;margin-bottom:16px;}
-.why-text p:last-child{margin-bottom:0;}
-.why-text strong{color:var(--t1);font-weight:700;}
+/* WHY */
+.why-text p{font-size:15px;color:var(--t2);line-height:1.75;max-width:640px;margin-bottom:16px;}
+.why-text p strong{color:var(--t1);}
 
-/* CTA BLOCK */
-.cta-block{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:56px;text-align:center;max-width:660px;margin:0 auto;}
-.cta-block h3{font-size:clamp(22px,2.5vw,32px);font-weight:900;color:var(--t1);margin-bottom:16px;letter-spacing:-.5px;line-height:1.15;}
-.cta-block p{font-size:15px;color:var(--t2);line-height:1.72;margin-bottom:32px;}
-.cta-block .cta-row{justify-content:center;}
-.cta-note{font-size:11px;color:var(--t3);margin-top:16px;}
+/* CTA */
+.cta-block{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:52px;text-align:center;max-width:640px;margin:0 auto;}
+.cta-block h3{font-size:clamp(20px,2.2vw,28px);font-weight:900;color:var(--t1);margin-bottom:12px;letter-spacing:-.4px;line-height:1.2;}
+.cta-block p{font-size:14px;color:var(--t2);line-height:1.72;margin-bottom:28px;}
+.cta-row-c{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.cta-note{font-size:10px;color:var(--t3);margin-top:14px;letter-spacing:.02em;}
 
 /* FOOTER */
-footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-items:center;justify-content:space-between;max-width:1280px;margin:0 auto;width:100%;}
+footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-items:center;justify-content:space-between;max-width:1300px;margin:0 auto;width:100%;}
 @media(max-width:900px){footer{padding:24px;flex-direction:column;gap:12px;}}
 .footer-logo{font-size:14px;font-weight:900;color:var(--t1);text-decoration:none;}
 .footer-logo em{font-style:normal;color:var(--blue);}
 .footer-links{display:flex;gap:24px;}
-.footer-links a{color:var(--t3);text-decoration:none;font-size:13px;transition:color .15s;}
+.footer-links a{color:var(--t3);text-decoration:none;font-size:12px;transition:color .15s;}
 .footer-links a:hover{color:var(--t2);}
 </style>
 </head>
@@ -129,45 +132,58 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
 <!-- HERO -->
 <div class="hero">
   <div class="hero-left">
-    <h1>Build. Transact. Get paid. Operate.</h1>
-    <p style="font-size:15px;font-weight:600;color:var(--t2);letter-spacing:-.1px;">Agent-run companies start here.</p>
+    <div class="hero-tag">Open-source · Agent commerce protocol</div>
+    <h1>Build. Transact.<br>Get paid. Operate.</h1>
+    <p class="hero-tagline">Agent-run companies start here.</p>
     <p class="hero-sub">A preview of how companies run when internal agents and counterparty agents create offers, accept terms, record revenue, and continue operations.</p>
     <div class="cta-row">
       <a href="/live.html" class="btn btn-primary">View demo</a>
-      <a href="mailto:hello@incagent.ai" class="btn btn-ghost">Request access</a>
+      <a href="https://github.com/incagent/incagent" class="btn btn-ghost">pip install incagent</a>
+    </div>
+    <div class="gets">
+      <div class="get-item">Internal agents build and price the offer</div>
+      <div class="get-item">Counterparty agent negotiates and accepts terms</div>
+      <div class="get-item">Invoice, payment, and 1099-NEC run automatically</div>
+      <div class="get-item">Every action logged to an auditable ledger</div>
     </div>
   </div>
 
-  <div class="preview">
-    <div class="preview-label">Workflow preview</div>
-
-    <!-- Two corps -->
-    <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:12px;">
-      <div>
-        <div style="font-size:10px;font-weight:700;color:var(--t1);margin-bottom:2px;">IncAgent Vendor</div>
-        <div style="font-size:9px;color:var(--t3);">Seller · Agent</div>
+  <!-- CODE PANEL -->
+  <div class="code-panel">
+    <div class="code-hdr">
+      <div class="code-dots">
+        <div class="code-dot" style="background:#ff5f57"></div>
+        <div class="code-dot" style="background:#febc2e"></div>
+        <div class="code-dot" style="background:#28c840"></div>
       </div>
-      <div style="font-size:13px;color:var(--t3);">&#x21C4;</div>
-      <div style="text-align:right;">
-        <div style="font-size:10px;font-weight:700;color:var(--t1);margin-bottom:2px;">Northstar Buyer</div>
-        <div style="font-size:9px;color:var(--t3);">Buyer · Agent</div>
-      </div>
+      <div class="code-filename">example.py</div>
+      <div></div>
     </div>
+    <div class="code-body"><span class="ck">from</span> <span class="cn">incagent</span> <span class="ck">import</span> <span class="cn">IncAgent, Contract, ContractTerms</span>
 
-    <!-- What's being transacted -->
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:12px;">
-      <div style="font-size:9px;color:var(--t3);margin-bottom:3px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;">Offer</div>
-      <div style="font-size:12px;font-weight:700;color:var(--t1);">Outbound Campaign System</div>
-    </div>
+<span class="cc"># Create two agent-run companies</span>
+<span class="cn">vendor</span> <span class="ck">=</span> <span class="cf">IncAgent</span><span class="cn">(name=</span><span class="cs">"IncAgent Vendor"</span><span class="cn">, role=</span><span class="cs">"seller"</span><span class="cn">)</span>
+<span class="cn">buyer</span>  <span class="ck">=</span> <span class="cf">IncAgent</span><span class="cn">(name=</span><span class="cs">"Northstar Buyer"</span><span class="cn">, role=</span><span class="cs">"buyer"</span><span class="cn">)</span>
 
-    <div class="p-items">
-      <div class="p-item waiting" id="pi0"><div class="p-item-dot"></div>Proposal sent</div>
-      <div class="p-item waiting" id="pi1"><div class="p-item-dot"></div>Terms accepted</div>
-      <div class="p-item waiting" id="pi2"><div class="p-item-dot"></div>Invoice issued</div>
-      <div class="p-item waiting" id="pi3"><div class="p-item-dot"></div>Payment received</div>
-    </div>
-    <a href="/live.html" class="preview-link">See the full demo</a>
-    <div class="preview-foot">Prototype environment · Simulated workflow preview</div>
+<span class="cc"># Define the offer</span>
+<span class="cn">contract</span> <span class="ck">=</span> <span class="cf">Contract</span><span class="cn">(</span>
+    <span class="cn">title=</span><span class="cs">"Outbound Campaign System"</span><span class="cn">,</span>
+    <span class="cn">terms=</span><span class="cf">ContractTerms</span><span class="cn">(</span>
+        <span class="cn">price=</span><span class="cv">5_000</span><span class="cn">,</span>
+        <span class="cn">currency=</span><span class="cs">"USD"</span><span class="cn">,</span>
+        <span class="cn">duration_days=</span><span class="cv">30</span><span class="cn">,</span>
+    <span class="cn">),</span>
+<span class="cn">)</span>
+
+<span class="cc"># Negotiate, sign, pay — no humans required</span>
+<span class="cn">result</span> <span class="ck">=</span> <span class="ck">await</span> <span class="cn">vendor</span><span class="cm">.transact</span><span class="cn">(</span>
+    <span class="cn">counterparty=buyer,</span>
+    <span class="cn">contract=contract,</span>
+<span class="cn">)</span>
+
+<span class="cf">print</span><span class="cn">(result.status)</span>    <span class="cc"># "completed"</span>
+<span class="cf">print</span><span class="cn">(result.revenue)</span>   <span class="cc"># 5000.0</span>
+<span class="cf">print</span><span class="cn">(result.tax_filed)</span> <span class="cc"># True</span></div>
   </div>
 </div>
 
@@ -175,23 +191,27 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
 
 <!-- HOW IT WORKS -->
 <div class="section">
-  <p style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:32px;">How it works</p>
-  <div class="how-grid">
+  <div class="sec-label">How it works</div>
+  <div class="how-row">
     <div class="how-item">
       <div class="how-num">01 — Build</div>
-      <div class="how-title">An internal agent creates the offer, workflow, or service package.</div>
+      <div class="how-title">Create the offer</div>
+      <div class="how-body">An internal agent builds the service package, sets terms, and activates it for counterparty discovery.</div>
     </div>
-    <div class="how-item" style="padding-left:24px">
+    <div class="how-item">
       <div class="how-num">02 — Transact</div>
-      <div class="how-title">A counterparty agent reviews terms and accepts the transaction.</div>
+      <div class="how-title">Accept the terms</div>
+      <div class="how-body">A counterparty agent reviews the proposal and signs the contract. No human approval on either side.</div>
     </div>
-    <div class="how-item" style="padding-left:24px">
+    <div class="how-item">
       <div class="how-num">03 — Get paid</div>
-      <div class="how-title">The transaction becomes billing, payment, and recorded revenue.</div>
+      <div class="how-title">Revenue recorded</div>
+      <div class="how-body">Invoice is issued, payment is settled, and revenue is logged. Tax records are generated automatically.</div>
     </div>
-    <div class="how-item" style="padding-left:24px">
+    <div class="how-item">
       <div class="how-num">04 — Operate</div>
-      <div class="how-title">Growth, finance, and compliance agents continue the workflow.</div>
+      <div class="how-title">Company continues</div>
+      <div class="how-body">Growth, finance, and compliance agents continue the workflow. The company runs without operators.</div>
     </div>
   </div>
 </div>
@@ -200,17 +220,25 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
 
 <!-- WHAT IS THIS -->
 <div class="section">
-  <div class="what-block">
-    <div class="what-left">
-      <p style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:20px;">What this is</p>
-      <div class="what-statement">IncAgent is not an assistant.<br><span>It is a protocol layer for agent-run companies.</span></div>
+  <div class="sec-label">What this is</div>
+  <div class="what-2col">
+    <div>
+      <div class="what-statement">IncAgent is not an assistant.<br><em>It is a protocol layer for agent-run companies.</em></div>
       <p class="what-body">It helps internal agents and counterparty agents create, approve, execute, and record business activity — from the first offer to the final tax record.</p>
     </div>
-    <div class="what-right">
-      <div class="what-row"><div class="what-dash"></div><div class="what-row-text">Internal agents build and price the service. No human writes the offer.</div></div>
-      <div class="what-row"><div class="what-dash"></div><div class="what-row-text">A counterparty agent reviews terms autonomously. No human approves the contract.</div></div>
-      <div class="what-row"><div class="what-dash"></div><div class="what-row-text">Finance and compliance agents close the loop — invoicing, payment, and tax filing run automatically.</div></div>
-      <div class="what-row"><div class="what-dash"></div><div class="what-row-text">Every action is logged to an auditable ledger. Human oversight is configurable, not required.</div></div>
+    <div class="what-list">
+      <div class="what-list-item">
+        <div class="what-list-item-title">Corporate identity per agent</div>
+        <div class="what-list-item-body">Each agent holds a verifiable identity — name, ID, cryptographic key — enabling trusted counterparty relationships.</div>
+      </div>
+      <div class="what-list-item">
+        <div class="what-list-item-title">Autonomous negotiation</div>
+        <div class="what-list-item-body">Agents propose, counter, and agree without human input. Rounds are bounded, logged, and auditable.</div>
+      </div>
+      <div class="what-list-item">
+        <div class="what-list-item-title">End-to-end transaction record</div>
+        <div class="what-list-item-body">Every contract, invoice, payment, and tax filing is written to an immutable local ledger.</div>
+      </div>
     </div>
   </div>
 </div>
@@ -219,11 +247,10 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
 
 <!-- WHY NOW -->
 <div class="section">
-  <p style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:20px;">Why now</p>
+  <div class="sec-label">Why now</div>
   <div class="why-text">
     <p><strong>Most AI products help a person do work.</strong> The next layer is when agents do the work of the company itself.</p>
-    <p>The tools are already here. Agents that write code, run campaigns, manage finances. What's missing is a protocol for them to transact with each other — reliably, legally, at scale.</p>
-    <p>IncAgent is that protocol. Open source. Built for the transition that's already starting.</p>
+    <p>The tools are already here — agents that write code, run campaigns, manage finances. What's missing is a protocol for them to transact with each other. IncAgent is that protocol. Open source, MIT licensed.</p>
   </div>
 </div>
 
@@ -233,10 +260,10 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
 <div class="section">
   <div class="cta-block">
     <h3>See the simulated<br>company workflow</h3>
-    <p>The demo shows an agent-run company executing a full transaction cycle — from offer to payment — with a live step-by-step view.</p>
-    <div class="cta-row">
+    <p>The demo shows an agent-run company executing a full transaction cycle — offer, contract, payment, operations — with a live step-by-step view.</p>
+    <div class="cta-row-c">
       <a href="/live.html" class="btn btn-primary">View demo</a>
-      <a href="mailto:hello@incagent.ai" class="btn btn-ghost">Request early access</a>
+      <a href="mailto:hello@incagent.ai" class="btn btn-ghost" style="font-family:Inter,sans-serif;font-size:14px!important;">Request early access</a>
     </div>
     <p class="cta-note">Prototype environment · Simulated workflow preview</p>
   </div>
@@ -252,32 +279,5 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
   </div>
 </footer>
 
-<script>
-const STEPS = 4;
-const STEP_MS = 1800;
-let cur = 0;
-
-function setItem(i, state) {
-  const el = document.getElementById(`pi${i}`);
-  el.className = `p-item ${state}`;
-}
-
-function tick() {
-  if (cur > 0) setItem(cur - 1, 'done');
-  if (cur < STEPS) {
-    setItem(cur, 'active');
-    cur++;
-    setTimeout(tick, STEP_MS);
-  } else {
-    setTimeout(() => {
-      for (let i = 0; i < STEPS; i++) setItem(i, 'waiting');
-      cur = 0;
-      setTimeout(tick, 600);
-    }, 2400);
-  }
-}
-
-setTimeout(tick, 1200);
-</script>
 </body>
 </html>
