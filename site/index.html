@@ -120,6 +120,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 48px;
 .final-cta h2{font-size:clamp(26px,3vw,42px);font-weight:900;color:var(--text);letter-spacing:-.5px;margin-bottom:16px;}
 .final-cta p{font-size:15px;color:var(--muted);margin-bottom:36px;}
 
+/* TENTACLES */
+#tentacles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;}
+#tentacles path{fill:none;stroke-width:3;stroke-linecap:round;opacity:0.35;}
+
 /* FOOTER */
 footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;}
 @media(max-width:900px){footer{padding:24px;flex-direction:column;gap:12px;}}
@@ -334,5 +338,44 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
   </div>
 </footer>
 
+<svg id="tentacles" viewBox="0 0 1440 900" preserveAspectRatio="none">
+  <!-- Left tentacles -->
+  <path class="t" stroke="rgba(91,140,255,0.6)" d="M0,200 Q80,180 120,250 Q160,320 100,400 Q60,460 90,520 Q130,580 80,650"/>
+  <path class="t" stroke="rgba(139,108,255,0.5)" d="M0,350 Q60,330 100,380 Q150,440 90,500 Q50,550 80,620 Q120,700 60,760"/>
+  <path class="t" stroke="rgba(0,212,255,0.4)" d="M0,500 Q70,480 110,540 Q140,600 80,660 Q40,710 70,770"/>
+  <!-- Right tentacles -->
+  <path class="t" stroke="rgba(91,140,255,0.6)" d="M1440,250 Q1360,230 1320,300 Q1280,370 1340,440 Q1380,500 1350,570 Q1310,630 1360,700"/>
+  <path class="t" stroke="rgba(25,195,125,0.5)" d="M1440,400 Q1380,380 1340,430 Q1290,490 1350,550 Q1390,600 1360,670 Q1320,740 1380,800"/>
+  <path class="t" stroke="rgba(245,185,66,0.4)" d="M1440,550 Q1370,530 1330,590 Q1300,650 1360,710 Q1400,760 1370,820"/>
+</svg>
+
+<script>
+const tPaths = document.querySelectorAll('#tentacles .t');
+const tData = [];
+tPaths.forEach(p => {
+  const len = p.getTotalLength();
+  p.style.strokeDasharray = len;
+  p.style.strokeDashoffset = len;
+  tData.push(len);
+});
+
+function onScroll() {
+  const scrollY = window.scrollY;
+  const maxScroll = document.body.scrollHeight - window.innerHeight;
+  const progress = Math.min(scrollY / maxScroll, 1);
+
+  tPaths.forEach((p, i) => {
+    // Stagger: each tentacle starts drawing at a different scroll point
+    const stagger = (i % 3) * 0.08;
+    const t = Math.max(0, Math.min(1, (progress - stagger) / 0.5));
+    // Ease out
+    const ease = 1 - Math.pow(1 - t, 3);
+    p.style.strokeDashoffset = tData[i] * (1 - ease);
+  });
+}
+
+window.addEventListener('scroll', onScroll, {passive: true});
+onScroll();
+</script>
 </body>
 </html>
