@@ -38,15 +38,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 40px;
   z-index:1;background:var(--base);
 }
 
-/* GRID */
-#grid-bg{
-  position:absolute;inset:0;pointer-events:none;
-  background-image:
-    linear-gradient(rgba(91,140,255,0.04) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(91,140,255,0.04) 1px,transparent 1px);
-  background-size:52px 52px;
-  mask-image:radial-gradient(ellipse 80% 80% at 62% 50%,black 15%,transparent 72%);
-}
+/* GRID — removed */
 
 /* SVG */
 #oct-svg{position:absolute;inset:0;width:100%;height:100%;}
@@ -61,10 +53,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 40px;
 
 /* CORE */
 .core-bg{fill:rgba(10,10,46,0.95);stroke:rgba(91,140,255,0.5);stroke-width:2;}
-.core-ring{fill:none;stroke:rgba(91,140,255,0.2);stroke-width:1;transform-box:fill-box;transform-origin:center;}
-.ring-a{animation:rexpand 3s ease-out infinite;}
-.ring-b{animation:rexpand 3s ease-out infinite 1.5s;}
-@keyframes rexpand{0%{transform:scale(1);opacity:.5;}100%{transform:scale(2.2);opacity:0;}}
+.core-ring{display:none;}
 .core-main{font-family:'Inter',sans-serif;font-size:15px;font-weight:900;fill:#EFF2FA;text-anchor:middle;}
 .core-sub{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;fill:#5B8CFF;text-anchor:middle;letter-spacing:.1em;}
 
@@ -161,8 +150,6 @@ footer{position:relative;z-index:10;background:var(--base);border-top:1px solid 
 
 <!-- Fixed animation frame: always covers viewport, post-scroll covers it after -->
 <div id="anim-wrap">
-  <div id="grid-bg"></div>
-
   <svg id="oct-svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid meet">
     <!-- 5 tentacle paths — core at (820,350) -->
     <path id="leg-0" class="leg" d="M820,350 Q580,195 350,80"/>
@@ -170,9 +157,6 @@ footer{position:relative;z-index:10;background:var(--base);border-top:1px solid 
     <path id="leg-2" class="leg" d="M820,350 Q1050,500 1100,630"/>
     <path id="leg-3" class="leg" d="M820,350 Q820,510 820,660"/>
     <path id="leg-4" class="leg" d="M820,350 Q580,500 350,630"/>
-    <!-- Core pulse rings -->
-    <circle class="core-ring ring-a" cx="820" cy="350" r="54"/>
-    <circle class="core-ring ring-b" cx="820" cy="350" r="54"/>
     <!-- Core -->
     <circle class="core-bg" cx="820" cy="350" r="46"/>
     <text class="core-main" x="820" y="346">Inc</text>
