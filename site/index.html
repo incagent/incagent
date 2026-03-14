@@ -41,6 +41,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 48px;
 .hero h1{font-size:clamp(36px,5vw,64px);font-weight:900;color:var(--text);line-height:1.08;letter-spacing:-1px;margin-bottom:20px;}
 .hero p{font-size:clamp(15px,1.4vw,18px);color:var(--muted);line-height:1.7;margin-bottom:36px;max-width:620px;margin-left:auto;margin-right:auto;}
 .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.install-row{display:inline-flex;align-items:center;gap:12px;background:rgba(16,16,58,0.85);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:10px;padding:14px 20px;}
+.install-row code{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--text);}
+.install-row .dollar{color:var(--dim);margin-right:4px;}
+.copy-btn{background:rgba(91,140,255,0.12);border:1px solid rgba(91,140,255,0.25);color:var(--cobalt);font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;}
+.copy-btn:hover{background:rgba(91,140,255,0.22);}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer;border:none;transition:all .15s;}
 .btn-p{background:var(--cobalt);color:#fff;}.btn-p:hover{filter:brightness(1.12);}
 .btn-g{background:transparent;color:var(--text);border:1px solid rgba(91,140,255,0.3);}.btn-g:hover{border-color:rgba(91,140,255,0.55);background:rgba(91,140,255,0.07);}
@@ -133,7 +138,7 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
     <a href="https://github.com/incagent/incagent" target="_blank">GitHub</a>
     <a href="https://github.com/incagent/incagent/tree/main/docs" target="_blank">Docs</a>
     <a href="https://x.com/incagentai" target="_blank">X</a>
-    <a href="/live.html" class="nav-cta">Book a Demo</a>
+    <a href="https://github.com/incagent/incagent" class="nav-cta" target="_blank">Get Started</a>
   </div>
 </nav>
 
@@ -147,9 +152,9 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
   <div class="hero-content">
     <h1>One AI agent for the whole company</h1>
     <p>A corporate AI that operates sales, accounting, support, recruiting, legal, marketing, operations, and engineering.</p>
-    <div class="hero-cta">
-      <a href="/live.html" class="btn btn-p">Book a Demo</a>
-      <a href="#what" class="btn btn-g">See How It Works</a>
+    <div class="install-row">
+      <code><span class="dollar">$</span> pip install incagent</code>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText('pip install incagent');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</button>
     </div>
   </div>
 </div>
