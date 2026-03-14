@@ -28,10 +28,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 48px;
 .nav-cta{background:var(--cobalt);color:#fff!important;font-weight:700!important;padding:7px 18px;border-radius:7px;}
 
 .hero{
-  min-height:100vh;display:grid;grid-template-columns:1fr 1fr;
+  position:relative;min-height:100vh;display:grid;grid-template-columns:1fr 1fr;
   align-items:center;gap:80px;padding:56px 80px 0;max-width:1400px;margin:0 auto;
+  z-index:2;
 }
 @media(max-width:900px){.hero{grid-template-columns:1fr;gap:40px;padding:80px 24px 40px;}}
+.hero-video-wrap{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;overflow:hidden;}
+.hero-video-wrap video{width:100%;height:100%;object-fit:cover;}
+.hero-video-wrap::after{content:'';position:absolute;inset:0;background:rgba(10,10,46,0.72);}
 
 .hero-left .tag{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cobalt);margin-bottom:20px;}
 .hero-left h1{font-size:clamp(32px,4vw,56px);font-weight:900;color:var(--text);line-height:1.08;letter-spacing:-.8px;margin-bottom:20px;}
@@ -42,7 +46,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 48px;
 .btn-g{background:transparent;color:var(--text);border:1px solid rgba(91,140,255,0.3);}.btn-g:hover{border-color:rgba(91,140,255,0.55);background:rgba(91,140,255,0.07);}
 
 .hero-right{display:flex;flex-direction:column;gap:0;}
-.code-block{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.code-block{background:rgba(16,16,58,0.85);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
 .code-header{display:flex;align-items:center;gap:8px;padding:12px 18px;border-bottom:1px solid var(--border);background:rgba(10,10,46,0.4);}
 .code-dot{width:8px;height:8px;border-radius:50%;}
 .code-dot.r{background:#ff5f57;}.code-dot.y{background:#febc2e;}.code-dot.g{background:#28c840;}
@@ -56,13 +60,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 48px;
 .code-body .op{color:var(--dim);}
 .code-body .var{color:var(--text);}
 
-.install-row{margin-top:16px;display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 20px;}
+.install-row{margin-top:16px;display:flex;align-items:center;gap:12px;background:rgba(16,16,58,0.85);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:10px;padding:14px 20px;}
 .install-row code{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text);flex:1;}
 .install-row .dollar{color:var(--dim);margin-right:4px;}
 .copy-btn{background:rgba(91,140,255,0.12);border:1px solid rgba(91,140,255,0.25);color:var(--cobalt);font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;}
 .copy-btn:hover{background:rgba(91,140,255,0.22);}
 
-footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;}
+footer{position:relative;z-index:2;background:var(--base);border-top:1px solid var(--border);padding:28px 80px;display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;}
 @media(max-width:900px){footer{padding:24px;flex-direction:column;gap:12px;}}
 .footer-logo{font-size:14px;font-weight:900;color:var(--text);text-decoration:none;}
 .footer-logo em{font-style:normal;color:var(--cobalt);}
@@ -72,6 +76,12 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
 </style>
 </head>
 <body>
+
+<div class="hero-video-wrap">
+  <video autoplay muted loop playsinline>
+    <source src="hero-bg.mp4" type="video/mp4">
+  </video>
+</div>
 
 <nav>
   <a href="/" class="logo">Inc<em>Agent</em></a>
