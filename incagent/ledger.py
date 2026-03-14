@@ -28,12 +28,18 @@ class Ledger:
                 agent_id TEXT NOT NULL,
                 action TEXT NOT NULL,
                 data TEXT NOT NULL,
+                signature TEXT NOT NULL DEFAULT '',
                 prev_hash TEXT NOT NULL,
                 hash TEXT NOT NULL UNIQUE
             );
             CREATE INDEX IF NOT EXISTS idx_entries_agent ON entries(agent_id);
             CREATE INDEX IF NOT EXISTS idx_entries_action ON entries(action);
         """)
+        # Migration: add signature column if missing (existing DBs)
+        try:
+            self._conn.execute("SELECT signature FROM entries LIMIT 1")
+        except Exception:
+            self._conn.execute("ALTER TABLE entries ADD COLUMN signature TEXT NOT NULL DEFAULT ''")
         self._conn.commit()
 
     def _last_hash(self) -> str:
@@ -47,16 +53,27 @@ class Ledger:
         payload = f"{timestamp}|{agent_id}|{action}|{data}|{prev_hash}"
         return hashlib.sha256(payload.encode()).hexdigest()
 
-    def append(self, agent_id: str, action: str, data: dict[str, Any] | None = None) -> int:
-        """Append an entry to the ledger. Returns the entry id."""
+    def append(
+        self,
+        agent_id: str,
+        action: str,
+        data: dict[str, Any] | None = None,
+        signature: str = "",
+    ) -> int:
+        """Append an entry to the ledger. Returns the entry id.
+
+        If a signature is provided, it is stored alongside the entry
+        for cryptographic attribution (Ed25519 hex signature of the data).
+        """
         now = datetime.now(timezone.utc).isoformat()
         data_json = json.dumps(data or {}, sort_keys=True, separators=(",", ":"))
         prev = self._last_hash()
         entry_hash = self._compute_hash(now, agent_id, action, data_json, prev)
 
         cur = self._conn.execute(
-            "INSERT INTO entries (timestamp, agent_id, action, data, prev_hash, hash) VALUES (?, ?, ?, ?, ?, ?)",
-            (now, agent_id, action, data_json, prev, entry_hash),
+            "INSERT INTO entries (timestamp, agent_id, action, data, signature, prev_hash, hash) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (now, agent_id, action, data_json, signature, prev, entry_hash),
         )
         self._conn.commit()
         return cur.lastrowid  # type: ignore[return-value]
@@ -102,6 +119,7 @@ class Ledger:
                 "agent_id": r["agent_id"],
                 "action": r["action"],
                 "data": json.loads(r["data"]),
+                "signature": r["signature"] if "signature" in r.keys() else "",
                 "hash": r["hash"],
             }
             for r in rows
@@ -117,6 +135,7 @@ class Ledger:
                 "agent_id": r["agent_id"],
                 "action": r["action"],
                 "data": json.loads(r["data"]),
+                "signature": r["signature"] if "signature" in r.keys() else "",
                 "prev_hash": r["prev_hash"],
                 "hash": r["hash"],
             }

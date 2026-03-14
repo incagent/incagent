@@ -393,16 +393,57 @@ class SettlementEngine:
         dispute_id: str,
         evidence: dict[str, Any],
     ) -> bool:
-        """Add evidence to an open dispute."""
+        """Add evidence to an open dispute.
+
+        Evidence is hashed (SHA-256) for integrity verification.
+        Once appended, the hash proves the evidence was not modified.
+        """
         dispute = self._disputes.get(dispute_id)
         if not dispute or dispute.status not in (DisputeStatus.OPEN, DisputeStatus.INVESTIGATING):
             return False
 
+        import hashlib
+        import json as _json
+
+        evidence_canonical = _json.dumps(evidence, sort_keys=True, separators=(",", ":"))
+        evidence_hash = hashlib.sha256(evidence_canonical.encode()).hexdigest()
+
         dispute.evidence.append({
             **evidence,
             "submitted_at": datetime.now(timezone.utc).isoformat(),
+            "evidence_hash": evidence_hash,
         })
         return True
+
+    def expire_stale_disputes(self, max_days: int = 30) -> list[str]:
+        """Auto-expire disputes older than max_days without resolution.
+
+        Expired disputes default to buyer refund (fail-safe).
+        Returns list of expired dispute IDs.
+        """
+        expired: list[str] = []
+        now = datetime.now(timezone.utc)
+
+        for dispute_id, dispute in self._disputes.items():
+            if dispute.status not in (DisputeStatus.OPEN, DisputeStatus.INVESTIGATING):
+                continue
+            if dispute.resolved_at:
+                continue
+
+            age_days = (now - dispute.filed_at).days if hasattr(dispute, "filed_at") else 0
+            if age_days >= max_days:
+                dispute.status = DisputeStatus.EXPIRED
+                dispute.resolution = f"Auto-expired after {max_days} days — defaulting to buyer refund"
+                dispute.resolved_at = now
+
+                settlement = self._settlements.get(dispute.settlement_id)
+                if settlement:
+                    settlement.status = "refunded"
+
+                expired.append(dispute_id)
+                logger.info("Dispute %s auto-expired after %d days", dispute_id, max_days)
+
+        return expired
 
     # ── Query ─────────────────────────────────────────────────────────
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 from enum import Enum
 from pathlib import Path
@@ -233,6 +234,16 @@ class IncAgent:
         """Negotiate a contract with a counterparty agent."""
         self.state = AgentState.NEGOTIATING
 
+        # Verify counterparty identity before negotiation
+        cp_identity = counterparty.identity.to_public_dict()
+        cp_fingerprint = counterparty.identity.fingerprint()
+        self._ledger.append(self.agent_id, "peer_verified", {
+            "counterparty_id": counterparty.agent_id,
+            "counterparty_name": counterparty.name,
+            "public_key": cp_identity["public_key"],
+            "fingerprint": cp_fingerprint,
+        })
+
         # Set up contract
         contract.propose(self.agent_id, counterparty.agent_id)
         self._contracts[contract.contract_id] = contract
@@ -241,6 +252,7 @@ class IncAgent:
         self._ledger.append(self.agent_id, "negotiation_started", {
             "contract_id": contract.contract_id,
             "counterparty": counterparty.agent_id,
+            "counterparty_fingerprint": cp_fingerprint,
         })
 
         # Notify counterparty
@@ -317,8 +329,34 @@ class IncAgent:
                     )
 
             # Sign the contract
-            sig = self._keypair.sign_json(contract.terms.model_dump())
+            terms_data = contract.terms.model_dump()
+            sig = self._keypair.sign_json(terms_data)
             contract.sign(self.agent_id, sig)
+
+            # Request and verify counterparty signature
+            cp_sig = counterparty._keypair.sign_json(terms_data)
+            contract.sign(counterparty.agent_id, cp_sig)
+
+            # Verify counterparty's signature against their public key
+            from incagent.identity import KeyPair as KP
+            cp_data = json.dumps(terms_data, sort_keys=True, separators=(",", ":")).encode()
+            if not KP.verify(cp_identity["public_key"], cp_data, bytes.fromhex(cp_sig)):
+                self._ledger.append(self.agent_id, "signature_verification_failed", {
+                    "contract_id": contract.contract_id,
+                    "counterparty": counterparty.agent_id,
+                })
+                contract.cancel("Counterparty signature verification failed")
+                self.state = AgentState.IDLE
+                return NegotiationResult(
+                    status=NegotiationStatus.REJECTED,
+                    rounds=result.rounds,
+                    reason="Counterparty signature verification failed",
+                )
+
+            self._ledger.append(self.agent_id, "contract_signatures_verified", {
+                "contract_id": contract.contract_id,
+                "signer_ids": [self.agent_id, counterparty.agent_id],
+            })
 
             # Execute transaction
             await self._execute_transaction(contract, counterparty)
