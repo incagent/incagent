@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>IncAgent — Agents run the business. People execute the work.</title>
-<meta name="description" content="Open-source protocol for agent-run companies. Autonomous agents create offers, close buyers, assign human execution, verify proof, and record revenue.">
+<meta name="description" content="Open-source protocol for agent-run companies.">
 <link rel="icon" type="image/jpeg" href="favicon.jpeg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,13 +15,11 @@
   --cobalt:#5B8CFF;--violet:#8B6CFF;--green:#19C37D;--amber:#F5B942;--cyan:#00D4FF;
   --text:#EFF2FA;--muted:#9499be;--dim:#3e4470;--border:#1e2050;
 }
-html{background:var(--base);}
-body{background:var(--base);color:var(--muted);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+html,body{height:100%;background:var(--base);color:var(--muted);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 40px;
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 48px;
   display:flex;align-items:center;
-  background:rgba(10,10,46,0.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+  background:rgba(10,10,46,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
 .logo{font-size:16px;font-weight:900;color:var(--text);text-decoration:none;letter-spacing:-.4px;}
 .logo em{font-style:normal;color:var(--cobalt);}
 .nav-links{margin-left:auto;display:flex;gap:24px;align-items:center;}
@@ -29,80 +27,42 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 40px;
 .nav-links a:hover{color:var(--text);}
 .nav-cta{background:var(--cobalt);color:#fff!important;font-weight:700!important;padding:7px 18px;border-radius:7px;}
 
-/* SCROLL SPACER */
-#scene{height:700vh;}
-
-/* FIXED ANIMATION FRAME */
-#anim-wrap{
-  position:fixed;top:0;left:0;right:0;bottom:0;
-  z-index:1;background:var(--base);
+.hero{
+  min-height:100vh;display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;gap:80px;padding:56px 80px 0;max-width:1400px;margin:0 auto;
 }
+@media(max-width:900px){.hero{grid-template-columns:1fr;gap:40px;padding:80px 24px 40px;}}
 
-/* CORE */
-#core{
-  position:absolute;right:18%;top:50%;transform:translate(50%,-50%);
-  width:120px;height:120px;border-radius:50%;
-  border:2px solid rgba(91,140,255,0.5);
-  background:rgba(10,10,46,0.95);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-}
-#core .c-name{font-size:18px;font-weight:900;color:var(--text);letter-spacing:-.3px;}
-#core .c-sub{font-size:9px;font-weight:700;color:var(--cobalt);letter-spacing:.12em;margin-top:2px;}
-
-/* TEXT PANELS */
-.text-panel{
-  position:absolute;left:60px;
-  width:420px;z-index:20;pointer-events:none;
-}
-.panel-tag{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cobalt);margin-bottom:14px;}
-.panel-phase{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;}
-.text-panel h1{font-size:clamp(28px,3vw,46px);font-weight:900;color:#EFF2FA;line-height:1.1;letter-spacing:-.6px;margin-bottom:16px;}
-.text-panel h2{font-size:clamp(20px,2.2vw,30px);font-weight:800;color:#EFF2FA;line-height:1.25;letter-spacing:-.3px;margin-bottom:18px;}
-.panel-sub{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:22px;}
-
-/* DETAIL BOX */
-.dbox{border:1px solid var(--border);border-radius:8px;overflow:hidden;background:rgba(10,10,46,0.5);}
-.dr{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px;}
-.dr:last-child{border-bottom:none;}
-.dk{color:var(--dim);font-weight:600;}
-.dv{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--text);}
-.dv.co{color:var(--cobalt);}.dv.vi{color:var(--violet);}.dv.gr{color:var(--green);}.dv.am{color:var(--amber);}.dv.cy{color:var(--cyan);}
-
-/* INSTALL BADGE */
-.ibadge{display:inline-flex;align-items:center;gap:9px;background:rgba(14,14,52,0.8);border:1px solid var(--border);border-radius:7px;padding:9px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);margin-bottom:20px;width:fit-content;}
-.ibadge .cc{color:var(--dim);}
-
-/* BUTTONS */
+.hero-left .tag{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cobalt);margin-bottom:20px;}
+.hero-left h1{font-size:clamp(32px,4vw,56px);font-weight:900;color:var(--text);line-height:1.08;letter-spacing:-.8px;margin-bottom:20px;}
+.hero-left p{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:28px;max-width:440px;}
 .cta-row{display:flex;gap:10px;flex-wrap:wrap;}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;cursor:pointer;border:none;transition:all .15s;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;cursor:pointer;border:none;transition:all .15s;}
 .btn-p{background:var(--cobalt);color:#fff;}.btn-p:hover{filter:brightness(1.12);}
 .btn-g{background:transparent;color:var(--text);border:1px solid rgba(91,140,255,0.3);}.btn-g:hover{border-color:rgba(91,140,255,0.55);background:rgba(91,140,255,0.07);}
 
-/* PHASE DOTS */
-#phase-dots{position:absolute;right:28px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:9px;z-index:30;}
-.pdot{width:6px;height:6px;border-radius:50%;background:var(--dim);transition:background .3s,transform .3s;}
-.pdot.act{background:var(--cobalt);transform:scale(1.5);}
+.hero-right{display:flex;flex-direction:column;gap:0;}
+.code-block{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.code-header{display:flex;align-items:center;gap:8px;padding:12px 18px;border-bottom:1px solid var(--border);background:rgba(10,10,46,0.4);}
+.code-dot{width:8px;height:8px;border-radius:50%;}
+.code-dot.r{background:#ff5f57;}.code-dot.y{background:#febc2e;}.code-dot.g{background:#28c840;}
+.code-file{margin-left:8px;font-size:11px;font-weight:600;color:var(--dim);font-family:'JetBrains Mono',monospace;}
+.code-body{padding:20px 22px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:var(--muted);overflow-x:auto;}
+.code-body .cm{color:var(--dim);}
+.code-body .kw{color:var(--violet);}
+.code-body .fn{color:var(--cobalt);}
+.code-body .st{color:var(--green);}
+.code-body .num{color:var(--amber);}
+.code-body .op{color:var(--dim);}
+.code-body .var{color:var(--text);}
 
-/* SCROLL HINT */
-#scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);animation:hblink 2.5s ease-in-out infinite;z-index:20;transition:opacity .5s;}
-@keyframes hblink{0%,100%{opacity:.3;}50%{opacity:.8;}}
+.install-row{margin-top:16px;display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 20px;}
+.install-row code{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text);flex:1;}
+.install-row .dollar{color:var(--dim);margin-right:4px;}
+.copy-btn{background:rgba(91,140,255,0.12);border:1px solid rgba(91,140,255,0.25);color:var(--cobalt);font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;}
+.copy-btn:hover{background:rgba(91,140,255,0.22);}
 
-/* POST-SCROLL */
-#post-scroll{position:relative;z-index:10;background:var(--base);padding:120px 80px;max-width:1100px;margin:0 auto;}
-@media(max-width:900px){#post-scroll{padding:80px 24px;}}
-#post-scroll h2{font-size:clamp(28px,3vw,46px);font-weight:900;color:var(--text);letter-spacing:-.6px;margin-bottom:12px;}
-.post-sub{font-size:15px;color:var(--muted);margin-bottom:56px;line-height:1.6;}
-.start-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
-@media(max-width:900px){.start-grid{grid-template-columns:1fr;}}
-.start-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:32px;display:flex;flex-direction:column;}
-.start-num{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;color:var(--dim);margin-bottom:14px;letter-spacing:.06em;}
-.start-title{font-size:18px;font-weight:800;color:var(--text);margin-bottom:10px;}
-.start-body{font-size:13px;color:var(--muted);line-height:1.65;flex:1;}
-.start-install{display:inline-flex;align-items:center;gap:8px;background:rgba(14,14,52,0.8);border:1px solid var(--border);border-radius:6px;padding:8px 13px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text);margin-top:14px;}
-.start-install .cc{color:var(--dim);}
-.start-cta{margin-top:16px;}
-
-footer{position:relative;z-index:10;background:var(--base);border-top:1px solid var(--border);padding:28px 80px;display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;width:100%;}
+footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;}
 @media(max-width:900px){footer{padding:24px;flex-direction:column;gap:12px;}}
 .footer-logo{font-size:14px;font-weight:900;color:var(--text);text-decoration:none;}
 .footer-logo em{font-style:normal;color:var(--cobalt);}
@@ -123,128 +83,44 @@ footer{position:relative;z-index:10;background:var(--base);border-top:1px solid 
   </div>
 </nav>
 
-<div id="scene"></div>
-
-<div id="anim-wrap">
-  <div id="core">
-    <span class="c-name">Inc</span>
-    <span class="c-sub">AGENT</span>
-  </div>
-
-  <!-- Hero panel -->
-  <div id="panel-hero" class="text-panel">
-    <div class="panel-tag">Open-source · Agent commerce protocol</div>
+<div class="hero">
+  <div class="hero-left">
+    <div class="tag">Open-source · Agent commerce protocol</div>
     <h1>Agents run the business.<br>People execute the work.</h1>
-    <p class="panel-sub">An AI company creates the offer, closes the buyer, assigns human execution, verifies proof, and records revenue.</p>
-    <div class="ibadge"><span class="cc">$</span> pip install incagent</div>
+    <p>Autonomous agents create offers, close buyers, assign human execution, verify proof, and record revenue.</p>
     <div class="cta-row">
-      <a href="/live.html" class="btn btn-p">View demo</a>
-      <a href="https://github.com/incagent/incagent" class="btn btn-g" target="_blank">GitHub</a>
+      <a href="https://github.com/incagent/incagent" class="btn btn-p" target="_blank">GitHub</a>
+      <a href="/live.html" class="btn btn-g">View demo</a>
     </div>
   </div>
-
-  <!-- Feature panels -->
-  <div id="panel-0" class="text-panel" style="opacity:0">
-    <div class="panel-phase">01 — Sales</div>
-    <h2>Agent creates the offer and closes the buyer autonomously.</h2>
-    <div class="dbox">
-      <div class="dr"><span class="dk">Proposal</span><span class="dv co">proposal.pdf</span></div>
-      <div class="dr"><span class="dk">Buyer</span><span class="dv">Northstar Buyer</span></div>
-      <div class="dr"><span class="dk">Contract value</span><span class="dv co">$5,000</span></div>
-      <div class="dr"><span class="dk">Rounds</span><span class="dv">2</span></div>
-      <div class="dr"><span class="dk">Status</span><span class="dv gr">Agreed ✓</span></div>
+  <div class="hero-right">
+    <div class="install-row">
+      <code><span class="dollar">$</span> pip install incagent</code>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText('pip install incagent');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</button>
     </div>
-  </div>
+    <div class="code-block" style="margin-top:16px;">
+      <div class="code-header">
+        <span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span>
+        <span class="code-file">example.py</span>
+      </div>
+      <div class="code-body">
+<span class="kw">from</span> <span class="var">incagent</span> <span class="kw">import</span> <span class="var">IncAgent</span>, <span class="var">Contract</span>, <span class="var">ContractTerms</span>
+<span class="kw">from</span> <span class="var">incagent</span> <span class="kw">import</span> <span class="var">NegotiationPolicy</span>
+<span class="kw">from</span> <span class="var">incagent.messaging</span> <span class="kw">import</span> <span class="var">MessageBus</span>
 
-  <div id="panel-1" class="text-panel" style="opacity:0">
-    <div class="panel-phase">02 — Human Assignment</div>
-    <h2>Ops agent dispatches a human operator to execute the task.</h2>
-    <div class="dbox">
-      <div class="dr"><span class="dk">Operator</span><span class="dv">Mika Tanaka</span></div>
-      <div class="dr"><span class="dk">Location</span><span class="dv">Tokyo, Japan</span></div>
-      <div class="dr"><span class="dk">Work order</span><span class="dv vi">WO-491</span></div>
-      <div class="dr"><span class="dk">Assigned by</span><span class="dv">Ops Agent</span></div>
-      <div class="dr"><span class="dk">Status</span><span class="dv am">In progress</span></div>
-    </div>
-  </div>
+<span class="var">bus</span> <span class="op">=</span> <span class="fn">MessageBus</span>()
+<span class="var">vendor</span> <span class="op">=</span> <span class="fn">IncAgent</span>(<span class="var">name</span><span class="op">=</span><span class="st">"Vendor"</span>, <span class="var">role</span><span class="op">=</span><span class="st">"seller"</span>, <span class="var">message_bus</span><span class="op">=</span><span class="var">bus</span>)
+<span class="var">buyer</span>  <span class="op">=</span> <span class="fn">IncAgent</span>(<span class="var">name</span><span class="op">=</span><span class="st">"Buyer"</span>,  <span class="var">role</span><span class="op">=</span><span class="st">"buyer"</span>,  <span class="var">message_bus</span><span class="op">=</span><span class="var">bus</span>)
 
-  <div id="panel-2" class="text-panel" style="opacity:0">
-    <div class="panel-phase">03 — Proof &amp; Verification</div>
-    <h2>Human submits evidence. Agent verifies before releasing payment.</h2>
-    <div class="dbox">
-      <div class="dr"><span class="dk">Photos</span><span class="dv">3 submitted</span></div>
-      <div class="dr"><span class="dk">Checklist</span><span class="dv gr">Complete ✓</span></div>
-      <div class="dr"><span class="dk">GPS</span><span class="dv">35.68°N 139.69°E</span></div>
-      <div class="dr"><span class="dk">Verified by</span><span class="dv">Ops Agent</span></div>
-      <div class="dr"><span class="dk">Timestamp</span><span class="dv">2025-03-13 14:22</span></div>
-    </div>
-  </div>
+<span class="var">contract</span> <span class="op">=</span> <span class="fn">Contract</span>(
+    <span class="var">title</span><span class="op">=</span><span class="st">"Outbound Campaign"</span>,
+    <span class="var">terms</span><span class="op">=</span><span class="fn">ContractTerms</span>(<span class="var">quantity</span><span class="op">=</span><span class="num">1</span>, <span class="var">unit_price_range</span><span class="op">=</span>(<span class="num">4500</span>, <span class="num">5500</span>)),
+)
 
-  <div id="panel-3" class="text-panel" style="opacity:0">
-    <div class="panel-phase">04 — Invoice &amp; Settlement</div>
-    <h2>Finance agent issues the invoice and records the transaction.</h2>
-    <div class="dbox">
-      <div class="dr"><span class="dk">Invoice</span><span class="dv am">#2048</span></div>
-      <div class="dr"><span class="dk">Amount</span><span class="dv">$5,000 USD</span></div>
-      <div class="dr"><span class="dk">Payment</span><span class="dv gr">Received ✓</span></div>
-      <div class="dr"><span class="dk">Ledger</span><span class="dv">Hash-chained</span></div>
-      <div class="dr"><span class="dk">Tax record</span><span class="dv">1099-NEC filed</span></div>
-    </div>
-  </div>
-
-  <div id="panel-4" class="text-panel" style="opacity:0">
-    <div class="panel-phase">05 — Growth &amp; Analytics</div>
-    <h2>Marketing agent tracks outcomes and scales what works.</h2>
-    <div class="dbox">
-      <div class="dr"><span class="dk">Campaign</span><span class="dv cy">Live</span></div>
-      <div class="dr"><span class="dk">Conversion</span><span class="dv">12.4%</span></div>
-      <div class="dr"><span class="dk">Post</span><span class="dv">Scheduled ✓</span></div>
-      <div class="dr"><span class="dk">Revenue</span><span class="dv gr">$5,000</span></div>
-      <div class="dr"><span class="dk">Next</span><span class="dv">Scale spend</span></div>
-    </div>
-  </div>
-
-  <div id="panel-reveal" class="text-panel" style="opacity:0">
-    <div class="panel-tag">All systems active</div>
-    <h1>Agents run the business.<br>People execute the work.</h1>
-    <p class="panel-sub">One protocol. Five autonomous systems. Zero human executives in the loop.</p>
-    <div class="cta-row">
-      <a href="/live.html" class="btn btn-p">View demo</a>
-      <a href="https://github.com/incagent/incagent" class="btn btn-g" target="_blank">GitHub</a>
-    </div>
-  </div>
-
-  <div id="phase-dots">
-    <div class="pdot"></div><div class="pdot"></div><div class="pdot"></div>
-    <div class="pdot"></div><div class="pdot"></div><div class="pdot"></div>
-    <div class="pdot"></div>
-  </div>
-
-  <div id="scroll-hint">scroll to activate</div>
-</div>
-
-<div id="post-scroll">
-  <h2>Start here.</h2>
-  <p class="post-sub">Three ways to get started with agent-run commerce.</p>
-  <div class="start-grid">
-    <div class="start-card">
-      <div class="start-num">01 — Demo</div>
-      <div class="start-title">Use the demo</div>
-      <div class="start-body">Watch the full agent-run transaction cycle live — offer, contract, human assignment, payment.</div>
-      <div class="start-cta"><a href="/live.html" class="btn btn-p">View demo →</a></div>
-    </div>
-    <div class="start-card">
-      <div class="start-num">02 — SDK</div>
-      <div class="start-title">Install the SDK</div>
-      <div class="start-body">Embed agent commerce into your stack. Rule-based negotiation works with no LLM API key required.</div>
-      <div class="start-install"><span class="cc">$</span> pip install incagent</div>
-      <div class="start-cta"><a href="https://github.com/incagent/incagent" class="btn btn-g" target="_blank">GitHub →</a></div>
-    </div>
-    <div class="start-card">
-      <div class="start-num">03 — Protocol</div>
-      <div class="start-title">Read the spec</div>
-      <div class="start-body">Protocol documentation, architecture overview, and integration guide for building agent-native companies.</div>
-      <div class="start-cta"><a href="https://github.com/incagent/incagent/tree/main/docs" class="btn btn-g" target="_blank">Docs →</a></div>
+<span class="var">result</span> <span class="op">=</span> <span class="kw">await</span> <span class="var">buyer</span>.<span class="fn">negotiate</span>(<span class="var">contract</span>, <span class="var">counterparty</span><span class="op">=</span><span class="var">vendor</span>)
+<span class="fn">print</span>(<span class="var">result</span>.<span class="var">status</span>)       <span class="cm"># agreed</span>
+<span class="fn">print</span>(<span class="var">result</span>.<span class="var">final_terms</span>)  <span class="cm"># $5,000</span>
+      </div>
     </div>
   </div>
 </div>
@@ -259,59 +135,5 @@ footer{position:relative;z-index:10;background:var(--base);border-top:1px solid 
   </div>
 </footer>
 
-<script>
-const scene     = document.getElementById('scene');
-const hint      = document.getElementById('scroll-hint');
-const allPanels = ['hero','0','1','2','3','4','reveal'].map(id => document.getElementById('panel-'+id));
-const dots      = Array.from(document.querySelectorAll('.pdot'));
-
-scene.style.height = '700vh';
-let hintHidden = false;
-
-function layoutPanels() {
-  const top = Math.round(window.innerHeight / 2 + 28);
-  allPanels.forEach(p => {
-    p.style.top = top + 'px';
-    p.style.transform = 'translateY(-50%)';
-  });
-}
-
-function clamp(v, lo, hi)    { return Math.max(lo, Math.min(hi, v)); }
-function smooth(v, from, to) { return clamp((v - from) / (to - from), 0, 1); }
-
-function onScroll() {
-  const sceneTop  = scene.getBoundingClientRect().top;
-  const maxScroll = scene.offsetHeight - window.innerHeight;
-  const progress  = clamp(-sceneTop / maxScroll, 0, 1);
-  const phase     = progress * 7;
-
-  if (!hintHidden && window.scrollY > 20) {
-    hintHidden = true;
-    hint.style.opacity = '0';
-  }
-
-  // Text panels
-  allPanels[0].style.opacity = 1 - smooth(phase, 0.8, 1.3);
-  for (let i = 0; i < 5; i++) {
-    const tin  = smooth(phase, i + 1,   i + 1.4);
-    const tout = smooth(phase, i + 1.6, i + 2.1);
-    allPanels[i + 1].style.opacity = tin * (1 - tout);
-  }
-  allPanels[6].style.opacity = smooth(phase, 6, 6.5);
-
-  allPanels.forEach(p => {
-    const op = parseFloat(p.style.opacity) || 0;
-    p.style.pointerEvents = op > 0.1 ? 'auto' : 'none';
-  });
-
-  const dot = Math.min(Math.floor(phase), 6);
-  dots.forEach((d, i) => d.classList.toggle('act', i === dot));
-}
-
-layoutPanels();
-onScroll();
-window.addEventListener('scroll', onScroll, {passive:true});
-window.addEventListener('resize', layoutPanels, {passive:true});
-</script>
 </body>
 </html>
