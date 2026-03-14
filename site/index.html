@@ -3,379 +3,593 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>IncAgent — One AI agent for the whole company</title>
-<meta name="description" content="A corporate AI that operates sales, accounting, support, recruiting, legal, marketing, operations, and engineering.">
+<title>IncAgent — One AI Agent for the Whole Company</title>
+<meta name="description" content="An autonomous AI agent that operates sales, accounting, support, recruiting, legal, marketing, operations, and engineering — from a single protocol.">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --base:#0a0a2e;--panel:#10103a;
-  --cobalt:#5B8CFF;--violet:#8B6CFF;--green:#19C37D;--amber:#F5B942;--cyan:#00D4FF;
-  --text:#EFF2FA;--muted:#9499be;--dim:#3e4470;--border:#1e2050;
+  --bg:#050510;--bg2:#0a0a1a;--panel:#0d0d24;
+  --blue:#4080FF;--cyan:#00D4FF;--violet:#8B6CFF;--green:#19C37D;--amber:#F5B942;
+  --text:rgba(255,255,255,0.92);--muted:rgba(255,255,255,0.55);--dim:rgba(255,255,255,0.25);
+  --border:rgba(255,255,255,0.06);
 }
-html{background:var(--base);}
-body{background:var(--base);color:var(--muted);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
-section{padding:120px 80px;max-width:1200px;margin:0 auto;}
-@media(max-width:900px){section{padding:80px 24px;}}
+html,body{background:var(--bg);color:var(--muted);font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 48px;
+/* ── NAV (Apple-style) ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;height:48px;padding:0 clamp(20px,4vw,48px);
   display:flex;align-items:center;
-  background:rgba(10,10,46,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
-.logo{font-size:20px;font-weight:900;color:var(--text);text-decoration:none;letter-spacing:-.4px;display:flex;align-items:center;gap:10px;}
-.logo em{font-style:normal;color:var(--cobalt);}
-.logo img{width:32px;height:32px;}
-.nav-links{margin-left:auto;display:flex;gap:24px;align-items:center;}
-.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;transition:color .15s;}
-.nav-links a:hover{color:var(--text);}
-.nav-cta{background:var(--cobalt);color:#fff!important;font-weight:700!important;padding:7px 18px;border-radius:7px;}
+  background:rgba(5,5,16,0);backdrop-filter:blur(0px);
+  border-bottom:1px solid transparent;
+  transition:background .4s,backdrop-filter .4s,border-color .4s;}
+nav.scrolled{background:rgba(5,5,16,0.82);backdrop-filter:blur(24px);border-bottom-color:var(--border);}
+.nav-logo{font-size:15px;font-weight:800;color:var(--text);text-decoration:none;letter-spacing:-.3px;display:flex;align-items:center;gap:8px;}
+.nav-logo img{width:26px;height:26px;border-radius:6px;}
+.nav-logo em{font-style:normal;color:var(--blue);}
+.nav-center{position:absolute;left:50%;transform:translateX(-50%);display:flex;gap:28px;}
+.nav-center a{color:var(--muted);text-decoration:none;font-size:12px;font-weight:500;letter-spacing:.01em;transition:color .2s;position:relative;}
+.nav-center a:hover{color:var(--text);}
+.nav-center a::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:1px;background:var(--blue);transform:scaleX(0);transition:transform .2s;}
+.nav-center a:hover::after{transform:scaleX(1);}
+.nav-right{margin-left:auto;}
+.nav-cta{font-size:12px;font-weight:700;color:#fff;text-decoration:none;padding:6px 16px;border-radius:20px;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  transition:opacity .2s,box-shadow .2s;}
+.nav-cta:hover{opacity:.9;box-shadow:0 0 20px rgba(64,128,255,0.25);}
+@media(max-width:768px){.nav-center{display:none;}}
 
-/* 1. HERO */
-.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;padding-bottom:clamp(80px,12vh,140px);z-index:2;}
-.hero-video-wrap{position:absolute;top:0;left:0;right:0;bottom:0;z-index:0;overflow:hidden;}
-.hero-video-wrap video{width:100%;height:100%;object-fit:cover;}
-.hero-video-wrap::after{content:'';position:absolute;inset:0;background:rgba(10,10,46,0.7);}
-.hero-content{position:relative;z-index:2;max-width:800px;padding:0 24px;}
-.hero h1{font-size:clamp(36px,5vw,64px);font-weight:900;color:var(--text);line-height:1.08;letter-spacing:-1px;margin-bottom:20px;}
-.hero p{font-size:clamp(15px,1.4vw,18px);color:var(--muted);line-height:1.7;margin-bottom:36px;max-width:620px;margin-left:auto;margin-right:auto;}
-.hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-.install-row{display:inline-flex;align-items:center;gap:12px;background:rgba(16,16,58,0.85);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:10px;padding:14px 20px;}
-.install-row code{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--text);}
-.install-row .dollar{color:var(--dim);margin-right:4px;}
-.copy-btn{background:rgba(91,140,255,0.12);border:1px solid rgba(91,140,255,0.25);color:var(--cobalt);font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;}
-.copy-btn:hover{background:rgba(91,140,255,0.22);}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer;border:none;transition:all .15s;}
-.btn-p{background:var(--cobalt);color:#fff;}.btn-p:hover{filter:brightness(1.12);}
-.btn-g{background:transparent;color:var(--text);border:1px solid rgba(91,140,255,0.3);}.btn-g:hover{border-color:rgba(91,140,255,0.55);background:rgba(91,140,255,0.07);}
+/* ── SCROLLYTELLING CONTAINER ── */
+.scroll-story{position:relative;height:500vh;}
+.scroll-story-sticky{position:sticky;top:0;height:100vh;width:100%;overflow:hidden;display:flex;align-items:center;justify-content:center;}
 
-/* 2. WHAT IS THIS */
-.what{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
-@media(max-width:900px){.what{grid-template-columns:1fr;gap:40px;}}
-.what-left h2{font-size:clamp(24px,2.8vw,38px);font-weight:900;color:var(--text);line-height:1.15;letter-spacing:-.5px;margin-bottom:16px;}
-.what-left .sub{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:28px;}
-.what-points{list-style:none;display:flex;flex-direction:column;gap:12px;}
-.what-points li{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--text);}
-.what-points li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--cobalt);flex-shrink:0;}
-.hub-float{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;max-width:420px;margin:0 auto;}
-.hub-core{background:var(--cobalt);color:#fff;font-size:13px;font-weight:800;padding:12px 22px;border-radius:24px;letter-spacing:.02em;}
-.hub-tag{background:var(--panel);border:1px solid var(--border);color:var(--muted);font-size:12px;font-weight:600;padding:9px 16px;border-radius:20px;transition:border-color .2s,color .2s;}
-.hub-tag:hover{border-color:var(--cobalt);color:var(--text);}
+/* Canvas area */
+.octopus-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+.octopus-img{width:clamp(200px,22vw,320px);height:auto;transition:transform .1s linear;filter:drop-shadow(0 0 60px rgba(64,128,255,0.15));z-index:2;position:relative;}
 
-/* 3. 8 DEPARTMENTS */
-.sec-title{font-size:clamp(24px,2.8vw,38px);font-weight:900;color:var(--text);letter-spacing:-.5px;margin-bottom:12px;}
-.sec-sub{font-size:15px;color:var(--muted);margin-bottom:48px;line-height:1.6;}
-.dept-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
-@media(max-width:900px){.dept-grid{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:500px){.dept-grid{grid-template-columns:1fr;}}
-.dept-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:24px;}
-.dept-card h3{font-size:15px;font-weight:800;color:var(--text);margin-bottom:12px;}
-.dept-card ul{list-style:none;display:flex;flex-direction:column;gap:6px;}
-.dept-card li{font-size:12.5px;color:var(--muted);padding-left:14px;position:relative;}
-.dept-card li::before{content:'';position:absolute;left:0;top:7px;width:4px;height:4px;border-radius:50%;background:var(--dim);}
+/* Tentacle SVG */
+.tentacle-svg{position:absolute;inset:0;width:100%;height:100%;z-index:1;}
+.tentacle-svg path{fill:none;stroke-linecap:round;stroke-linejoin:round;}
 
-/* 4. HOW IT WORKS */
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
-@media(max-width:900px){.steps{grid-template-columns:1fr;}}
-.step{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:32px;}
-.step-num{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--cobalt);margin-bottom:14px;letter-spacing:.06em;}
-.step h3{font-size:17px;font-weight:800;color:var(--text);margin-bottom:10px;}
-.step p{font-size:13px;color:var(--muted);line-height:1.65;}
+/* Department nodes */
+.dept-node{position:absolute;opacity:0;transform:scale(0.7);transition:opacity .3s,transform .3s;z-index:3;text-align:center;pointer-events:none;}
+.dept-node.visible{opacity:1;transform:scale(1);}
+.dept-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;margin:0 auto 6px;
+  background:var(--panel);border:1px solid var(--border);backdrop-filter:blur(12px);}
+.dept-label{font-size:11px;font-weight:700;color:var(--text);letter-spacing:.02em;white-space:nowrap;}
+.dept-sub{font-size:9px;color:var(--muted);margin-top:2px;white-space:nowrap;}
 
-/* 5. DASHBOARD */
-.dash{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:32px;display:grid;grid-template-columns:200px 1fr 280px;gap:24px;}
-@media(max-width:900px){.dash{grid-template-columns:1fr;}}
-.dash-col h4{font-size:11px;font-weight:700;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;}
-.stat{margin-bottom:14px;}
-.stat .label{font-size:11px;color:var(--dim);margin-bottom:2px;}
-.stat .val{font-size:22px;font-weight:900;color:var(--text);font-family:'JetBrains Mono',monospace;}
-.stat .val.co{color:var(--cobalt);}.stat .val.gr{color:var(--green);}.stat .val.am{color:var(--amber);}
-.dept-status{display:flex;flex-direction:column;gap:8px;}
-.ds{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;}
-.ds:last-child{border-bottom:none;}
-.ds .name{color:var(--muted);}
-.ds .badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;}
-.ds .badge.on{background:rgba(25,195,125,0.15);color:var(--green);}
-.feed{display:flex;flex-direction:column;gap:6px;}
-.feed-item{font-size:11.5px;color:var(--muted);padding:6px 10px;background:rgba(10,10,46,0.5);border-radius:6px;border-left:2px solid var(--border);}
-.feed-item.s{border-left-color:var(--cobalt);}
-.feed-item.a{border-left-color:var(--amber);}
-.feed-item.g{border-left-color:var(--green);}
-.feed-item.v{border-left-color:var(--violet);}
-.feed-item.c{border-left-color:var(--cyan);}
+/* Story text overlays */
+.story-text{position:absolute;z-index:10;opacity:0;transform:translateY(30px);transition:opacity .5s ease,transform .5s ease;pointer-events:none;max-width:520px;}
+.story-text.visible{opacity:1;transform:translateY(0);}
+.story-text.left{left:clamp(40px,8vw,120px);top:50%;transform:translateY(calc(-50% + 30px));}
+.story-text.left.visible{transform:translateY(-50%);}
+.story-text.right{right:clamp(40px,8vw,120px);top:50%;transform:translateY(calc(-50% + 30px));text-align:right;}
+.story-text.right.visible{transform:translateY(-50%);}
+.story-text.center{left:50%;top:50%;transform:translate(-50%,calc(-50% + 30px));text-align:center;}
+.story-text.center.visible{transform:translate(-50%,-50%);}
+.story-text.bottom-center{left:50%;bottom:clamp(60px,10vh,120px);transform:translate(-50%,30px);text-align:center;}
+.story-text.bottom-center.visible{transform:translate(-50%,0);}
 
-/* 6. CONTROL */
-#control{background:rgba(6,6,26,0.6);}
-.ctrl-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
-@media(max-width:900px){.ctrl-grid{grid-template-columns:repeat(2,1fr);}}.ctrl-grid>div:last-child{grid-column:span 1;}
-@media(max-width:500px){.ctrl-grid{grid-template-columns:1fr;}}
-.ctrl-item{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;}
-.ctrl-item h4{font-size:13px;font-weight:800;color:var(--text);margin-bottom:6px;}
-.ctrl-item p{font-size:11.5px;color:var(--dim);}
+.story-text h2{font-size:clamp(28px,3.5vw,52px);font-weight:900;line-height:1.08;letter-spacing:-1.5px;margin-bottom:16px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.95) 40%,rgba(255,255,255,0.6));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.story-text h3{font-size:clamp(20px,2.2vw,32px);font-weight:800;color:var(--text);line-height:1.15;letter-spacing:-.8px;margin-bottom:12px;}
+.story-text p{font-size:clamp(14px,1.1vw,17px);color:var(--muted);line-height:1.7;margin-bottom:10px;}
+.story-text .accent{color:var(--blue);}
+.story-text .tag-line{font-size:clamp(13px,1vw,15px);color:var(--dim);font-weight:500;letter-spacing:.04em;text-transform:uppercase;margin-bottom:10px;}
 
-/* 7. FINAL CTA */
-.final-cta{text-align:center;padding:140px 80px;}
-@media(max-width:900px){.final-cta{padding:100px 24px;}}
-.final-cta h2{font-size:clamp(26px,3vw,42px);font-weight:900;color:var(--text);letter-spacing:-.5px;margin-bottom:16px;}
-.final-cta p{font-size:15px;color:var(--muted);margin-bottom:36px;}
+/* Glow ring behind octopus */
+.glow-ring{position:absolute;width:clamp(300px,35vw,500px);height:clamp(300px,35vw,500px);border-radius:50%;
+  background:radial-gradient(circle,rgba(64,128,255,0.08) 0%,rgba(64,128,255,0) 70%);
+  z-index:0;transition:transform .1s,opacity .3s;}
 
-/* TENTACLES */
-#tentacles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;}
-#tentacles path{fill:none;stroke-width:3;stroke-linecap:round;opacity:0.35;}
+/* ── BELOW-FOLD SECTIONS ── */
+.below-fold{position:relative;z-index:5;background:var(--bg);}
 
-/* FOOTER */
-footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;}
-@media(max-width:900px){footer{padding:24px;flex-direction:column;gap:12px;}}
-.footer-logo{font-size:14px;font-weight:900;color:var(--text);text-decoration:none;}
-.footer-logo em{font-style:normal;color:var(--cobalt);}
+/* Specs section */
+.specs-section{padding:clamp(80px,12vh,160px) clamp(24px,6vw,80px);max-width:1100px;margin:0 auto;}
+.specs-section .sec-label{font-size:12px;font-weight:700;color:var(--blue);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;}
+.specs-section h2{font-size:clamp(26px,3vw,44px);font-weight:900;color:var(--text);letter-spacing:-1px;line-height:1.1;margin-bottom:16px;}
+.specs-section .sec-desc{font-size:clamp(14px,1.1vw,17px);color:var(--muted);line-height:1.7;max-width:600px;margin-bottom:56px;}
+
+.spec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:16px;overflow:hidden;}
+@media(max-width:768px){.spec-grid{grid-template-columns:1fr;}}
+.spec-card{background:var(--panel);padding:clamp(24px,3vw,40px);transition:background .3s;}
+.spec-card:hover{background:rgba(13,13,36,0.9);}
+.spec-card .spec-num{font-family:'JetBrains Mono',monospace;font-size:clamp(28px,3vw,44px);font-weight:800;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:8px;}
+.spec-card h4{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.spec-card p{font-size:12px;color:var(--muted);line-height:1.6;}
+
+/* How it works */
+.how-section{padding:clamp(80px,12vh,160px) clamp(24px,6vw,80px);max-width:1100px;margin:0 auto;}
+.how-section .sec-label{font-size:12px;font-weight:700;color:var(--blue);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;}
+.how-section h2{font-size:clamp(26px,3vw,44px);font-weight:900;color:var(--text);letter-spacing:-1px;line-height:1.1;margin-bottom:56px;}
+
+.how-steps{display:flex;flex-direction:column;gap:0;position:relative;}
+.how-steps::before{content:'';position:absolute;left:23px;top:24px;bottom:24px;width:1px;background:linear-gradient(to bottom,var(--blue),var(--cyan),var(--violet));}
+.how-step{display:flex;gap:clamp(20px,3vw,40px);align-items:flex-start;padding:clamp(24px,3vw,40px) 0;border-bottom:1px solid var(--border);}
+.how-step:last-child{border-bottom:none;}
+.step-marker{width:48px;height:48px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:800;color:var(--text);
+  background:var(--panel);border:1px solid var(--border);position:relative;z-index:2;}
+.how-step h3{font-size:clamp(17px,1.5vw,22px);font-weight:800;color:var(--text);margin-bottom:8px;letter-spacing:-.3px;}
+.how-step p{font-size:clamp(13px,1vw,15px);color:var(--muted);line-height:1.7;max-width:500px;}
+
+/* Dashboard mock */
+.dash-section{padding:clamp(80px,12vh,160px) clamp(24px,6vw,80px);max-width:1100px;margin:0 auto;}
+.dash-section .sec-label{font-size:12px;font-weight:700;color:var(--blue);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;}
+.dash-section h2{font-size:clamp(26px,3vw,44px);font-weight:900;color:var(--text);letter-spacing:-1px;line-height:1.1;margin-bottom:16px;}
+.dash-section .sec-desc{font-size:clamp(14px,1.1vw,17px);color:var(--muted);line-height:1.7;max-width:600px;margin-bottom:56px;}
+
+.dash-mock{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.dash-topbar{display:flex;align-items:center;gap:8px;padding:12px 20px;border-bottom:1px solid var(--border);}
+.dash-dot{width:8px;height:8px;border-radius:50%;background:var(--dim);}
+.dash-dot.r{background:#ff5f57;}.dash-dot.y{background:#febc2e;}.dash-dot.g{background:#28c840;}
+.dash-title{font-size:11px;font-weight:600;color:var(--dim);margin-left:12px;}
+.dash-body{display:grid;grid-template-columns:180px 1fr 240px;gap:0;min-height:340px;}
+@media(max-width:900px){.dash-body{grid-template-columns:1fr;}}
+.dash-sidebar{border-right:1px solid var(--border);padding:16px;}
+.dash-sidebar a{display:block;padding:7px 12px;border-radius:6px;font-size:11px;font-weight:600;color:var(--muted);text-decoration:none;margin-bottom:2px;transition:all .15s;}
+.dash-sidebar a.active{background:rgba(64,128,255,0.1);color:var(--blue);}
+.dash-main{padding:20px;display:flex;flex-direction:column;gap:16px;}
+.dash-stat-row{display:flex;gap:12px;}
+.dash-stat{flex:1;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.dash-stat .ds-label{font-size:10px;color:var(--dim);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.dash-stat .ds-val{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:var(--text);}
+.dash-stat .ds-val.blue{color:var(--blue);}.dash-stat .ds-val.green{color:var(--green);}.dash-stat .ds-val.amber{color:var(--amber);}
+.dash-feed{border-left:1px solid var(--border);padding:16px;}
+.dash-feed h5{font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;}
+.feed-item{font-size:11px;color:var(--muted);padding:6px 10px;border-radius:6px;margin-bottom:4px;border-left:2px solid var(--border);background:rgba(255,255,255,0.015);}
+.feed-item.fb{border-left-color:var(--blue);}.feed-item.fg{border-left-color:var(--green);}.feed-item.fa{border-left-color:var(--amber);}.feed-item.fv{border-left-color:var(--violet);}.feed-item.fc{border-left-color:var(--cyan);}
+
+/* Final CTA */
+.final-cta{text-align:center;padding:clamp(100px,16vh,200px) clamp(24px,6vw,80px);position:relative;}
+.final-cta::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:600px;
+  background:radial-gradient(circle,rgba(64,128,255,0.06) 0%,transparent 70%);pointer-events:none;}
+.final-cta h2{font-size:clamp(28px,3.5vw,52px);font-weight:900;letter-spacing:-1.5px;line-height:1.08;margin-bottom:16px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.95) 40%,rgba(255,255,255,0.6));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.final-cta p{font-size:clamp(14px,1.1vw,17px);color:var(--muted);line-height:1.7;margin-bottom:40px;max-width:520px;margin-left:auto;margin-right:auto;}
+.final-cta .install-row{display:inline-flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 24px;margin-bottom:20px;}
+.final-cta .install-row code{font-family:'JetBrains Mono',monospace;font-size:15px;color:var(--text);}
+.final-cta .install-row .dollar{color:var(--dim);margin-right:4px;}
+.copy-btn{background:rgba(64,128,255,0.1);border:1px solid rgba(64,128,255,0.2);color:var(--blue);font-size:11px;font-weight:700;padding:5px 14px;border-radius:6px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;}
+.copy-btn:hover{background:rgba(64,128,255,0.2);}
+.cta-links{display:flex;gap:16px;justify-content:center;margin-top:16px;}
+.cta-links a{font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;transition:color .2s;}
+.cta-links a:hover{color:var(--text);}
+
+/* Footer */
+footer{border-top:1px solid var(--border);padding:28px clamp(24px,4vw,80px);display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;}
+@media(max-width:768px){footer{flex-direction:column;gap:12px;}}
+.footer-logo{font-size:13px;font-weight:800;color:var(--text);text-decoration:none;}
+.footer-logo em{font-style:normal;color:var(--blue);}
 .footer-links{display:flex;gap:24px;}
-.footer-links a{color:var(--dim);text-decoration:none;font-size:12px;transition:color .15s;}
+.footer-links a{color:var(--dim);text-decoration:none;font-size:11px;font-weight:500;transition:color .15s;}
 .footer-links a:hover{color:var(--muted);}
+.footer-copy{font-size:10px;color:var(--dim);}
+
+/* ── Ambient glow ── */
+.ambient-glow{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;}
+.ambient-glow::before{content:'';position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:120vw;height:60vh;
+  background:radial-gradient(ellipse,rgba(64,128,255,0.04) 0%,transparent 70%);}
+
+@media(max-width:768px){
+  .story-text.left,.story-text.right{left:24px;right:24px;text-align:center;max-width:none;}
+  .story-text.left.visible,.story-text.right.visible{transform:translateY(-50%);}
+  .dept-node{display:none;}
+}
 </style>
 </head>
 <body>
 
-<nav>
-  <a href="/" class="logo"><img src="octopus.png" alt="">Inc<em>Agent</em></a>
-  <div class="nav-links">
-    <a href="https://github.com/incagent/incagent" target="_blank">GitHub</a>
+<div class="ambient-glow"></div>
+
+<!-- ── NAV ── -->
+<nav id="nav">
+  <a href="/" class="nav-logo"><img src="octopus.png" alt="">Inc<em>Agent</em></a>
+  <div class="nav-center">
+    <a href="#overview">Overview</a>
+    <a href="#departments">Departments</a>
+    <a href="#how">How It Works</a>
+    <a href="#dashboard">Dashboard</a>
     <a href="https://github.com/incagent/incagent/tree/main/docs" target="_blank">Docs</a>
-    <a href="https://x.com/incagentai" target="_blank">X</a>
+  </div>
+  <div class="nav-right">
     <a href="https://github.com/incagent/incagent" class="nav-cta" target="_blank">Get Started</a>
   </div>
 </nav>
 
-<!-- 1. HERO -->
-<div class="hero">
-  <div class="hero-video-wrap">
-    <video autoplay muted loop playsinline>
-      <source src="hero-bg.mp4" type="video/mp4">
-    </video>
+<!-- ══════════════════════════════════════════════════════════════
+     SCROLLYTELLING — The core experience
+     ══════════════════════════════════════════════════════════════ -->
+<div class="scroll-story" id="overview">
+  <div class="scroll-story-sticky">
+
+    <!-- Ambient glow ring -->
+    <div class="glow-ring" id="glowRing"></div>
+
+    <!-- Octopus stage -->
+    <div class="octopus-stage">
+      <img class="octopus-img" id="octopusImg" src="octopus.png" alt="IncAgent">
+    </div>
+
+    <!-- Tentacle SVG -->
+    <svg class="tentacle-svg" id="tentacleSvg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid meet">
+      <!-- 8 tentacles, one per department - drawn dynamically by JS -->
+    </svg>
+
+    <!-- Department nodes (positioned by JS) -->
+    <div class="dept-node" id="dn-sales"><div class="dept-icon">📞</div><div class="dept-label">Sales</div><div class="dept-sub">Lead scoring · Follow-up</div></div>
+    <div class="dept-node" id="dn-accounting"><div class="dept-icon">📊</div><div class="dept-label">Accounting</div><div class="dept-sub">Invoicing · Reconciliation</div></div>
+    <div class="dept-node" id="dn-support"><div class="dept-icon">💬</div><div class="dept-label">Support</div><div class="dept-sub">Ticket triage · Escalation</div></div>
+    <div class="dept-node" id="dn-recruiting"><div class="dept-icon">👤</div><div class="dept-label">Recruiting</div><div class="dept-sub">Screening · Scheduling</div></div>
+    <div class="dept-node" id="dn-legal"><div class="dept-icon">⚖️</div><div class="dept-label">Legal</div><div class="dept-sub">Contract review · Compliance</div></div>
+    <div class="dept-node" id="dn-marketing"><div class="dept-icon">📣</div><div class="dept-label">Marketing</div><div class="dept-sub">Campaigns · Analytics</div></div>
+    <div class="dept-node" id="dn-ops"><div class="dept-icon">⚙️</div><div class="dept-label">Operations</div><div class="dept-sub">Workflow · Approvals</div></div>
+    <div class="dept-node" id="dn-eng"><div class="dept-icon">🛠</div><div class="dept-label">Engineering</div><div class="dept-sub">Bug triage · Deploys</div></div>
+
+    <!-- Story text overlays -->
+    <div class="story-text center" id="st-hero">
+      <div class="tag-line">Open Protocol · Python SDK · Self-Hosted</div>
+      <h2>One AI agent<br>for the whole company.</h2>
+      <p>An autonomous corporate agent that operates every department — sales, accounting, support, recruiting, legal, marketing, ops, and engineering — from a single intelligence.</p>
+    </div>
+
+    <div class="story-text left" id="st-expand">
+      <h3>Not a chatbot.<br>Not a single-purpose tool.</h3>
+      <p>IncAgent is an enterprise AI protocol that executes real workflows across your entire organization. One agent. Eight departments. Zero context switching.</p>
+    </div>
+
+    <div class="story-text right" id="st-departments">
+      <h3>Eight departments.<br><span class="accent">One intelligence.</span></h3>
+      <p>Each tentacle reaches a different function — from processing invoices to triaging bugs to screening candidates. Every action is logged, auditable, and reversible.</p>
+    </div>
+
+    <div class="story-text left" id="st-control">
+      <h3>AI runs the work.<br>Humans keep control.</h3>
+      <p>Approval checkpoints. Audit logs. Role-based permissions. Escalation rules. Human override at any time. Built for enterprise governance from day one.</p>
+    </div>
+
+    <div class="story-text bottom-center" id="st-cta">
+      <h3>Deploy your AI agent today.</h3>
+      <div style="display:inline-flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px 20px;margin-top:8px;">
+        <code style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text);"><span style="color:var(--dim);">$ </span>pip install incagent</code>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('pip install incagent');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</button>
+      </div>
+    </div>
+
   </div>
-  <div class="hero-content">
-    <h1>One AI agent for the whole company</h1>
-    <p>A corporate AI that operates sales, accounting, support, recruiting, legal, marketing, operations, and engineering.</p>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     BELOW-FOLD — Static sections (after scroll story)
+     ══════════════════════════════════════════════════════════════ -->
+<div class="below-fold">
+
+  <!-- SPECS -->
+  <section class="specs-section" id="departments">
+    <div class="sec-label">Departments</div>
+    <h2>Eight functions. One protocol.</h2>
+    <p class="sec-desc">Each department gets dedicated AI workflows — not a generic chatbot bolted onto Slack.</p>
+    <div class="spec-grid">
+      <div class="spec-card"><div class="spec-num">01</div><h4>Sales</h4><p>Lead scoring, call follow-up, meeting scheduling, pipeline management.</p></div>
+      <div class="spec-card"><div class="spec-num">02</div><h4>Accounting</h4><p>Invoice creation, payment matching, reconciliation, tax prep.</p></div>
+      <div class="spec-card"><div class="spec-num">03</div><h4>Support</h4><p>Ticket triage, reply drafting, escalation routing, SLA tracking.</p></div>
+      <div class="spec-card"><div class="spec-num">04</div><h4>Recruiting</h4><p>Candidate screening, interview scheduling, evaluation scoring.</p></div>
+      <div class="spec-card"><div class="spec-num">05</div><h4>Legal</h4><p>Contract review, clause flagging, approval routing, compliance checks.</p></div>
+      <div class="spec-card"><div class="spec-num">06</div><h4>Marketing</h4><p>Campaign launch, content workflow, performance analysis, A/B testing.</p></div>
+      <div class="spec-card"><div class="spec-num">07</div><h4>Operations</h4><p>Workflow routing, task assignment, approval handling, resource allocation.</p></div>
+      <div class="spec-card"><div class="spec-num">08</div><h4>Engineering</h4><p>Bug triage, deploy queue, alert summarization, incident response.</p></div>
+    </div>
+  </section>
+
+  <!-- DIVIDER -->
+  <div style="max-width:1100px;margin:0 auto;padding:0 clamp(24px,6vw,80px);"><div style="height:1px;background:var(--border);"></div></div>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section" id="how">
+    <div class="sec-label">How It Works</div>
+    <h2>Three steps to deploy.</h2>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="step-marker">01</div>
+        <div>
+          <h3>Connect your workflows</h3>
+          <p>Email, CRM, accounting, support, recruiting, contracts, and dev tools — the agent plugs into your existing stack via API or SDK integration.</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="step-marker">02</div>
+        <div>
+          <h3>Assign departments</h3>
+          <p>Choose which departments to automate and configure autonomy levels. Start with human-in-the-loop, then gradually increase agent authority.</p>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="step-marker">03</div>
+        <div>
+          <h3>Review, approve, scale</h3>
+          <p>The AI runs the work. Humans approve where it matters. Every action is logged. Scale department by department at your own pace.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIVIDER -->
+  <div style="max-width:1100px;margin:0 auto;padding:0 clamp(24px,6vw,80px);"><div style="height:1px;background:var(--border);"></div></div>
+
+  <!-- DASHBOARD -->
+  <section class="dash-section" id="dashboard">
+    <div class="sec-label">Command Center</div>
+    <h2>Everything the agent does, in one place.</h2>
+    <p class="sec-desc">Real-time visibility across every department, every action, every decision.</p>
+    <div class="dash-mock">
+      <div class="dash-topbar">
+        <span class="dash-dot r"></span><span class="dash-dot y"></span><span class="dash-dot g"></span>
+        <span class="dash-title">IncAgent Dashboard — acme-corp</span>
+      </div>
+      <div class="dash-body">
+        <div class="dash-sidebar">
+          <a class="active">Dashboard</a>
+          <a>Sales</a>
+          <a>Accounting</a>
+          <a>Support</a>
+          <a>Recruiting</a>
+          <a>Legal</a>
+          <a>Marketing</a>
+          <a>Operations</a>
+          <a>Engineering</a>
+          <a>Settings</a>
+        </div>
+        <div class="dash-main">
+          <div class="dash-stat-row">
+            <div class="dash-stat"><div class="ds-label">Departments</div><div class="ds-val blue">8</div></div>
+            <div class="dash-stat"><div class="ds-label">Tasks Today</div><div class="ds-val green">142</div></div>
+            <div class="dash-stat"><div class="ds-label">Pending</div><div class="ds-val amber">3</div></div>
+            <div class="dash-stat"><div class="ds-label">Escalations</div><div class="ds-val">0</div></div>
+          </div>
+          <div class="dash-stat-row">
+            <div class="dash-stat"><div class="ds-label">Uptime</div><div class="ds-val green">99.97%</div></div>
+            <div class="dash-stat"><div class="ds-label">Avg Response</div><div class="ds-val blue">1.2s</div></div>
+            <div class="dash-stat"><div class="ds-label">Cost Saved</div><div class="ds-val green">$24.8k</div></div>
+            <div class="dash-stat"><div class="ds-label">Accuracy</div><div class="ds-val">98.4%</div></div>
+          </div>
+        </div>
+        <div class="dash-feed">
+          <h5>Live Activity</h5>
+          <div class="feed-item fb">Sales follow-up sent to 3 leads</div>
+          <div class="feed-item fa">Invoice #4821 matched & approved</div>
+          <div class="feed-item fg">Support ticket #892 auto-resolved</div>
+          <div class="feed-item fv">2 candidates shortlisted for Sr. Eng</div>
+          <div class="feed-item fc">NDA flagged — clause 4.2 review</div>
+          <div class="feed-item fb">Q1 campaign metrics compiled</div>
+          <div class="feed-item fg">Deploy v2.4.1 queued for staging</div>
+          <div class="feed-item fa">Expense report auto-categorized</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <div class="final-cta">
+    <h2>See how one AI agent<br>can run your company.</h2>
+    <p>Open protocol. Python SDK. Self-hosted. Start with one department, then scale across all eight.</p>
     <div class="install-row">
-      <code><span class="dollar">$</span> pip install incagent</code>
+      <code><span class="dollar">$ </span>pip install incagent</code>
       <button class="copy-btn" onclick="navigator.clipboard.writeText('pip install incagent');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</button>
     </div>
+    <div class="cta-links">
+      <a href="https://github.com/incagent/incagent" target="_blank">GitHub →</a>
+      <a href="https://github.com/incagent/incagent/tree/main/docs" target="_blank">Documentation →</a>
+      <a href="https://x.com/incagentai" target="_blank">Follow on X →</a>
+    </div>
   </div>
+
+  <footer>
+    <a href="/" class="footer-logo">Inc<em>Agent</em></a>
+    <div class="footer-links">
+      <a href="https://github.com/incagent/incagent" target="_blank">GitHub</a>
+      <a href="https://github.com/incagent/incagent/tree/main/docs" target="_blank">Docs</a>
+      <a href="https://x.com/incagentai" target="_blank">X</a>
+      <a href="mailto:hello@incagent.ai">Contact</a>
+    </div>
+    <span class="footer-copy">© 2026 IncAgent. Open source under MIT.</span>
+  </footer>
 </div>
 
-<!-- 2. WHAT IS THIS -->
-<section id="what">
-  <div class="what">
-    <div class="what-left">
-      <h2>Not a chatbot.<br>Not a single-purpose tool.</h2>
-      <p class="sub">This is an enterprise AI agent that runs work across the whole company.</p>
-      <ul class="what-points">
-        <li>Works across 8 departments</li>
-        <li>Executes real workflows</li>
-        <li>Reports everything in one place</li>
-      </ul>
-    </div>
-    <div class="hub-float">
-      <span class="hub-core">AI Agent</span>
-      <span class="hub-tag">Sales</span>
-      <span class="hub-tag">Accounting</span>
-      <span class="hub-tag">Support</span>
-      <span class="hub-tag">Recruiting</span>
-      <span class="hub-tag">Legal</span>
-      <span class="hub-tag">Marketing</span>
-      <span class="hub-tag">Operations</span>
-      <span class="hub-tag">Engineering</span>
-    </div>
-  </div>
-</section>
-
-<!-- 3. 8 DEPARTMENTS -->
-<section>
-  <div class="sec-title">8 departments. One agent.</div>
-  <p class="sec-sub">Each department gets dedicated AI workflows — not a generic chatbot.</p>
-  <div class="dept-grid">
-    <div class="dept-card">
-      <h3>Sales</h3>
-      <ul><li>Lead scoring</li><li>Call follow-up</li><li>Meeting scheduling</li></ul>
-    </div>
-    <div class="dept-card">
-      <h3>Accounting</h3>
-      <ul><li>Invoice creation</li><li>Payment matching</li><li>Reconciliation</li></ul>
-    </div>
-    <div class="dept-card">
-      <h3>Customer Support</h3>
-      <ul><li>Ticket triage</li><li>Reply drafting</li><li>Escalation routing</li></ul>
-    </div>
-    <div class="dept-card">
-      <h3>Recruiting</h3>
-      <ul><li>Candidate screening</li><li>Interview scheduling</li><li>Evaluation scoring</li></ul>
-    </div>
-    <div class="dept-card">
-      <h3>Legal</h3>
-      <ul><li>Contract review</li><li>Clause flagging</li><li>Approval routing</li></ul>
-    </div>
-    <div class="dept-card">
-      <h3>Marketing</h3>
-      <ul><li>Campaign launch</li><li>Content workflow</li><li>Performance analysis</li></ul>
-    </div>
-    <div class="dept-card">
-      <h3>Operations</h3>
-      <ul><li>Workflow routing</li><li>Task assignment</li><li>Approval handling</li></ul>
-    </div>
-    <div class="dept-card">
-      <h3>Engineering</h3>
-      <ul><li>Bug triage</li><li>Deploy queue</li><li>Alert summarization</li></ul>
-    </div>
-  </div>
-</section>
-
-<!-- 4. HOW IT WORKS -->
-<section>
-  <div class="sec-title">How it works</div>
-  <p class="sec-sub">Three steps to deploy an AI agent across your organization.</p>
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">Step 1</div>
-      <h3>Connect your workflows</h3>
-      <p>Email, CRM, accounting, support, recruiting, contracts, and dev tools — plug them in.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">Step 2</div>
-      <h3>Assign the AI agent to departments</h3>
-      <p>Choose which departments to automate and how much autonomy the agent gets.</p>
-    </div>
-    <div class="step">
-      <div class="step-num">Step 3</div>
-      <h3>Review, approve, and scale</h3>
-      <p>The AI runs the work. Humans approve where it matters. Scale department by department.</p>
-    </div>
-  </div>
-</section>
-
-<!-- 5. DASHBOARD -->
-<section>
-  <div class="sec-title">Your command center</div>
-  <p class="sec-sub">Everything the agent does, in one place.</p>
-  <div class="dash">
-    <div class="dash-col">
-      <h4>Overview</h4>
-      <div class="stat"><div class="label">Active departments</div><div class="val co">8</div></div>
-      <div class="stat"><div class="label">Tasks completed today</div><div class="val gr">142</div></div>
-      <div class="stat"><div class="label">Pending approvals</div><div class="val am">3</div></div>
-      <div class="stat"><div class="label">Escalations</div><div class="val">0</div></div>
-    </div>
-    <div class="dash-col">
-      <h4>Department status</h4>
-      <div class="dept-status">
-        <div class="ds"><span class="name">Sales</span><span class="badge on">Active</span></div>
-        <div class="ds"><span class="name">Accounting</span><span class="badge on">Active</span></div>
-        <div class="ds"><span class="name">Support</span><span class="badge on">Active</span></div>
-        <div class="ds"><span class="name">Recruiting</span><span class="badge on">Active</span></div>
-        <div class="ds"><span class="name">Legal</span><span class="badge on">Active</span></div>
-        <div class="ds"><span class="name">Marketing</span><span class="badge on">Active</span></div>
-        <div class="ds"><span class="name">Operations</span><span class="badge on">Active</span></div>
-        <div class="ds"><span class="name">Engineering</span><span class="badge on">Active</span></div>
-      </div>
-    </div>
-    <div class="dash-col">
-      <h4>Live activity</h4>
-      <div class="feed">
-        <div class="feed-item s">Sales follow-up sent</div>
-        <div class="feed-item a">Invoice matched</div>
-        <div class="feed-item g">Ticket escalated</div>
-        <div class="feed-item v">Candidate shortlisted</div>
-        <div class="feed-item c">Contract flagged</div>
-        <div class="feed-item s">Campaign updated</div>
-        <div class="feed-item g">Workflow approved</div>
-        <div class="feed-item a">Bug triaged</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 6. CONTROL -->
-<section id="control">
-  <div class="sec-title">AI runs the work. Humans keep the control.</div>
-  <p class="sec-sub">Built for enterprise governance and compliance.</p>
-  <div class="ctrl-grid">
-    <div class="ctrl-item">
-      <h4>Approval checkpoints</h4>
-      <p>Set gates before critical actions execute</p>
-    </div>
-    <div class="ctrl-item">
-      <h4>Audit logs</h4>
-      <p>Every action recorded and traceable</p>
-    </div>
-    <div class="ctrl-item">
-      <h4>Role-based permissions</h4>
-      <p>Control who sees and approves what</p>
-    </div>
-    <div class="ctrl-item">
-      <h4>Escalation rules</h4>
-      <p>Auto-route edge cases to humans</p>
-    </div>
-    <div class="ctrl-item">
-      <h4>Human override</h4>
-      <p>Take back control at any time</p>
-    </div>
-  </div>
-</section>
-
-<!-- 7. FINAL CTA -->
-<div class="final-cta">
-  <h2>See how one AI agent can run your company</h2>
-  <p>Start with one department, then scale across all 8.</p>
-  <a href="/live.html" class="btn btn-p">Book a Demo</a>
-</div>
-
-<footer>
-  <a href="/" class="footer-logo">Inc<em>Agent</em></a>
-  <div class="footer-links">
-    <a href="https://github.com/incagent/incagent" target="_blank">GitHub</a>
-    <a href="https://github.com/incagent/incagent/tree/main/docs" target="_blank">Docs</a>
-    <a href="https://x.com/incagentai" target="_blank">X</a>
-    <a href="mailto:hello@incagent.ai">Contact</a>
-  </div>
-</footer>
-
-<svg id="tentacles" viewBox="0 0 1440 900" preserveAspectRatio="none">
-  <!-- Left tentacles -->
-  <path class="t" stroke="rgba(91,140,255,0.6)" d="M0,200 Q80,180 120,250 Q160,320 100,400 Q60,460 90,520 Q130,580 80,650"/>
-  <path class="t" stroke="rgba(139,108,255,0.5)" d="M0,350 Q60,330 100,380 Q150,440 90,500 Q50,550 80,620 Q120,700 60,760"/>
-  <path class="t" stroke="rgba(0,212,255,0.4)" d="M0,500 Q70,480 110,540 Q140,600 80,660 Q40,710 70,770"/>
-  <!-- Right tentacles -->
-  <path class="t" stroke="rgba(91,140,255,0.6)" d="M1440,250 Q1360,230 1320,300 Q1280,370 1340,440 Q1380,500 1350,570 Q1310,630 1360,700"/>
-  <path class="t" stroke="rgba(25,195,125,0.5)" d="M1440,400 Q1380,380 1340,430 Q1290,490 1350,550 Q1390,600 1360,670 Q1320,740 1380,800"/>
-  <path class="t" stroke="rgba(245,185,66,0.4)" d="M1440,550 Q1370,530 1330,590 Q1300,650 1360,710 Q1400,760 1370,820"/>
-</svg>
-
+<!-- ══════════════════════════════════════════════════════════════
+     SCROLL ENGINE
+     ══════════════════════════════════════════════════════════════ -->
 <script>
-const tPaths = document.querySelectorAll('#tentacles .t');
-const tData = [];
-tPaths.forEach(p => {
-  const len = p.getTotalLength();
-  p.style.strokeDasharray = len;
-  p.style.strokeDashoffset = len;
-  tData.push(len);
-});
+(function(){
+  'use strict';
 
-function onScroll() {
-  const scrollY = window.scrollY;
-  const maxScroll = document.body.scrollHeight - window.innerHeight;
-  const progress = Math.min(scrollY / maxScroll, 1);
+  // ── Elements ──
+  const nav = document.getElementById('nav');
+  const scrollStory = document.querySelector('.scroll-story');
+  const octopus = document.getElementById('octopusImg');
+  const glowRing = document.getElementById('glowRing');
+  const tentacleSvg = document.getElementById('tentacleSvg');
 
-  tPaths.forEach((p, i) => {
-    // Stagger: each tentacle starts drawing at a different scroll point
-    const stagger = (i % 3) * 0.08;
-    const t = Math.max(0, Math.min(1, (progress - stagger) / 0.5));
-    // Ease out
-    const ease = 1 - Math.pow(1 - t, 3);
-    p.style.strokeDashoffset = tData[i] * (1 - ease);
+  // Story text panels
+  const stHero = document.getElementById('st-hero');
+  const stExpand = document.getElementById('st-expand');
+  const stDepts = document.getElementById('st-departments');
+  const stControl = document.getElementById('st-control');
+  const stCta = document.getElementById('st-cta');
+
+  // Department nodes
+  const deptNodes = [
+    document.getElementById('dn-sales'),
+    document.getElementById('dn-accounting'),
+    document.getElementById('dn-support'),
+    document.getElementById('dn-recruiting'),
+    document.getElementById('dn-legal'),
+    document.getElementById('dn-marketing'),
+    document.getElementById('dn-ops'),
+    document.getElementById('dn-eng')
+  ];
+
+  // ── Department positions (angle from center, in degrees) ──
+  const deptAngles = [0, 45, 90, 135, 180, 225, 270, 315];
+  const deptColors = ['#4080FF','#19C37D','#00D4FF','#8B6CFF','#F5B942','#FF6B6B','#4080FF','#19C37D'];
+
+  // ── Build tentacle paths ──
+  const cx = 720, cy = 450; // SVG center
+  const tentacleRadius = 340;
+
+  let tentaclePaths = [];
+  deptAngles.forEach((angle, i) => {
+    const rad = (angle - 90) * Math.PI / 180;
+    const ex = cx + Math.cos(rad) * tentacleRadius;
+    const ey = cy + Math.sin(rad) * tentacleRadius;
+
+    // Organic bezier with slight curve
+    const mx1 = cx + Math.cos(rad) * tentacleRadius * 0.3 + Math.sin(rad) * 40;
+    const my1 = cy + Math.sin(rad) * tentacleRadius * 0.3 - Math.cos(rad) * 40;
+    const mx2 = cx + Math.cos(rad) * tentacleRadius * 0.65 - Math.sin(rad) * 30;
+    const my2 = cy + Math.sin(rad) * tentacleRadius * 0.65 + Math.cos(rad) * 30;
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', `M${cx},${cy} C${mx1},${my1} ${mx2},${my2} ${ex},${ey}`);
+    path.setAttribute('stroke', deptColors[i]);
+    path.setAttribute('stroke-width', '2.5');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke-linecap', 'round');
+    path.style.opacity = '0';
+    tentacleSvg.appendChild(path);
+
+    const len = path.getTotalLength();
+    path.style.strokeDasharray = len;
+    path.style.strokeDashoffset = len;
+
+    tentaclePaths.push({ el: path, len, ex, ey, angle });
   });
-}
 
-window.addEventListener('scroll', onScroll, {passive: true});
-onScroll();
+  // ── Position department nodes ──
+  function positionNodes() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const nodeRadius = Math.min(vw, vh) * 0.38;
+
+    deptAngles.forEach((angle, i) => {
+      const rad = (angle - 90) * Math.PI / 180;
+      const x = vw / 2 + Math.cos(rad) * nodeRadius;
+      const y = vh / 2 + Math.sin(rad) * nodeRadius;
+      const node = deptNodes[i];
+      node.style.left = x + 'px';
+      node.style.top = y + 'px';
+      node.style.transform = 'translate(-50%,-50%) scale(0.7)';
+    });
+  }
+  positionNodes();
+  window.addEventListener('resize', positionNodes);
+
+  // ── Easing ──
+  function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+  function easeInOutCubic(t){ return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
+
+  // ── Scroll range helper ──
+  function rangeMap(val, inMin, inMax, outMin, outMax) {
+    const t = Math.max(0, Math.min(1, (val - inMin) / (inMax - inMin)));
+    return outMin + t * (outMax - outMin);
+  }
+
+  // ── Show/hide story text ──
+  function showText(el, show) {
+    if (show) el.classList.add('visible');
+    else el.classList.remove('visible');
+  }
+
+  // ── Main scroll handler ──
+  function onScroll() {
+    const rect = scrollStory.getBoundingClientRect();
+    const scrollH = scrollStory.offsetHeight - window.innerHeight;
+    const scrolled = -rect.top;
+    const progress = Math.max(0, Math.min(1, scrolled / scrollH));
+
+    // Nav state
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+
+    // ── PHASE 1: Hero (0–20%) ──
+    showText(stHero, progress < 0.18);
+
+    // ── PHASE 2: Expand / "Not a chatbot" (18–38%) ──
+    showText(stExpand, progress >= 0.16 && progress < 0.36);
+
+    // ── Octopus scale/glow ──
+    const octoScale = 1 + easeOutCubic(Math.min(progress / 0.5, 1)) * 0.15;
+    octopus.style.transform = `scale(${octoScale})`;
+    const glowScale = 1 + easeOutCubic(Math.min(progress / 0.5, 1)) * 0.6;
+    glowRing.style.transform = `scale(${glowScale})`;
+    glowRing.style.opacity = rangeMap(progress, 0.1, 0.4, 0.3, 1);
+
+    // ── PHASE 3: Tentacles draw + departments appear (30–65%) ──
+    showText(stDepts, progress >= 0.34 && progress < 0.62);
+
+    tentaclePaths.forEach((tp, i) => {
+      const stagger = i * 0.025;
+      const drawStart = 0.25 + stagger;
+      const drawEnd = 0.50 + stagger;
+
+      // Draw tentacle
+      let drawProgress = rangeMap(progress, drawStart, drawEnd, 0, 1);
+      drawProgress = easeOutCubic(drawProgress);
+      tp.el.style.strokeDashoffset = tp.len * (1 - drawProgress);
+      tp.el.style.opacity = drawProgress > 0 ? (0.25 + drawProgress * 0.45) : 0;
+
+      // Show node
+      const nodeVisible = drawProgress > 0.85;
+      const node = deptNodes[i];
+      if (nodeVisible) {
+        node.classList.add('visible');
+        node.style.transform = 'translate(-50%,-50%) scale(1)';
+      } else {
+        node.classList.remove('visible');
+        node.style.transform = 'translate(-50%,-50%) scale(0.7)';
+      }
+    });
+
+    // ── PHASE 4: Control (60–80%) ──
+    showText(stControl, progress >= 0.58 && progress < 0.78);
+
+    // ── PHASE 5: Retract tentacles + CTA (75–100%) ──
+    if (progress > 0.72) {
+      const retractP = easeInOutCubic(rangeMap(progress, 0.72, 0.90, 0, 1));
+      tentaclePaths.forEach((tp, i) => {
+        tp.el.style.strokeDashoffset = tp.len * retractP;
+        tp.el.style.opacity = Math.max(0, 0.7 - retractP);
+      });
+      deptNodes.forEach(n => {
+        if (retractP > 0.3) {
+          n.classList.remove('visible');
+          n.style.transform = 'translate(-50%,-50%) scale(0.7)';
+        }
+      });
+      // Scale octopus back
+      const backScale = 1.15 - retractP * 0.15;
+      octopus.style.transform = `scale(${Math.max(1, backScale)})`;
+    }
+
+    showText(stCta, progress >= 0.82);
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  onScroll();
+
+  // ── Smooth scroll for nav links ──
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+
+})();
 </script>
 </body>
 </html>
