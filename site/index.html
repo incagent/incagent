@@ -38,56 +38,38 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 40px;
   z-index:1;background:var(--base);
 }
 
-/* SVG */
-#oct-svg{position:absolute;inset:0;width:100%;height:100%;}
-
-/* LEGS */
-.leg{fill:none;stroke-width:1.5;stroke-linecap:round;}
-#leg-0{stroke:rgba(91,140,255,0.72);}
-#leg-1{stroke:rgba(139,108,255,0.72);}
-#leg-2{stroke:rgba(25,195,125,0.72);}
-#leg-3{stroke:rgba(245,185,66,0.72);}
-#leg-4{stroke:rgba(0,212,255,0.72);}
-
 /* CORE */
-.core-bg{fill:rgba(10,10,46,0.95);stroke:rgba(91,140,255,0.5);stroke-width:2;}
-.core-main{font-family:'Inter',sans-serif;font-size:15px;font-weight:900;fill:#EFF2FA;text-anchor:middle;}
-.core-sub{font-family:'Inter',sans-serif;font-size:9px;font-weight:700;fill:#5B8CFF;text-anchor:middle;letter-spacing:.1em;}
-
-/* ENDPOINT CARDS */
-.ep-card{
-  position:absolute;width:150px;
-  background:rgba(10,10,46,0.92);border:1px solid var(--border);
-  border-radius:10px;padding:12px 14px;
-  transform:translate(-50%,-50%);
-  backdrop-filter:blur(12px);z-index:10;pointer-events:none;
+#core{
+  position:absolute;right:18%;top:50%;transform:translate(50%,-50%);
+  width:120px;height:120px;border-radius:50%;
+  border:2px solid rgba(91,140,255,0.5);
+  background:rgba(10,10,46,0.95);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
 }
-.card-cat{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
-.card-val{font-size:12px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;line-height:1.35;margin-bottom:3px;}
-.card-det{font-size:10px;color:var(--muted);}
+#core .c-name{font-size:18px;font-weight:900;color:var(--text);letter-spacing:-.3px;}
+#core .c-sub{font-size:9px;font-weight:700;color:var(--cobalt);letter-spacing:.12em;margin-top:2px;}
 
 /* TEXT PANELS */
 .text-panel{
   position:absolute;left:60px;
-  width:360px;z-index:20;pointer-events:none;
-  /* vertical centering applied via JS for reliability */
+  width:420px;z-index:20;pointer-events:none;
 }
 .panel-tag{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cobalt);margin-bottom:14px;}
 .panel-phase{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:12px;}
-.text-panel h1{font-size:clamp(26px,2.8vw,42px);font-weight:900;color:#EFF2FA;line-height:1.1;letter-spacing:-.6px;margin-bottom:14px;}
-.text-panel h2{font-size:clamp(18px,2vw,26px);font-weight:800;color:#EFF2FA;line-height:1.25;letter-spacing:-.3px;margin-bottom:18px;}
-.panel-sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
+.text-panel h1{font-size:clamp(28px,3vw,46px);font-weight:900;color:#EFF2FA;line-height:1.1;letter-spacing:-.6px;margin-bottom:16px;}
+.text-panel h2{font-size:clamp(20px,2.2vw,30px);font-weight:800;color:#EFF2FA;line-height:1.25;letter-spacing:-.3px;margin-bottom:18px;}
+.panel-sub{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:22px;}
 
 /* DETAIL BOX */
 .dbox{border:1px solid var(--border);border-radius:8px;overflow:hidden;background:rgba(10,10,46,0.5);}
-.dr{display:flex;justify-content:space-between;align-items:center;padding:8px 13px;border-bottom:1px solid var(--border);font-size:11.5px;}
+.dr{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px;}
 .dr:last-child{border-bottom:none;}
 .dk{color:var(--dim);font-weight:600;}
 .dv{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--text);}
 .dv.co{color:var(--cobalt);}.dv.vi{color:var(--violet);}.dv.gr{color:var(--green);}.dv.am{color:var(--amber);}.dv.cy{color:var(--cyan);}
 
 /* INSTALL BADGE */
-.ibadge{display:inline-flex;align-items:center;gap:9px;background:rgba(14,14,52,0.8);border:1px solid var(--border);border-radius:7px;padding:9px 16px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text);margin-bottom:18px;width:fit-content;}
+.ibadge{display:inline-flex;align-items:center;gap:9px;background:rgba(14,14,52,0.8);border:1px solid var(--border);border-radius:7px;padding:9px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);margin-bottom:20px;width:fit-content;}
 .ibadge .cc{color:var(--dim);}
 
 /* BUTTONS */
@@ -105,7 +87,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 40px;
 #scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);animation:hblink 2.5s ease-in-out infinite;z-index:20;transition:opacity .5s;}
 @keyframes hblink{0%,100%{opacity:.3;}50%{opacity:.8;}}
 
-/* POST-SCROLL: covers the fixed frame once scene is past */
+/* POST-SCROLL */
 #post-scroll{position:relative;z-index:10;background:var(--base);padding:120px 80px;max-width:1100px;margin:0 auto;}
 @media(max-width:900px){#post-scroll{padding:80px 24px;}}
 #post-scroll h2{font-size:clamp(28px,3vw,46px);font-weight:900;color:var(--text);letter-spacing:-.6px;margin-bottom:12px;}
@@ -120,7 +102,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 40px;
 .start-install .cc{color:var(--dim);}
 .start-cta{margin-top:16px;}
 
-/* FOOTER: also above fixed frame */
 footer{position:relative;z-index:10;background:var(--base);border-top:1px solid var(--border);padding:28px 80px;display:flex;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto;width:100%;}
 @media(max-width:900px){footer{padding:24px;flex-direction:column;gap:12px;}}
 .footer-logo{font-size:14px;font-weight:900;color:var(--text);text-decoration:none;}
@@ -142,52 +123,15 @@ footer{position:relative;z-index:10;background:var(--base);border-top:1px solid 
   </div>
 </nav>
 
-<!-- Scroll spacer: creates 700vh of scroll height -->
 <div id="scene"></div>
 
-<!-- Fixed animation frame: always covers viewport, post-scroll covers it after -->
 <div id="anim-wrap">
-  <svg id="oct-svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid meet">
-    <!-- 5 tentacle paths — core at (820,350) -->
-    <path id="leg-0" class="leg" d="M820,350 Q580,195 350,80"/>
-    <path id="leg-1" class="leg" d="M820,350 Q1050,195 1100,80"/>
-    <path id="leg-2" class="leg" d="M820,350 Q1050,500 1100,630"/>
-    <path id="leg-3" class="leg" d="M820,350 Q820,510 820,660"/>
-    <path id="leg-4" class="leg" d="M820,350 Q580,500 350,630"/>
-    <!-- Core -->
-    <circle class="core-bg" cx="820" cy="350" r="46"/>
-    <text class="core-main" x="820" y="346">Inc</text>
-    <text class="core-sub"  x="820" y="366">AGENT</text>
-  </svg>
-
-  <!-- Endpoint cards -->
-  <div id="card-0" class="ep-card" style="opacity:0">
-    <div class="card-cat" style="color:#5B8CFF">Sales</div>
-    <div class="card-val">proposal.pdf</div>
-    <div class="card-det">$5,000 · 2 rounds</div>
-  </div>
-  <div id="card-1" class="ep-card" style="opacity:0">
-    <div class="card-cat" style="color:#8B6CFF">Human Assignment</div>
-    <div class="card-val">Mika Tanaka</div>
-    <div class="card-det">Tokyo · WO-491</div>
-  </div>
-  <div id="card-2" class="ep-card" style="opacity:0">
-    <div class="card-cat" style="color:#19C37D">Proof</div>
-    <div class="card-val">3 photos</div>
-    <div class="card-det">Verified ✓</div>
-  </div>
-  <div id="card-3" class="ep-card" style="opacity:0">
-    <div class="card-cat" style="color:#F5B942">Invoice</div>
-    <div class="card-val">#2048 · $5,000</div>
-    <div class="card-det">Payment received</div>
-  </div>
-  <div id="card-4" class="ep-card" style="opacity:0">
-    <div class="card-cat" style="color:#00D4FF">Growth</div>
-    <div class="card-val">Campaign live</div>
-    <div class="card-det">12.4% conversion</div>
+  <div id="core">
+    <span class="c-name">Inc</span>
+    <span class="c-sub">AGENT</span>
   </div>
 
-  <!-- Hero panel (visible at start) -->
+  <!-- Hero panel -->
   <div id="panel-hero" class="text-panel">
     <div class="panel-tag">Open-source · Agent commerce protocol</div>
     <h1>Agents run the business.<br>People execute the work.</h1>
@@ -199,7 +143,7 @@ footer{position:relative;z-index:10;background:var(--base);border-top:1px solid 
     </div>
   </div>
 
-  <!-- Feature panels (hidden initially) -->
+  <!-- Feature panels -->
   <div id="panel-0" class="text-panel" style="opacity:0">
     <div class="panel-phase">01 — Sales</div>
     <h2>Agent creates the offer and closes the buyer autonomously.</h2>
@@ -270,7 +214,6 @@ footer{position:relative;z-index:10;background:var(--base);border-top:1px solid 
     </div>
   </div>
 
-  <!-- Phase indicator -->
   <div id="phase-dots">
     <div class="pdot"></div><div class="pdot"></div><div class="pdot"></div>
     <div class="pdot"></div><div class="pdot"></div><div class="pdot"></div>
@@ -280,7 +223,6 @@ footer{position:relative;z-index:10;background:var(--base);border-top:1px solid 
   <div id="scroll-hint">scroll to activate</div>
 </div>
 
-<!-- POST-SCROLL: solid bg covers fixed frame -->
 <div id="post-scroll">
   <h2>Start here.</h2>
   <p class="post-sub">Three ways to get started with agent-run commerce.</p>
@@ -318,122 +260,58 @@ footer{position:relative;z-index:10;background:var(--base);border-top:1px solid 
 </footer>
 
 <script>
-// SVG endpoint coords (viewBox: 0 0 1200 700)
-const EP = [
-  {x:350,  y:80},   // 0 Sales
-  {x:1100, y:80},   // 1 Human
-  {x:1100, y:630},  // 2 Proof
-  {x:820,  y:660},  // 3 Invoice
-  {x:350,  y:630},  // 4 Growth
-];
-
 const scene     = document.getElementById('scene');
-const animWrap  = document.getElementById('anim-wrap');
-const svg       = document.getElementById('oct-svg');
 const hint      = document.getElementById('scroll-hint');
-const legs      = [0,1,2,3,4].map(i => document.getElementById('leg-'+i));
-const cards     = [0,1,2,3,4].map(i => document.getElementById('card-'+i));
 const allPanels = ['hero','0','1','2','3','4','reveal'].map(id => document.getElementById('panel-'+id));
 const dots      = Array.from(document.querySelectorAll('.pdot'));
 
-// Give scene its height (in JS so we can reference vh)
 scene.style.height = '700vh';
-
-let legLengths = [];
 let hintHidden = false;
 
-function initLegs() {
-  legs.forEach((leg, i) => {
-    const len = leg.getTotalLength();
-    legLengths[i] = len;
-    leg.style.strokeDasharray  = len;
-    leg.style.strokeDashoffset = len; // start hidden
-  });
-}
-
-// Lay panels out vertically centered (done in JS so vh is reliable)
 function layoutPanels() {
-  const vh = window.innerHeight;
-  const top = Math.round(vh / 2 + 28); // 50vh + half-nav offset
+  const top = Math.round(window.innerHeight / 2 + 28);
   allPanels.forEach(p => {
     p.style.top = top + 'px';
     p.style.transform = 'translateY(-50%)';
   });
 }
 
-// Convert SVG viewBox → screen pixel (fixed wrap = full viewport)
-function svgPt(sx, sy) {
-  const r  = svg.getBoundingClientRect();
-  const vb = svg.viewBox.baseVal;
-  const sc = Math.min(r.width / vb.width, r.height / vb.height);
-  const ox = (r.width  - vb.width  * sc) / 2;
-  const oy = (r.height - vb.height * sc) / 2;
-  return { x: sx * sc + ox, y: sy * sc + oy };
-}
-
-function positionCards() {
-  EP.forEach((ep, i) => {
-    const p = svgPt(ep.x, ep.y);
-    cards[i].style.left = p.x + 'px';
-    cards[i].style.top  = p.y + 'px';
-  });
-}
-
-function clamp(v, lo, hi)     { return Math.max(lo, Math.min(hi, v)); }
-function smooth(v, from, to)  { return clamp((v - from) / (to - from), 0, 1); }
+function clamp(v, lo, hi)    { return Math.max(lo, Math.min(hi, v)); }
+function smooth(v, from, to) { return clamp((v - from) / (to - from), 0, 1); }
 
 function onScroll() {
-  // Progress 0→1 as user scrolls through 700vh scene
   const sceneTop  = scene.getBoundingClientRect().top;
   const maxScroll = scene.offsetHeight - window.innerHeight;
   const progress  = clamp(-sceneTop / maxScroll, 0, 1);
-  const phase     = progress * 7; // 0–7
+  const phase     = progress * 7;
 
-  // Hide scroll hint on first movement
   if (!hintHidden && window.scrollY > 20) {
     hintHidden = true;
     hint.style.opacity = '0';
   }
 
-  // Legs: leg i extends during phase i+1 → i+2
-  legs.forEach((leg, i) => {
-    const t = smooth(phase, i + 1, i + 2);
-    leg.style.strokeDashoffset = legLengths[i] * (1 - t);
-  });
-
-  // Cards: fade in after leg ~70% drawn
-  cards.forEach((card, i) => {
-    card.style.opacity = smooth(phase, i + 1.7, i + 2.2);
-  });
-
   // Text panels
-  allPanels[0].style.opacity = 1 - smooth(phase, 0.8, 1.3); // hero out
+  allPanels[0].style.opacity = 1 - smooth(phase, 0.8, 1.3);
   for (let i = 0; i < 5; i++) {
     const tin  = smooth(phase, i + 1,   i + 1.4);
     const tout = smooth(phase, i + 1.6, i + 2.1);
     allPanels[i + 1].style.opacity = tin * (1 - tout);
   }
-  allPanels[6].style.opacity = smooth(phase, 6, 6.5); // reveal in
+  allPanels[6].style.opacity = smooth(phase, 6, 6.5);
 
-  // Pointer events: only visible panel is interactive
   allPanels.forEach(p => {
     const op = parseFloat(p.style.opacity) || 0;
     p.style.pointerEvents = op > 0.1 ? 'auto' : 'none';
   });
 
-  // Phase dots
   const dot = Math.min(Math.floor(phase), 6);
   dots.forEach((d, i) => d.classList.toggle('act', i === dot));
 }
 
-// Init
-initLegs();
 layoutPanels();
-positionCards();
-onScroll(); // set initial state before first scroll
-
+onScroll();
 window.addEventListener('scroll', onScroll, {passive:true});
-window.addEventListener('resize', () => { layoutPanels(); positionCards(); }, {passive:true});
+window.addEventListener('resize', layoutPanels, {passive:true});
 </script>
 </body>
 </html>
