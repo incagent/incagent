@@ -58,10 +58,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 48px;
 .what-points{list-style:none;display:flex;flex-direction:column;gap:12px;}
 .what-points li{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--text);}
 .what-points li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--cobalt);flex-shrink:0;}
-.hub-diagram{position:relative;width:100%;aspect-ratio:1;max-width:400px;margin:0 auto;}
-.hub-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;border-radius:50%;background:var(--panel);border:2px solid var(--cobalt);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--cobalt);letter-spacing:.06em;z-index:2;}
-.hub-node{position:absolute;width:56px;height:56px;border-radius:50%;background:var(--panel);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--muted);text-align:center;line-height:1.2;}
-.hub-line{position:absolute;top:50%;left:50%;transform-origin:0 0;height:1px;background:var(--border);z-index:0;}
+.hub-float{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;max-width:420px;margin:0 auto;}
+.hub-core{background:var(--cobalt);color:#fff;font-size:13px;font-weight:800;padding:12px 22px;border-radius:24px;letter-spacing:.02em;}
+.hub-tag{background:var(--panel);border:1px solid var(--border);color:var(--muted);font-size:12px;font-weight:600;padding:9px 16px;border-radius:20px;transition:border-color .2s,color .2s;}
+.hub-tag:hover{border-color:var(--cobalt);color:var(--text);}
 
 /* 3. 8 DEPARTMENTS */
 .sec-title{font-size:clamp(24px,2.8vw,38px);font-weight:900;color:var(--text);letter-spacing:-.5px;margin-bottom:12px;}
@@ -171,8 +171,16 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
         <li>Reports everything in one place</li>
       </ul>
     </div>
-    <div class="hub-diagram" id="hub">
-      <div class="hub-center">AI</div>
+    <div class="hub-float">
+      <span class="hub-core">AI Agent</span>
+      <span class="hub-tag">Sales</span>
+      <span class="hub-tag">Accounting</span>
+      <span class="hub-tag">Support</span>
+      <span class="hub-tag">Recruiting</span>
+      <span class="hub-tag">Legal</span>
+      <span class="hub-tag">Marketing</span>
+      <span class="hub-tag">Operations</span>
+      <span class="hub-tag">Engineering</span>
     </div>
   </div>
 </section>
@@ -326,32 +334,5 @@ footer{border-top:1px solid var(--border);padding:28px 80px;display:flex;align-i
   </div>
 </footer>
 
-<script>
-// Hub diagram: 8 nodes around center
-const depts = ['Sales','Acct','Support','Recruit','Legal','Mktg','Ops','Eng'];
-const hub = document.getElementById('hub');
-const cx = 50, cy = 50, r = 40; // percent
-depts.forEach((d, i) => {
-  const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
-  const x = cx + r * Math.cos(angle);
-  const y = cy + r * Math.sin(angle);
-  // line
-  const line = document.createElement('div');
-  line.className = 'hub-line';
-  const dx = x - cx, dy = y - cy;
-  const len = Math.sqrt(dx*dx + dy*dy);
-  const deg = Math.atan2(dy, dx) * 180 / Math.PI;
-  line.style.width = len + '%';
-  line.style.transform = 'rotate(' + deg + 'deg)';
-  hub.appendChild(line);
-  // node
-  const node = document.createElement('div');
-  node.className = 'hub-node';
-  node.textContent = d;
-  node.style.left = 'calc(' + x + '% - 28px)';
-  node.style.top = 'calc(' + y + '% - 28px)';
-  hub.appendChild(node);
-});
-</script>
 </body>
 </html>
