@@ -46,21 +46,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;padding:0 48px;
 .btn-g{background:transparent;color:var(--text);border:1px solid rgba(91,140,255,0.3);}.btn-g:hover{border-color:rgba(91,140,255,0.55);background:rgba(91,140,255,0.07);}
 
 .hero-right{display:flex;flex-direction:column;gap:0;}
-.code-block{background:rgba(16,16,58,0.85);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
-.code-header{display:flex;align-items:center;gap:8px;padding:12px 18px;border-bottom:1px solid var(--border);background:rgba(10,10,46,0.4);}
-.code-dot{width:8px;height:8px;border-radius:50%;}
-.code-dot.r{background:#ff5f57;}.code-dot.y{background:#febc2e;}.code-dot.g{background:#28c840;}
-.code-file{margin-left:8px;font-size:11px;font-weight:600;color:var(--dim);font-family:'JetBrains Mono',monospace;}
-.code-body{padding:20px 22px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:var(--muted);overflow-x:auto;}
-.code-body .cm{color:var(--dim);}
-.code-body .kw{color:var(--violet);}
-.code-body .fn{color:var(--cobalt);}
-.code-body .st{color:var(--green);}
-.code-body .num{color:var(--amber);}
-.code-body .op{color:var(--dim);}
-.code-body .var{color:var(--text);}
 
-.install-row{margin-top:16px;display:flex;align-items:center;gap:12px;background:rgba(16,16,58,0.85);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:10px;padding:14px 20px;}
+.install-row{display:flex;align-items:center;gap:12px;background:rgba(16,16,58,0.85);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:10px;padding:14px 20px;}
 .install-row code{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text);flex:1;}
 .install-row .dollar{color:var(--dim);margin-right:4px;}
 .copy-btn{background:rgba(91,140,255,0.12);border:1px solid rgba(91,140,255,0.25);color:var(--cobalt);font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;}
@@ -107,30 +94,6 @@ footer{position:relative;z-index:2;background:var(--base);border-top:1px solid v
     <div class="install-row">
       <code><span class="dollar">$</span> pip install incagent</code>
       <button class="copy-btn" onclick="navigator.clipboard.writeText('pip install incagent');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)">Copy</button>
-    </div>
-    <div class="code-block" style="margin-top:16px;">
-      <div class="code-header">
-        <span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span>
-        <span class="code-file">example.py</span>
-      </div>
-      <div class="code-body">
-<span class="kw">from</span> <span class="var">incagent</span> <span class="kw">import</span> <span class="var">IncAgent</span>, <span class="var">Contract</span>, <span class="var">ContractTerms</span>
-<span class="kw">from</span> <span class="var">incagent</span> <span class="kw">import</span> <span class="var">NegotiationPolicy</span>
-<span class="kw">from</span> <span class="var">incagent.messaging</span> <span class="kw">import</span> <span class="var">MessageBus</span>
-
-<span class="var">bus</span> <span class="op">=</span> <span class="fn">MessageBus</span>()
-<span class="var">vendor</span> <span class="op">=</span> <span class="fn">IncAgent</span>(<span class="var">name</span><span class="op">=</span><span class="st">"Vendor"</span>, <span class="var">role</span><span class="op">=</span><span class="st">"seller"</span>, <span class="var">message_bus</span><span class="op">=</span><span class="var">bus</span>)
-<span class="var">buyer</span>  <span class="op">=</span> <span class="fn">IncAgent</span>(<span class="var">name</span><span class="op">=</span><span class="st">"Buyer"</span>,  <span class="var">role</span><span class="op">=</span><span class="st">"buyer"</span>,  <span class="var">message_bus</span><span class="op">=</span><span class="var">bus</span>)
-
-<span class="var">contract</span> <span class="op">=</span> <span class="fn">Contract</span>(
-    <span class="var">title</span><span class="op">=</span><span class="st">"Outbound Campaign"</span>,
-    <span class="var">terms</span><span class="op">=</span><span class="fn">ContractTerms</span>(<span class="var">quantity</span><span class="op">=</span><span class="num">1</span>, <span class="var">unit_price_range</span><span class="op">=</span>(<span class="num">4500</span>, <span class="num">5500</span>)),
-)
-
-<span class="var">result</span> <span class="op">=</span> <span class="kw">await</span> <span class="var">buyer</span>.<span class="fn">negotiate</span>(<span class="var">contract</span>, <span class="var">counterparty</span><span class="op">=</span><span class="var">vendor</span>)
-<span class="fn">print</span>(<span class="var">result</span>.<span class="var">status</span>)       <span class="cm"># agreed</span>
-<span class="fn">print</span>(<span class="var">result</span>.<span class="var">final_terms</span>)  <span class="cm"># $5,000</span>
-      </div>
     </div>
   </div>
 </div>
