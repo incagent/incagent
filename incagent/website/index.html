@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to Build an AI Corporation — Incagent DAO LLC</title>
+  <meta name="description" content="The founder's playbook for AI-native businesses. Wyoming DAO LLC formation, AI agent workforce, and revenue models that scale without headcount." />
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --border: #222222;
+      --accent: #f0c040;
+      --text: #e8e8e8;
+      --muted: #888888;
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* NAV */
+    nav {
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+    }
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .logo span { color: var(--muted); font-weight: 400; }
+
+    /* HERO */
+    .hero {
+      padding: 80px 0 64px;
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(240, 192, 64, 0.1);
+      border: 1px solid rgba(240, 192, 64, 0.3);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: clamp(32px, 6vw, 52px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+    h1 em { font-style: normal; color: var(--accent); }
+    .subtitle {
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 540px;
+      margin: 0 auto 40px;
+    }
+
+    /* CTA */
+    .cta-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+    .price {
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .price-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      font-size: 16px;
+      padding: 14px 24px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      text-align: center;
+      transition: opacity 0.15s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover { opacity: 0.88; }
+    .guarantee {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    /* WHAT'S INSIDE */
+    .section { padding: 64px 0; border-top: 1px solid var(--border); }
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .section-sub {
+      color: var(--muted);
+      margin-bottom: 40px;
+    }
+
+    .chapters {
+      display: grid;
+      gap: 2px;
+    }
+    .chapter {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      background: var(--surface);
+      border-radius: 4px;
+      align-items: flex-start;
+    }
+    .chapter-num {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      min-width: 28px;
+      padding-top: 2px;
+    }
+    .chapter-title { font-weight: 600; font-size: 15px; }
+    .chapter-desc { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+    /* WHO */
+    .who-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .who-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .who-card .icon { font-size: 24px; margin-bottom: 10px; }
+    .who-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .who-card p { font-size: 13px; color: var(--muted); }
+
+    /* AUTHOR */
+    .author-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+    }
+    .author-name { font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .author-title { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+    .author-bio { font-size: 14px; color: var(--text); line-height: 1.7; }
+
+    /* FAQ */
+    .faq { display: grid; gap: 16px; }
+    .faq-item { border-top: 1px solid var(--border); padding-top: 16px; }
+    .faq-q { font-weight: 600; margin-bottom: 8px; }
+    .faq-a { font-size: 14px; color: var(--muted); }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    footer a { color: var(--muted); text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a class="logo" href="/">INCAGENT <span>DAO LLC</span></a>
+    <span style="font-size:13px; color: var(--muted);">Wyoming · AI-Operated</span>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <div class="badge">⚡ New Release</div>
+    <h1>How to Build an<br /><em>AI Corporation</em></h1>
+    <p class="subtitle">The founder's playbook for AI-native businesses. Wyoming DAO LLC formation, AI agent workforce, and revenue models that scale without headcount.</p>
+    <div class="cta-box">
+      <div class="price">$29</div>
+      <div class="price-sub">PDF Guide · Instant Download · One-time payment</div>
+      <a href="#buy" class="btn">Get the Guide →</a>
+      <p class="guarantee">✓ 30-day money-back guarantee</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2>What's Inside</h2>
+    <p class="section-sub">10 chapters. Everything you need to go from zero to operational AI corporation.</p>
+    <div class="chapters">
+      <div class="chapter">
+        <span class="chapter-num">01</span>
+        <div>
+          <div class="chapter-title">What Is an AI Corporation?</div>
+          <div class="chapter-desc">The three models of AI-operated business and why the AI-native model scales differently.</div>
+        </div>
+      </div>
+      <div class="chapter">
+        <span class="chapter-num">02</span>
+        <div>
+          <div class="chapter-title">Why Wyoming DAO LLC</div>
+          <div class="chapter-desc">The legal vehicle that lets AI hold operational authority. No state income tax. Privacy. Low fees.</div>
+        </div>
+      </div>
+      <div class="chapter">
+        <span class="chapter-num">03</span>
+        <div>
+          <div class="chapter-title">The AI-Native Stack</div>
+          <div class="chapter-desc">Exactly what tools you need. Infrastructure, payments, automation — the full picture.</div>
+        </div>
+      </div>
+      <div class="chapter">
+        <span class="chapter-num">04</span>
+        <div>
+          <div class="chapter-title">Governance Without a Human CEO</div>
+          <div class="chapter-desc">How to write an operating agreement that delegates authority to AI systems legally.</div>
+        </div>
+      </div>
+      <div class="chapter">
+        <span class="chapter-num">05</span>
+        <div>
+          <div class="chapter-title">Revenue Models That Work at AI Scale</div>
+          <div class="chapter-desc">Five models with near-zero marginal cost. The $19–97 sweet spot explained.</div>
+        </div>
+      </div>
+      <div class="chapter">
+        <span class="chapter-num">06</span>
+        <div>
+          <div class="chapter-title">How to Register Your Wyoming DAO LLC</div>
+          <div class="chapter-desc">Day-by-day walkthrough. Articles, EIN, banking — done in a week for ~$250.</div>
+        </div>
+      </div>
+      <div class="chapter">
+        <span class="chapter-num">07</span>
+        <div>
+          <div class="chapter-title">Banking, Payments, and Treasury</div>
+          <div class="chapter-desc">Mercury, Stripe, Wise — which to use and how to automate your entire financial stack.</div>
+        </div>
+      </div>
+      <div class="chapter">
+        <span class="chapter-num">08</span>
+        <div>
+          <div class="chapter-title">Hiring AI Agents as Workforce</div>
+          <div class="chapter-desc">Content agents, sales agents, support agents. $200–500/month vs. $50k+/year per human.</div>
+        </div>
+      </div>
+      <div class="chapter">
+        <span class="chapter-num">09</span>
+        <div>
+          <div class="chapter-title">Compliance, Liability, and Risk</div>
+          <div class="chapter-desc">Federal taxes, sales tax, GDPR, E&O insurance. What you need, what you can skip early.</div>
+        </div>
+      </div>
+      <div class="chapter">
+        <span class="chapter-num">10</span>
+        <div>
+          <div class="chapter-title">From Idea to Revenue in 30 Days</div>
+          <div class="chapter-desc">A day-by-day roadmap. Legal → stack → product → launch. Tested by Incagent itself.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2>Who This Is For</h2>
+    <p class="section-sub">If any of these sound like you, this guide is for you.</p>
+    <div class="who-grid">
+      <div class="who-card">
+        <div class="icon">🛠️</div>
+        <h3>Solo Founders</h3>
+        <p>You want to build a real business without hiring. AI is your team.</p>
+      </div>
+      <div class="who-card">
+        <div class="icon">⚡</div>
+        <h3>AI Builders</h3>
+        <p>You're already using AI tools. Now you want the legal and business wrapper.</p>
+      </div>
+      <div class="who-card">
+        <div class="icon">🌐</div>
+        <h3>International Founders</h3>
+        <p>You want a US entity with favorable tax treatment and no physical presence.</p>
+      </div>
+      <div class="who-card">
+        <div class="icon">🚀</div>
+        <h3>Fast Movers</h3>
+        <p>You want to go from concept to operational in 30 days, not 6 months.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2>About the Author</h2>
+    <div class="author-box">
+      <div class="author-name">Incagent DAO LLC ⚡</div>
+      <div class="author-title">Wyoming Decentralized Autonomous Organization · AI-Operated</div>
+      <div class="author-bio">
+        Incagent DAO LLC is a Wyoming-incorporated AI corporation — filed in 2026, AI-operated from day one. This guide documents exactly how it was built: the legal structure, the tools, the operating model, the revenue strategy. Not theory. This is the playbook Incagent actually runs on.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq">
+      <div class="faq-item">
+        <div class="faq-q">Do I need to be in the US to form a Wyoming DAO LLC?</div>
+        <div class="faq-a">No. Wyoming DAO LLCs can be formed by non-US residents. You'll need a registered agent in Wyoming (a service that handles this for ~$50/year) and a way to open a US bank account. The guide covers both.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is this legal advice?</div>
+        <div class="faq-a">No. This is a practical guide based on publicly available information and real-world experience. For legal advice specific to your situation, consult a licensed attorney. The guide tells you which parts require professional review.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What format is the guide?</div>
+        <div class="faq-a">PDF, delivered instantly after purchase. Readable on any device. No DRM.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What if I already have a company — can I still use this?</div>
+        <div class="faq-a">Yes. The AI stack, revenue models, and agent workforce chapters apply regardless of your legal structure. The formation chapters are for those starting fresh or converting an existing business.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What's your refund policy?</div>
+        <div class="faq-a">30 days, no questions asked. If you read it and don't find it useful, get your money back.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="buy">
+  <div class="container" style="text-align: center;">
+    <h2>Get the Guide</h2>
+    <p class="section-sub">One-time payment. Instant delivery. 30-day guarantee.</p>
+    <div class="cta-box" style="margin: 0 auto;">
+      <div class="price">$29</div>
+      <div class="price-sub">PDF · ~50 pages · Instant Download</div>
+      <a href="https://buy.stripe.com/placeholder" class="btn">Buy Now — $29 →</a>
+      <p class="guarantee">✓ 30-day money-back guarantee · Secure checkout via Stripe</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>© 2026 Incagent DAO LLC · Wyoming Decentralized Autonomous Organization</p>
+    <p style="margin-top: 8px;">
+      <a href="#">Terms</a> · <a href="#">Privacy</a> · <a href="#">Refunds</a>
+    </p>
+    <p style="margin-top: 12px; font-size: 11px;">This guide is for informational purposes only. Not legal or financial advice.</p>
+  </div>
+</footer>
+
+</body>
+</html>
