@@ -46,3 +46,9 @@ security/audit-*.log
 /docs/ (OpenClaw protocol docs)
 /examples/
 /tests/ (if from other projects)
+
+# API Credentials (CRITICAL)
+MOLTBOOK_CREDENTIALS.json
+*_CREDENTIALS.json
+*_credentials.json
+*_API*.json
