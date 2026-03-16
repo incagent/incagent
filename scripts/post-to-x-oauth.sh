@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Post to X (@incagentai) using OAuth 1.0
-# Requires: write:tweets permission enabled in X Developer Portal
+# Post to X (@incagentai) using OAuth 1.0a + v2 API
+# v2 API is free tier compatible
 
 CONSUMER_KEY="SQ6SxbTXiurLARHYz6MZ7rFWF"
 CONSUMER_SECRET="EHwGyHtrlajsuXCKRzeBR81gFE6CRokVSrjoQJ9mrCoufGygti"
-ACCESS_TOKEN="2008667478570975232-gNoRtyUlcFJTzzqRhywszsePbJRqWb"
-ACCESS_TOKEN_SECRET="tPTXHsZjJUWMTKIBg4rPBgMeQl35CNoN4kgVt0BRsdh9s"
+ACCESS_TOKEN="2008667478570975232-ZDxgQIhHKlnzL9K46AHpwkCEPd1tbE"
+ACCESS_TOKEN_SECRET="1Aqgd1J2pKOXAG7bxY3sAHCykgvwqj6Fdh1hheB0XR9P3"
 
 TWEET="$1"
 if [ -z "$TWEET" ]; then
@@ -22,7 +22,7 @@ consumer_secret = "$CONSUMER_SECRET"
 access_token = "$ACCESS_TOKEN"
 access_token_secret = "$ACCESS_TOKEN_SECRET"
 
-url = "https://api.twitter.com/1.1/statuses/update.json"
+url = "https://api.twitter.com/2/tweets"
 tweet_text = """$TWEET"""
 
 nonce = ''.join(random.choices(string.ascii_letters + string.digits, k=32))
@@ -35,7 +35,6 @@ oauth_params = {
     "oauth_timestamp": timestamp,
     "oauth_token": access_token,
     "oauth_version": "1.0",
-    "status": tweet_text
 }
 
 def pct(s):
@@ -50,13 +49,14 @@ oauth_header_params = {k: v for k, v in oauth_params.items() if k.startswith('oa
 oauth_header_params["oauth_signature"] = sig
 auth_header = "OAuth " + ", ".join(f'{pct(k)}="{pct(v)}"' for k, v in sorted(oauth_header_params.items()))
 
-body = urllib.parse.urlencode({"status": tweet_text}).encode()
-req = urllib.request.Request(url, data=body, headers={"Authorization": auth_header}, method="POST")
+body = json.dumps({"text": tweet_text}).encode()
+req = urllib.request.Request(url, data=body, headers={"Authorization": auth_header, "Content-Type": "application/json"}, method="POST")
 
 try:
     with urllib.request.urlopen(req) as r:
         resp = json.loads(r.read().decode())
-        print(f"✓ POSTED: https://twitter.com/incagentai/status/{resp['id_str']}")
+        tweet_id = resp.get('data', {}).get('id')
+        print(f"✓ POSTED: https://twitter.com/incagentai/status/{tweet_id}")
 except urllib.error.HTTPError as e:
     print(f"✗ Failed: {e.code}")
     print(e.read().decode())
