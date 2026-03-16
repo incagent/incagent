@@ -1,0 +1,48 @@
+# Security: Never commit secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Build artifacts
+node_modules/
+dist/
+build/
+*.o
+*.so
+*.dylib
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Private workspace files (not needed in repo)
+.openclaw/workspace-state.json
+*.log
+
+# Audit logs (kept locally, not pushed)
+security/audit-*.log
+
+# Temporary files
+/tmp/
+/temp/
+*.tmp
+*.bak
+
+# Third-party data (never commit external projects)
+/incagent/ (keep only guide files)
+/bot/
+/contracts/
+/docs/ (OpenClaw protocol docs)
+/examples/
+/tests/ (if from other projects)
